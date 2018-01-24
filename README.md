@@ -25,3 +25,6 @@ TODO:
 - for each project, add a log viewer (just adapt this code https://github.com/iamthemanintheshower/wp-exceptions-mng)
 - InputChecker->getParametersWhitelist() => add the parameters for each position
 - InputChecker->checkParameters => add the require/formal check + token (just adapt this code https://medium.com/@imthemanintheshower/another-form-validator-for-wordpress-5161efd2e673)
+
+
+Read about the project: https://medium.com/@imthemanintheshower/open-source-projects-and-the-short-of-time-285eeea14f70
