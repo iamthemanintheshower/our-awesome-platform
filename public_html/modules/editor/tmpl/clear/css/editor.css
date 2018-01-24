@@ -1,0 +1,82 @@
+#buttons_editor{width: 100%}
+#buttons_editor span{list-style: none;min-width: 50px;padding-right: 10px;border-right: 1px solid #ccc;padding-left: 10px;background-color: #999}
+#buttons_editor span a{color:#fff}
+#buttons_editor span a {color: #fff;font-size: 11px;}
+
+.editor_history{background-color: #ddd !important;color:#666;line-height: 16px}
+.editor_history a{color: #777 !important;font-size: 10px !important;}
+
+#file_change_history_content{width: 100%;height: 300px;margin-top: 10px;color:#0000ff}
+
+.view_file_in_history_content{cursor: pointer}
+
+#file_change_history_result_modal .modal-body{font-size: 11px}
+
+div#collected_edited_files table {font-size: 10px;}
+div#collected_edited_files th {padding: 5px;}
+div#collected_edited_files td {padding-right: 5px;}
+.show_on_click{cursor: pointer}
+.send_to_dropbox{cursor: pointer}
+
+.CodeMirror {height: 100%; font-size: 13px}
+
+.col-md-2{ padding: 0px !important; overflow: auto; height: 100%; color: #fff }
+.col-md-10{ padding: 0px !important; }
+.CodeMirror-linenumber { color: #222; }
+.CodeMirror-gutters { background-color: #e9e8e2; }
+.CodeMirror pre { padding: 0 10px; line-height: 18px; }
+.cm-s-default .cm-tag{ color: #00c; }
+.cm-s-default .cm-attribute{ color: #170; }
+.cm-s-default .cm-comment{ color: #aaa; }
+.cm-s-default .cm-string { color: rgb(206,123,0); }
+.cm-s-default .cm-qualifier { color: #170; }
+.cm-s-default .cm-atom { color: #000; }
+span.cm-property { color: #00c; }
+.cm-s-default .cm-number { color: #000; }
+.cm-s-default .cm-meta { color: #4a8bc3; }
+div.CodeMirror span.CodeMirror-matchingbracket { color: #000; background-color: yellow; }
+        
+.CodeMirror-focused .cm-matchhighlight {
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFklEQVQI12NgYGBgkKzc8x9CMDAwAAAmhwSbidEoSQAAAABJRU5ErkJggg==);
+  background-position: bottom;
+  background-repeat: repeat-x;
+}
+.cm-matchhighlight {background-color: lightgreen}
+.CodeMirror-selection-highlight-scrollbar {background-color: green}
+
+#btnSaveHTML{
+    position: absolute;
+    z-index: 100;
+    top: 0px;
+    right: 0px;
+}
+
+.no-margin-no-padding{
+    margin:  0px !important;
+    padding: 0px !important;
+    line-height: 7px;
+    max-height: 12px;
+}
+
+#left-sidebar{
+    overflow: auto;
+}
+ul{display: block;padding-left: 15px;}
+
+#searchstringinfile{
+    margin: 0px !important;
+    padding: 0px !important;
+    border: 1px solid #888;
+    margin-right: 1px !important;
+}
+
+#collect_edited_files{
+    margin: 0px !important;
+    padding: 0px !important;
+    border: none !important;
+}
+
+
+
+
+#div_header_bar{font-size: 8px}
