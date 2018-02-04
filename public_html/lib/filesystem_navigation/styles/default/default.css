@@ -1,0 +1,26 @@
+.filesystem-nav {
+    font-family: Georgia;
+    font-size: 12px;
+    letter-spacing: 1px;	
+    line-height: 1.5;
+    padding-left: 5px; 
+}
+
+.filesystem-nav a {
+    color: #222;
+    text-decoration: none;
+}
+
+.filesystem-nav a:hover {
+    color: #777;
+}
+
+.glyphicon.glyphicon-file {
+    color: #172bb9;
+    margin-right: 10px;
+}
+
+.glyphicon.glyphicon-folder-close {
+    color: #eac933;
+    margin-right: 10px;
+}
