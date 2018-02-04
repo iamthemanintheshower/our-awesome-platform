@@ -71,7 +71,8 @@ SOFTWARE.
                 <div class="col-md-2">
                     <div id="left-sidebar"><?php
                         if($project_domain === $application_configs['APPLICATION_DOMAIN']){
-                            echo filesystem_navigation($application_configs['ROOT_PATH']);
+                            $filesystem_navigation = new FileSystemNavigation();
+                            echo $filesystem_navigation->filesystem_navigation($application_configs['ROOT_PATH']);
                         }else{
                             echo file_get_contents($website.'/WS-filelist-dsohfidskjf.php');
                         }
