@@ -74,6 +74,8 @@ class editor extends page{
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
                     'jquery/jquery-1.12.4.min.js',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
+                    'bootstrap-3.3.7-dist/js/bootstrap.min.js',
+                $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
                     'filesystem_navigation/filesystem_navigation_jquery.js',
                 //# code mirror
                 $code_mirror_base_url.'codemirror.js',
@@ -165,7 +167,7 @@ class editor extends page{
         $local__root_folder = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_temp-file-to-be-uploaded/';
 
         $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website']);
+        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
 
 
         return array(
@@ -177,7 +179,98 @@ class editor extends page{
         );
     }
     
-    
+
+    public function _action_searchStringInFile($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+        
+        $searchstring = $post['searchstring'];
+
+        $user = $getProjectWSDetails['ws_user'];
+        $password = $getProjectWSDetails['ws_psw'];
+        $url = $project['website'].'/WS-find-string-in-file-shiawdjaiowdnw.php?searchstring='.$searchstring;
+        
+        $url = str_replace('https://', '', $url);
+        $stream = fopen("https://$user:$password@$url", "r");
+        $stream_searchStringInFile = stream_get_contents($stream, -1, 0);
+        fclose($stream);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'stream_searchStringInFile' => $stream_searchStringInFile,
+            )
+        );
+    }
+
+    public function _action_collectEditedFiles($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+        $website = str_replace('https://', '', $project['website']);
+        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
+
+        $token = $post['token'];
+
+        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);      
+        $get_editorsavelog = $ftp->get_editorsavelog($application_configs['db_mng'], $id_project, $token);
+
+        foreach ($get_editorsavelog as $file){
+            $bkup_file[] = $file['bkup_file'];
+        }
+
+        $compressed_filename = 'bkup-'.date('d-m-Y_H:i:s').'-'.$website.'-'.$token.'.zip';
+        $ftp->_compress_files($application_configs['editor__temp-download-collected-files'].$compressed_filename, $bkup_file);
+        
+        
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'get_editorsavelog' => $get_editorsavelog,
+                'compressed_filename' => $compressed_filename
+            )
+        );
+    }
+
+    public function _action_collectEditedFilesgetFileZIP($application_configs, $module, $action, $post, $optional_parameters){
+        if($optional_parameters){
+            $parameter_key = $optional_parameters[0];
+            if($parameter_key === 'compressed_filename'){
+                $compressed_filename = $optional_parameters[1];
+            }else{
+                $compressed_filename = 0;;
+            }
+        }
+
+        if (file_exists($application_configs['editor__temp-download-collected-files'].$compressed_filename)) {
+            $contents = file_get_contents($application_configs['editor__temp-download-collected-files'].$compressed_filename);
+            header('Content-Length: ' . filesize($application_configs['editor__temp-download-collected-files'].$compressed_filename));
+            header('Content-type: application/zip');
+            header('Content-Disposition: download; filename="' . $compressed_filename . '"');
+
+            echo $contents;
+
+            $this->_sendToDropbox($application_configs, $compressed_filename);
+        }
+    }
+
+    private function _sendToDropbox($application_configs, $compressed_filename){
+        if (file_exists($application_configs['editor__temp-download-collected-files'].$compressed_filename)) {
+            $path = '';
+            $headers = array("Content-Type: application/json");
+            $endpoint = "https://api.dropboxapi.com/2/files/create_folder_v2";
+            $postdata = json_encode(array( "path" => $path, "autorename" => FALSE ));
+            $this->_dropbox_postRequest($endpoint, $headers, $postdata, $application_configs);
+
+            $filename = $application_configs['editor__temp-download-collected-files'].$compressed_filename;
+            $headers = array('Dropbox-API-Arg: {"path":"/'.$compressed_filename.'", "mode":"add"}','Content-Type: application/octet-stream',);
+            $endpoint = 'https://content.dropboxapi.com/2/files/upload';
+
+            $postdata = file_get_contents($filename); //
+            $this->_dropbox_postRequest($endpoint, $headers, $postdata, $application_configs);
+        }
+    }
+
     private function getProjectID($optional_parameters){
         if($optional_parameters){
             return $optional_parameters['id_project'];
@@ -197,8 +290,27 @@ class editor extends page{
         return $project->getProjectFTPDetails($ftp_id_details);
     }
 
+    private function getProjectWSDetails($db_mng, $getProjectData){
+        $project = new Project($db_mng);
+        $ws_id_details = $getProjectData['ws_id_details'];
+        return $project->getProjectWSDetails($ws_id_details);
+    }
+
     public function getInitScript($application_configs, $token){
         //# put here page related scripts
         $this->_getInitScript($application_configs, $token);
-    }    
+    }
+    
+    private function _dropbox_postRequest($endpoint, $headers, $data, $application_configs){
+        $ch = curl_init($endpoint);
+        array_push($headers, $application_configs['editor__dropbox_key']);
+        curl_setopt($ch, CURLOPT_POST, TRUE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        $r = curl_exec($ch);
+        curl_close($ch);
+
+        return json_decode($r, true);
+    }
 }
