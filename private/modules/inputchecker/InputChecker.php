@@ -57,6 +57,16 @@ class InputChecker {
             'editor/editor/index' => 'no-parameters',
             'editor/editor/getFile' => 'no-parameters',
             'editor/editor/setFile' => 'no-parameters',
+            'editor/editor/searchStringInFile' => array(
+                'id_project', 'searchstring', 'token'
+            ),
+            'editor/editor/collectEditedFiles' => array(
+                'id_project', 'token'
+            ),
+            'editor/editor/sendToDropbox' => array(
+                'id_project', 'send_to_dropbox__files', 'token'
+            ),
+            'editor/editor/collectEditedFilesgetFileZIP' => 'no-parameters',
             'login/login/index' => 'no-parameters',
             'login/login/checklogin' => array(
                 'token', 'username', 'password'
