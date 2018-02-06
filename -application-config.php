@@ -66,4 +66,10 @@ $application_configs['db_details'] = array(
     'qsPV6EwtzA' => 'DB_USER',
     'AQowahicz5' => 'DB_PSW'
 );
+
+$application_configs['editor__backup-on-save'] = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_backup-on-save/';
+$application_configs['editor__temp-file-to-be-uploaded'] = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_temp-file-to-be-uploaded/';
+$application_configs['editor__temp-download-collected-files'] = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_temp-download-collected-files/';
+$application_configs['editor__dropbox_key'] = 'YOUR_DROPBOX_KEY';
+
 error_reporting(E_ALL|E_STRICT);
