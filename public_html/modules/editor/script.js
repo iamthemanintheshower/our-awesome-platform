@@ -78,12 +78,79 @@ $( document ).ready(function() {
             alert('Saved');
         })
         .fail(function( data ) {
-            console.log( "FAIL: " + data );
+            console.log( data );
             alert('************** failed ************************');
             sendError('#btnSaveHTML', '', 'script.js', 'btnSaveHTML-fail', '0', data);
         });
 
     });
+
+    $('body').on('click', '#btnSearchStringInFile', function () {
+        var values = {
+            id_project: current_project,
+            searchstring: $('#searchstringinfile').val(),
+            token: token
+        };
+
+        $.post( APPLICATION_URL + "editor/editor/searchStringInFile", values)
+        .done(function( data ) {
+            console.log(data);
+            $('#searchinfile_result').html(data.stream_searchStringInFile);
+            $('#searchinfile_result_modal').modal();
+        })
+        .fail(function( data ) {
+            console.log( data );
+            alert('************** failed ************************');
+            sendError('#btnSearchStringInFile', '', 'script.js', 'btnSearchStringInFile-fail', '0', data);
+        });
+    });
+
+
+    var compressed_filename = '';
+
+    $('body').on('click', '#btnCollectEditedFiles', function () {
+        var values = {
+            id_project: current_project,
+            token: token
+        };
+
+        $.post( APPLICATION_URL + "editor/editor/collectEditedFiles", values)
+        .done(function( data ) {
+            console.log(data);
+            compressed_filename = data.compressed_filename;
+            data = data.get_editorsavelog;
+            var tblRow__edited_files = '<table>';
+            $.each(data, function( i, column ) {
+                tblRow__edited_files = tblRow__edited_files + '<tr>';
+                $.each(column, function( n, field ) {
+                    if(field !== null && field.length > 8){
+                        tblRow__edited_files = tblRow__edited_files + '<td class="show_on_click" data-field="' + field + '">' + field.substring(0,20) + '</td>';
+                    }else{
+                        if(field === null){
+                            tblRow__edited_files = tblRow__edited_files + '<td></td>';
+                        }else{
+                            tblRow__edited_files = tblRow__edited_files + '<td>' + field + '</td>';
+                        }
+                    }
+                });
+
+                tblRow__edited_files = tblRow__edited_files + '</tr>';
+            });
+
+            $('#collected_edited_files').html(
+                tblRow__edited_files + '</table>' + 
+                '<a target="_blank" href="' + APPLICATION_URL + 'editor/editor/collectEditedFilesgetFileZIP/compressed_filename/' + compressed_filename + '">Download</a>'
+            );
+
+            $('#collected_edited_files_modal').modal();
+        })
+        .fail(function( data ) {
+            console.log( data );
+            alert('************** failed ************************');
+            sendError('#btnCollectEditedFiles', '', 'script.js', 'btnCollectEditedFiles-fail', '0', data);
+        });
+    });
+
 });
 
 
