@@ -109,13 +109,30 @@ class DbMng {
         }
         $select .= ' FROM `'.$selectedTable.'` ';
 
-        foreach ($whereValues as $v){
-            if($v['where_value'] !== NULL){
-                $where_field = $v['where_field'];
-                $select .= ' WHERE `'.$where_field.'` = :'.$where_field;
+        if(count($whereValues) === 1){
+            foreach ($whereValues as $v){
+                if($v['where_value'] !== NULL){
+                    $where_field = $v['where_field'];
+                    $select .= ' WHERE `'.$where_field.'` = :'.$where_field;
+                }
+                if($v['where_value'] !== NULL){
+                    $execute_ary[':'.$v['where_field']] = $v['where_value'];
+                }
             }
-            if($v['where_value'] !== NULL){
-                $execute_ary[':'.$v['where_field']] = $v['where_value'];
+        }
+
+        if(count($whereValues) > 1){
+            if($whereValues[0]['where_value'] !== NULL){
+                $select .= ' WHERE 1= 1 ';
+            }
+            foreach ($whereValues as $v){
+                if($v['where_value'] !== NULL){
+                    $where_field = $v['where_field'];
+                    $select .= ' AND `'.$where_field.'` = :'.$where_field;
+                }
+                if($v['where_value'] !== NULL){
+                    $execute_ary[':'.$v['where_field']] = $v['where_value'];
+                }
             }
         }
 
