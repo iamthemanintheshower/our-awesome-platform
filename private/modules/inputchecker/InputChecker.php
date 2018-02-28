@@ -67,6 +67,25 @@ class InputChecker {
                 'id_project', 'send_to_dropbox__files', 'token'
             ),
             'editor/editor/collectEditedFilesgetFileZIP' => 'no-parameters',
+            'dbadmin/dbadmin/index' => 'no-parameters',
+            'dbadmin/dbadmin/getDBTables' => array(
+                'id_project', 'token'
+            ),
+            'dbadmin/dbadmin/getTableDescription' => array(
+                'id_project', 'tablename', 'token'
+            ),
+            'dbadmin/dbadmin/getQueryResult' => array(
+                'id_project', 'raw_query', 'token'
+            ),
+            'dbadmin/dbadmin/executeInsertQuery' => array(
+                'id_project', 'tablename', 'inputFields', 'inputValues', 'token'
+            ),
+
+            'timetracker/timetracker/trackProjectAndAction' => array(
+                'token', 'current_project', 'current_action'
+            ),
+            'timetracker/timetracker/index' => 'no-parameters',
+
             'login/login/index' => 'no-parameters',
             'login/login/checklogin' => array(
                 'token', 'username', 'password'
