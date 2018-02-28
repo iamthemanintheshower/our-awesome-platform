@@ -57,26 +57,7 @@ SOFTWARE.
 
             <div id="div_body_bar" class="row">
                 <div class="col-md-12">
-                    <?php
-                    $available_actions = array(
-                        'FTP' => 'ftp_action', 
-                        'View' => 'website_action',
-                        'WP' => 'wp_admin_action',
-                        'Notes' => 'notes_action',
-                        'Actions' => 'actions_action',
-                        'Time' => 'time_action'
-                    );
-
-                    $i = 0;
-                    foreach ($available_actions as $k=>$v){
-                        if($i === 0){
-                            echo $button->getResponse($k, $v, 'action-button active-action-button', 'data-action="'.$v.'"');
-                        }else{
-                            echo $button->getResponse($k, $v, 'action-button', 'data-action="'.$v.'"');
-                        }
-                        $i++;
-                    }
-                    ?>
+                    <div id="tabs"></div>
                 </div>
             </div>
 
@@ -85,6 +66,8 @@ SOFTWARE.
                     <iframe id="ftp_iframe" src=""></iframe>
                     <iframe id="website_iframe" src=""></iframe>
                     <iframe id="wp_admin_iframe" src=""></iframe>
+                    <iframe id="db_admin_iframe" src=""></iframe>
+                    <iframe id="time_iframe" src=""></iframe>
                 </div>
             </div>
 
