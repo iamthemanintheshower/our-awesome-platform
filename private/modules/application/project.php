@@ -55,11 +55,13 @@ class Project {
         $selectValues_getWebsiteByID[] = 'website';
         $selectValues_getWebsiteByID[] = 'wp_admin';
         $selectValues_getWebsiteByID[] = 'ftp_id_details';
+        $selectValues_getWebsiteByID[] = 'db_id_details';
+        $selectValues_getWebsiteByID[] = 'ws_id_details';
         
         $whereValues__website[] = array('where_field' => 'id_website', 'where_value' => $website_id);
 
         $getWebsiteByID = $this->db_mng->getDataByWhere($selectedTable__website, $selectValues_getWebsiteByID, $whereValues__website);
-        
+
         return array_merge($getProjectDataByID['response_columns'][0], $getWebsiteByID['response_columns'][0]);
     }
     
@@ -75,6 +77,7 @@ class Project {
         foreach ($getTabsByProjectID['response_columns'] as $v){   
             //# tabs
             $selectedTable_getTabByID = 'oap__tabs';
+            $selectValues_getTabByID[] = 'id_tab';
             $selectValues_getTabByID[] = 'tab';
             $selectValues_getTabByID[] = 'html_id';
             $selectValues_getTabByID[] = 'data-action';
@@ -82,7 +85,19 @@ class Project {
 
             $getTabByID = $this->db_mng->getDataByWhere($selectedTable_getTabByID, $selectValues_getTabByID, $whereValues_getTabByID);
 
-            $tabs[] = $getTabByID['response_columns'][0];
+            $button = new Button();
+            $tabs[] = array_merge(
+                $getTabByID['response_columns'][0], 
+                array(
+                    'button' =>
+                    $button->getResponse(
+                        $getTabByID['response_columns'][0]['tab'], 
+                        $getTabByID['response_columns'][0]['html_id'], 
+                        'action-button', 
+                        'data-action="'.$getTabByID['response_columns'][0]['html_id'].'" data-id_tab="'.$getTabByID['response_columns'][0]['id_tab'].'"' //active-action-button
+                    )
+                )
+            );
             $selectValues_getTabByID = $whereValues_getTabByID = null;
             
         }
@@ -102,5 +117,53 @@ class Project {
         $getFTPdetailsByID = $this->db_mng->getDataByWhere($selectedTable__ftp_details, $selectValues_getFTPdetailsByID, $whereValues__ftp_details);
 
         return array_merge($getFTPdetailsByID['response_columns'][0]);
+    }
+
+    public function getProjectTimetracker($project_id){
+        //# ftp
+        $selectedTable__ftp_details = 'oap__timetracker';
+        $selectValues_getProjectTimetracker[] = 'id_timetracker';
+        $selectValues_getProjectTimetracker[] = 'project_id';
+        $selectValues_getProjectTimetracker[] = 'tab_id';
+        $selectValues_getProjectTimetracker[] = 'insert';
+        $selectValues_getProjectTimetracker[] = 'update';
+
+        $whereValues__ftp_details[] = array('where_field' => 'project_id', 'where_value' => $project_id);
+
+        $getProjectTimetracker = $this->db_mng->getDataByWhere(
+            $selectedTable__ftp_details, $selectValues_getProjectTimetracker, $whereValues__ftp_details
+        );
+
+        return array_merge($getProjectTimetracker['response_columns']);
+    }
+
+    public function getProjectDBDetails($db_id_details){
+        //# db
+        $selectedTable__db_details = 'oap__db_details';
+        $selectValues_getDBdetailsByID[] = 'id_db_details';
+        $selectValues_getDBdetailsByID[] = 'db_server';
+        $selectValues_getDBdetailsByID[] = 'db_name';
+        $selectValues_getDBdetailsByID[] = 'db_user';
+        $selectValues_getDBdetailsByID[] = 'db_psw';
+        
+        $whereValues__db_details[] = array('where_field' => 'id_db_details', 'where_value' => $db_id_details);
+
+        $getDBdetailsByID = $this->db_mng->getDataByWhere($selectedTable__db_details, $selectValues_getDBdetailsByID, $whereValues__db_details);
+
+        return array_merge($getDBdetailsByID['response_columns'][0]);
+    }
+
+    public function getProjectWSDetails($ws_id_details){
+        //# ws
+        $selectedTable__ws_details = 'oap__ws_details';
+        $selectValues_getWSdetailsByID[] = 'id_ws_details';
+        $selectValues_getWSdetailsByID[] = 'ws_user';
+        $selectValues_getWSdetailsByID[] = 'ws_psw';
+        
+        $whereValues__ws_details[] = array('where_field' => 'id_ws_details', 'where_value' => $ws_id_details);
+
+        $getWSdetailsByID = $this->db_mng->getDataByWhere($selectedTable__ws_details, $selectValues_getWSdetailsByID, $whereValues__ws_details);
+
+        return array_merge($getWSdetailsByID['response_columns'][0]);
     }
 }
