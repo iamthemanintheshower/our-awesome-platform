@@ -41,6 +41,8 @@ include($application_configs['PRIVATE_FOLDER_MODULES'].'token/token.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'https_redirect/https_redirect.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'localization/localization.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'inputchecker/InputChecker.php');
+include($application_configs['PRIVATE_FOLDER_MODULES'].'dbadmin/dbadmin.php');
+include($application_configs['PRIVATE_FOLDER_MODULES'].'timetracker/timetracker.php');
 
 session_start();
 
