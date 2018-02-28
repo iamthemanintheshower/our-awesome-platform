@@ -28,6 +28,9 @@ $( document ).ready(function() {
     set_mirror_height();
 
     $(document).on('click','.file',function(){
+        var this_ = $(this);
+        disable_element(this_);
+
         var dir = $( this ).data('dir');
         var file = $( this ).data('file');
 
@@ -49,8 +52,8 @@ $( document ).ready(function() {
                 console.log('added');
                 opened_file_tabs.push(dir+'/'+file);
             }
-            console.log(data);
             editor.setValue(data.file_content);
+            enable_element(this_);
         })
         .fail(function( data ) {
             console.log( data );
@@ -59,6 +62,9 @@ $( document ).ready(function() {
     });
 
     $('body').on('click', '#btnSaveHTML', function () {
+        var this_ = $(this);
+        disable_element(this_);
+
         var dir = $( '#dir').val();
         var file = $( '#file').val();
         var data = editor.getValue();
@@ -73,9 +79,8 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/setFile", values)
         .done(function( data ) {
-            console.log( "Data Loaded: " );
-            console.log( data );
             alert('Saved');
+            enable_element(this_);
         })
         .fail(function( data ) {
             console.log( data );
@@ -94,7 +99,6 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/searchStringInFile", values)
         .done(function( data ) {
-            console.log(data);
             $('#searchinfile_result').html(data.stream_searchStringInFile);
             $('#searchinfile_result_modal').modal();
         })
@@ -116,7 +120,6 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/collectEditedFiles", values)
         .done(function( data ) {
-            console.log(data);
             compressed_filename = data.compressed_filename;
             data = data.get_editorsavelog;
             var tblRow__edited_files = '<table>';
@@ -252,4 +255,15 @@ function completeIfInTag(cm) {
     var inner = CodeMirror.innerMode(cm.getMode(), tok.state).state;
     return inner.tagName;
   });
+}
+
+var disabled_element = '';
+function disable_element(element){
+    disabled_element = element.html();
+    element.html('...loading...');
+    element.attr('disabled', true);
+}
+function enable_element(element){
+    element.html(disabled_element);
+    element.attr('disabled', false);
 }
