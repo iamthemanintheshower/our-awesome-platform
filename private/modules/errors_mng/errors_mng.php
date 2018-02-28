@@ -68,6 +68,16 @@ class errors_mng extends page{
     }
 }
 
+function shutDownFunction() { 
+    $error = error_get_last();
+    if ($error['type'] === E_ERROR) { 
+        $date = new DateTime();
+        error_log('!$error:'.$date->getTimestamp().'|'.print_r($error, true).'|', 3, __DIR__."/logs/php-exception.log");
+        die();
+    } 
+}
+register_shutdown_function('shutDownFunction');
+
 set_error_handler('myErrorHandler');
 
 function myErrorHandler($errno, $errstr, $errfile, $errline) {
