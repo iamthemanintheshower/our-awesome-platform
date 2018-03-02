@@ -34,6 +34,9 @@ $( document ).ready(function() {
 
 
     $('body').on('click', '.project-button', function() {
+        if(current_project !== $(this).data('id_project')){
+            opened_iframes = new Array();
+        }
         current_project = $(this).data('id_project');
         current_action = 'ftp_action';
 
