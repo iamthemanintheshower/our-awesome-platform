@@ -22,7 +22,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-** This code is probably inspired to some code I found on internet but I can't remember where **
+** This code is probably inspired to some code I found on internet but I can't remember where (please let me know if you recognize this code) **
 
 */
 
