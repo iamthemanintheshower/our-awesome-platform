@@ -105,10 +105,11 @@ class dbadmin extends page{
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $encryption = new Encryption($application_configs['encryption_details']);
 
-        //# project's db details
+        //#TODO: following is an example on how to use the stored db credentials (to connect the database) or an external ws
+
+        //# project's db details: direct connection to the database, use the stored db credentials
         $db_id_details = $project['db_id_details'];
         $getProjectDBDetails = $this->getProjectDBDetails($application_configs['db_mng'], $db_id_details);
-
         $_project_db_mng = new DbMng(
             array(
                 'Nrqtx0HHsX' => $getProjectDBDetails['db_server'],
@@ -117,14 +118,33 @@ class dbadmin extends page{
                 'AQowahicz5' => $encryption->decrypt($getProjectDBDetails['db_psw'])
             )
         );
+        $getDBTables = $_project_db_mng->getDataByQuery('show tables', 'db');  //# not using $getDBTables in this example
 
-        $getDBTables = $_project_db_mng->getDataByQuery('show tables', 'db');
+        //# can't connect to the database server? use the ws...
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+        $__project_db_mng = new DbMng(
+            false,
+            false,
+            array(
+                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+            )
+        );
+
+        $getDBTables_via_ws = $__project_db_mng->getDataByQuery('show tables', 'ws');
+
+        $_show_tables = array();
+
+        foreach ($getDBTables_via_ws['response'] as $element){
+            $_show_tables[] = $element['Tables_in_'.$encryption->decrypt($getProjectDBDetails['db_name'])];
+        }
 
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
-                'getDBTables' => $getDBTables
+                'getDBTables' => $_show_tables
             )
         );
     }
@@ -199,6 +219,12 @@ class dbadmin extends page{
     private function getProjectByID($db_mng, $project_id){
         $project = new Project($db_mng);
         return $project->getProjectDataByID($project_id);
+    }
+
+    private function getProjectWSDetails($db_mng, $getProjectData){
+        $project = new Project($db_mng);
+        $ws_id_details = $getProjectData['ws_id_details'];
+        return $project->getProjectWSDetails($ws_id_details);
     }
 
     private function getProjectDBDetails($db_mng, $db_id_details){
