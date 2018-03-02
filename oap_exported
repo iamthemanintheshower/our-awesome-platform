@@ -1,0 +1,354 @@
+-- MySQL dump 10.13  Distrib 5.7.21, for Linux (x86_64)
+--
+-- Host: localhost    Database: oap
+-- ------------------------------------------------------
+-- Server version	5.7.21-0ubuntu0.16.04.1
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `oap__db_details`
+--
+
+DROP TABLE IF EXISTS `oap__db_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__db_details` (
+  `id_db_details` int(11) NOT NULL AUTO_INCREMENT,
+  `db_server` varchar(50) NOT NULL,
+  `db_name` varchar(200) NOT NULL,
+  `db_user` varchar(200) NOT NULL,
+  `db_psw` varchar(200) NOT NULL,
+  PRIMARY KEY (`id_db_details`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__db_details`
+--
+
+LOCK TABLES `oap__db_details` WRITE;
+/*!40000 ALTER TABLE `oap__db_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__db_details` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__editorsavelog`
+--
+
+DROP TABLE IF EXISTS `oap__editorsavelog`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__editorsavelog` (
+  `id_editorsavelog` int(11) NOT NULL AUTO_INCREMENT,
+  `folder` text NOT NULL,
+  `filename` text NOT NULL,
+  `token` text NOT NULL,
+  `bkup_file` text NOT NULL,
+  `id_project` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_editorsavelog`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__editorsavelog`
+--
+
+LOCK TABLES `oap__editorsavelog` WRITE;
+/*!40000 ALTER TABLE `oap__editorsavelog` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__editorsavelog` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__ftp_details`
+--
+
+DROP TABLE IF EXISTS `oap__ftp_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__ftp_details` (
+  `id_ftp_details` int(11) NOT NULL AUTO_INCREMENT,
+  `ftp_server` varchar(50) NOT NULL,
+  `ftp_user` varchar(200) NOT NULL,
+  `ftp_psw` varchar(200) NOT NULL,
+  PRIMARY KEY (`id_ftp_details`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__ftp_details`
+--
+
+LOCK TABLES `oap__ftp_details` WRITE;
+/*!40000 ALTER TABLE `oap__ftp_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__ftp_details` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__groups`
+--
+
+DROP TABLE IF EXISTS `oap__groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__groups` (
+  `id_groups` int(11) NOT NULL AUTO_INCREMENT,
+  `project_group` varchar(50) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_groups`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__groups`
+--
+
+LOCK TABLES `oap__groups` WRITE;
+/*!40000 ALTER TABLE `oap__groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__projects`
+--
+
+DROP TABLE IF EXISTS `oap__projects`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__projects` (
+  `id_project` int(11) NOT NULL AUTO_INCREMENT,
+  `project` varchar(50) NOT NULL,
+  `website_id` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_project`),
+  KEY `website_id` (`website_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__projects`
+--
+
+LOCK TABLES `oap__projects` WRITE;
+/*!40000 ALTER TABLE `oap__projects` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__projects` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__projects_groups`
+--
+
+DROP TABLE IF EXISTS `oap__projects_groups`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__projects_groups` (
+  `id_projects_groups` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_projects_groups`),
+  KEY `project_id` (`project_id`),
+  KEY `group_id` (`group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__projects_groups`
+--
+
+LOCK TABLES `oap__projects_groups` WRITE;
+/*!40000 ALTER TABLE `oap__projects_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__projects_groups` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__projects_tabs`
+--
+
+DROP TABLE IF EXISTS `oap__projects_tabs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__projects_tabs` (
+  `id_projects_tabs` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) NOT NULL,
+  `tab_id` int(11) NOT NULL,
+  PRIMARY KEY (`id_projects_tabs`),
+  KEY `project_id` (`project_id`),
+  KEY `tab_id` (`tab_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__projects_tabs`
+--
+
+LOCK TABLES `oap__projects_tabs` WRITE;
+/*!40000 ALTER TABLE `oap__projects_tabs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__projects_tabs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__tabs`
+--
+
+DROP TABLE IF EXISTS `oap__tabs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__tabs` (
+  `id_tab` int(11) NOT NULL AUTO_INCREMENT,
+  `tab` varchar(50) NOT NULL,
+  `html_id` varchar(20) NOT NULL,
+  `data-action` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_tab`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__tabs`
+--
+
+LOCK TABLES `oap__tabs` WRITE;
+/*!40000 ALTER TABLE `oap__tabs` DISABLE KEYS */;
+INSERT INTO `oap__tabs` VALUES (1,'FTP','ftp_action','ftp_action'),(2,'View','website_action','website_action'),(3,'WP','wp_admin_action','wp_admin_action'),(5,'DB','db_admin_action','db_admin_action'),(6,'Time','time_action','time_action');
+/*!40000 ALTER TABLE `oap__tabs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__timetracker`
+--
+
+DROP TABLE IF EXISTS `oap__timetracker`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__timetracker` (
+  `id_timetracker` int(11) NOT NULL AUTO_INCREMENT,
+  `project_id` int(11) NOT NULL,
+  `tab_id` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_timetracker`),
+  KEY `project_id` (`project_id`),
+  KEY `tab_id` (`tab_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__timetracker`
+--
+
+LOCK TABLES `oap__timetracker` WRITE;
+/*!40000 ALTER TABLE `oap__timetracker` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__timetracker` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__users`
+--
+
+DROP TABLE IF EXISTS `oap__users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__users` (
+  `id_user` int(11) NOT NULL AUTO_INCREMENT,
+  `email_and_user` varchar(50) NOT NULL,
+  `psw` varchar(255) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `surname` varchar(50) NOT NULL,
+  `usertype_id` int(11) NOT NULL,
+  PRIMARY KEY (`id_user`),
+  KEY `email_and_user` (`email_and_user`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__users`
+--
+
+LOCK TABLES `oap__users` WRITE;
+/*!40000 ALTER TABLE `oap__users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__websites`
+--
+
+DROP TABLE IF EXISTS `oap__websites`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__websites` (
+  `id_website` int(11) NOT NULL AUTO_INCREMENT,
+  `website` varchar(100) NOT NULL,
+  `wp_admin` varchar(100) NOT NULL,
+  `ftp_id_details` int(11) NOT NULL,
+  `db_id_details` int(11) NOT NULL,
+  `ws_id_details` int(11) NOT NULL,
+  PRIMARY KEY (`id_website`),
+  KEY `ftp_id_details` (`ftp_id_details`),
+  KEY `db_id_details` (`db_id_details`),
+  KEY `ws_id_details` (`ws_id_details`),
+  KEY `ftp_id_details_2` (`ftp_id_details`),
+  KEY `db_id_details_2` (`db_id_details`),
+  KEY `ws_id_details_2` (`ws_id_details`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__websites`
+--
+
+LOCK TABLES `oap__websites` WRITE;
+/*!40000 ALTER TABLE `oap__websites` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__websites` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `oap__ws_details`
+--
+
+DROP TABLE IF EXISTS `oap__ws_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oap__ws_details` (
+  `id_ws_details` int(11) NOT NULL AUTO_INCREMENT,
+  `ws_user` varchar(200) NOT NULL,
+  `ws_psw` varchar(200) NOT NULL,
+  `ws_find_string_in_file` text NOT NULL,
+  `ws_database_url` text NOT NULL,
+  PRIMARY KEY (`id_ws_details`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `oap__ws_details`
+--
+
+LOCK TABLES `oap__ws_details` WRITE;
+/*!40000 ALTER TABLE `oap__ws_details` DISABLE KEYS */;
+/*!40000 ALTER TABLE `oap__ws_details` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-03-02 22:57:04
