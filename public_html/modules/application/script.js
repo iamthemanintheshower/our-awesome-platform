@@ -68,10 +68,11 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
     var position = 'getProjectActionData';
 
     var ftp_src = APPLICATION_URL + 'editor/editor/index/id_project/' + current_project;
+    var db_src = APPLICATION_URL + 'dbadmin/dbadmin/index/id_project/' + current_project;
+    var timetracker_src = APPLICATION_URL + 'timetracker/timetracker/index/id_project/' + current_project;
 
     $.post( APPLICATION_URL + "/application/home/getProject", { token: token, id_project: current_project, current_action: current_action})
     .done(function(data) {
-
         var project = data.project;
         var tabs = data.tabs;
 
@@ -81,26 +82,65 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
             case 'ftp_action':
                 $('#website_iframe').hide();
                 $('#wp_admin_iframe').hide();
+                $('#db_admin_iframe').hide();
+                $('#time_iframe').hide();
 
                 $('#ftp_iframe').show();
-                $('#ftp_iframe').attr('src', ftp_src);
+                if(opened_iframes.indexOf(current_action) === -1){
+                    $('#ftp_iframe').attr('src', ftp_src);
+                    opened_iframes.push(current_action);
+                }
                 break;
             case 'website_action':
                 $('#ftp_iframe').hide();
                 $('#wp_admin_iframe').hide();
+                $('#db_admin_iframe').hide();
+                $('#time_iframe').hide();
 
                 $('#website_iframe').show();
-                $('#website_iframe').attr('src', project.website);
+                if(opened_iframes.indexOf(current_action) === -1){
+                    $('#website_iframe').attr('src', project.website);
+                    opened_iframes.push(current_action);
+                }
                 break;
             case 'wp_admin_action':
                 if(project.wp_admin !== ''){
                     $('#ftp_iframe').hide();
                     $('#website_iframe').hide();
+                    $('#db_admin_iframe').hide();
+                    $('#time_iframe').hide();
 
                     $('#wp_admin_iframe').show();
-                    $('#wp_admin_iframe').attr('src', project.wp_admin);
+                    if(opened_iframes.indexOf(current_action) === -1){
+                        $('#wp_admin_iframe').attr('src', project.wp_admin);
+                        opened_iframes.push(current_action);
+                    }
                 }else{
                     alert('no WP');
+                }
+                break;
+            case 'db_admin_action':
+                $('#ftp_iframe').hide();
+                $('#website_iframe').hide();
+                $('#wp_admin_iframe').hide();
+                $('#time_iframe').hide();
+
+                $('#db_admin_iframe').show();
+                if(opened_iframes.indexOf(current_action) === -1){
+                    $('#db_admin_iframe').attr('src', db_src);
+                    opened_iframes.push(current_action);
+                }
+                break;
+            case 'time_action':
+                $('#ftp_iframe').hide();
+                $('#website_iframe').hide();
+                $('#wp_admin_iframe').hide();
+                $('#db_admin_iframe').hide();
+
+                $('#time_iframe').show();
+                if(opened_iframes.indexOf(current_action) === -1){
+                    $('#time_iframe').attr('src', timetracker_src);
+                    opened_iframes.push(current_action);
                 }
                 break;
 
@@ -113,6 +153,8 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
         $('#id_' + current_project).addClass('active-action-button');
         $('#' + current_action).addClass('active-action-button');
+
+        trackProjectAction(current_project, current_action);
     })
     .fail(function(data) {
         console.log( "error" );
@@ -120,7 +162,6 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
         sendError(position, '', 'script.js', 'getProjectActionData-fail', '0', data);
     });
 }
-
 
 function getProjectsByGroupID(APPLICATION_URL, token, current_group){
     var position = 'getProjectsByGroupID';
