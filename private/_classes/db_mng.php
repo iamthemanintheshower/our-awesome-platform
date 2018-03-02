@@ -32,10 +32,12 @@ class DbMng {
 
     private $db_details;
     private $file_details;
+    private $ws_details;
     
-    public function __construct($db_details = false, $file_details = false) {
+    public function __construct($db_details = false, $file_details = false, $ws_details = false) {
         $this->db_details = $db_details;
         $this->file_details = $file_details;
+        $this->ws_details = $ws_details;
     }
 
     public function saveDataOnTable($selectedTable, $inputValues, $_dbType, $_insert_update = 0){
@@ -194,6 +196,12 @@ class DbMng {
             case 'file':
                 
                 break;
+
+            case 'ws':
+                $_select_insert_update = 'select';
+                $_deal_with_ws = $this->_deal_with_ws($query, $_select_insert_update);
+                return json_decode($_deal_with_ws, true);
+
             default:
                 break;
         }
@@ -283,7 +291,28 @@ class DbMng {
 
         return array('query' => $update, 'execute_ary' => $execute_ary);
     }
-    
+
+    private function _deal_with_ws($query, $_select_insert_update){
+        $ws_url = $this->ws_details['ws_url'];
+        $ws_user = $this->ws_details['user'];
+        $ws_psw = $this->ws_details['psw'];
+
+        $ch = curl_init();
+        $fields = array('query_type' => $_select_insert_update, 'query_string' => $query);
+        $post_ = 'query_type='.$_select_insert_update.'&query_string='.$query;
+        curl_setopt($ch,CURLOPT_URL,$ws_url);
+        curl_setopt($ch, CURLOPT_USERPWD, $ws_user . ":" . $ws_psw);
+        curl_setopt($ch,CURLOPT_POST,count($fields));
+        curl_setopt($ch,CURLOPT_POSTFIELDS,$post_);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
+
+        $_deal_with_ws = curl_exec($ch);
+        //$output = curl_error($ch); //# debug
+        //$info = curl_getinfo($ch); //# debug
+        curl_close($ch);
+        return $_deal_with_ws;
+    }
+
     public function getDB(){
         $db_host = $this->db_details['Nrqtx0HHsX'];
         $db_name = $this->db_details['VxMO8N5kX4'];
