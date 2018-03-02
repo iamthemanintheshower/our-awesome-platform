@@ -155,3 +155,17 @@ function reset_project(){
         $('#' + value.id).removeClass('active-action-button');
     });
 }
+
+function trackProjectAction(current_project, current_action){
+    var position = 'trackProjectAction';
+
+    $.post( APPLICATION_URL + "/timetracker/timetracker/trackProjectAndAction", { token: token, current_project: current_project, current_action: $('#' + current_action).data('id_tab')})
+    .done(function(data) {
+        console.log(data);
+    })
+    .fail(function(data) {
+        console.log( "error" );
+        console.log(data.responseText);
+        sendError(position, '', 'script.js', 'trackProjectAction-fail', '0', data.responseText);
+    });
+}
