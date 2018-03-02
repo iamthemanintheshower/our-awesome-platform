@@ -116,14 +116,12 @@ function getDBTables(){
     .done(function( data ) {
         console.log(data);
         data = data.getDBTables;
-        $.each(data, function( i, table ) {
-            $.each(table, function( i, t ) {
-                if(typeof t != 'undefined' && typeof t.Tables_in_Sql1129750_3 != 'undefined'){
-                    var table_in_db = t.Tables_in_Sql1129750_3;
-                    console.log(table_in_db);
-                    $('#left-sidebar').html($('#left-sidebar').html() + '<div class="db_table" data-table="' + table_in_db + '">' + table_in_db + '</div>')
-                }
-            });
+        $.each(data, function( i, table_in_db ) {
+            if(typeof table_in_db != 'undefined'){
+                $('#left-sidebar').html(
+                    $('#left-sidebar').html() + '<div class="db_table" data-table="' + table_in_db + '">' + table_in_db + '</div>'
+                );
+            }
         });
     })
     .fail(function( data ) {
