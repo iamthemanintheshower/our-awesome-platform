@@ -189,7 +189,8 @@ class editor extends page{
 
         $user = $getProjectWSDetails['ws_user'];
         $password = $getProjectWSDetails['ws_psw'];
-        $url = $project['website'].'/WS-find-string-in-file-shiawdjaiowdnw.php?searchstring='.$searchstring;
+        $ws_find_string_in_file = $getProjectWSDetails['ws_find_string_in_file'];
+        $url = $project['website'].$ws_find_string_in_file.'?searchstring='.$searchstring;
         
         $url = str_replace('https://', '', $url);
         $stream = fopen("https://$user:$password@$url", "r");
