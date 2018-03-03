@@ -35,7 +35,7 @@ class DbMng {
     private $ws_details;
     private $WSConsumer;
 
-    public function __construct($db_details = false, $file_details = false, $ws_details = false) {
+    public function __construct($db_details = false, $file_details = false, $ws_details = false, $WSConsumer = false) {
         $this->db_details = $db_details;
         $this->file_details = $file_details;
         $this->ws_details = $ws_details;
