@@ -1,0 +1,7 @@
+The WSConsumer() consumes these webservices.
+
+For improve the security of this VERY CRITICAL PART OF THE SOFTWARE, always remember:
+
+1) don't use the standard names of the webservices becouse everybody know them: change the name/URL of the webservices and folder, and use only custom names you don't tell everyone else;
+2) set up the apache authantication service (.htaccess with .htpasswd);
+3) don't use this software without the the HTTPS (don't use it with "http");
