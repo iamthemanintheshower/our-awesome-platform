@@ -33,7 +33,8 @@ class DbMng {
     private $db_details;
     private $file_details;
     private $ws_details;
-    
+    private $WSConsumer;
+
     public function __construct($db_details = false, $file_details = false, $ws_details = false) {
         $this->db_details = $db_details;
         $this->file_details = $file_details;
@@ -199,8 +200,8 @@ class DbMng {
 
             case 'ws':
                 $_select_insert_update = 'select';
-                $_deal_with_ws = $this->_deal_with_ws($query, $_select_insert_update);
-                return json_decode($_deal_with_ws, true);
+                $_db_ws = $this->_db_ws($query, $_select_insert_update);
+                return json_decode($_db_ws, true);
 
             default:
                 break;
@@ -292,25 +293,10 @@ class DbMng {
         return array('query' => $update, 'execute_ary' => $execute_ary);
     }
 
-    private function _deal_with_ws($query, $_select_insert_update){
-        $ws_url = $this->ws_details['ws_url'];
-        $ws_user = $this->ws_details['user'];
-        $ws_psw = $this->ws_details['psw'];
+    private function _db_ws($query, $_select_insert_update){
+        $WSConsumer = $this->ws_details['WSConsumer'];
 
-        $ch = curl_init();
-        $fields = array('query_type' => $_select_insert_update, 'query_string' => $query);
-        $post_ = 'query_type='.$_select_insert_update.'&query_string='.$query;
-        curl_setopt($ch,CURLOPT_URL,$ws_url);
-        curl_setopt($ch, CURLOPT_USERPWD, $ws_user . ":" . $ws_psw);
-        curl_setopt($ch,CURLOPT_POST,count($fields));
-        curl_setopt($ch,CURLOPT_POSTFIELDS,$post_);
-        curl_setopt($ch,CURLOPT_RETURNTRANSFER, 1);
-
-        $_deal_with_ws = curl_exec($ch);
-        //$output = curl_error($ch); //# debug
-        //$info = curl_getinfo($ch); //# debug
-        curl_close($ch);
-        return $_deal_with_ws;
+        return $WSConsumer->db_ws($this->ws_details, $query, $_select_insert_update);
     }
 
     public function getDB(){
