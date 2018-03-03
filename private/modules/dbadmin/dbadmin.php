@@ -33,7 +33,8 @@ class dbadmin extends page{
     public function getFilesToInclude($application_configs){
         $files_to_include = 
             array(
-                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php'
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php',
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'ws_consumer/ws_consumer.php'
             )
         ;
         return $this->_getFilesToInclude($files_to_include);
@@ -129,6 +130,7 @@ class dbadmin extends page{
                 'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
                 'user' => $getProjectWSDetails['ws_user'],
                 'psw' => $getProjectWSDetails['ws_psw'],
+                'WSConsumer' => new WSConsumer()
             )
         );
 
