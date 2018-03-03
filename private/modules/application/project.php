@@ -159,11 +159,18 @@ class Project {
         $selectValues_getWSdetailsByID[] = 'id_ws_details';
         $selectValues_getWSdetailsByID[] = 'ws_user';
         $selectValues_getWSdetailsByID[] = 'ws_psw';
+        $selectValues_getWSdetailsByID[] = 'ws_find_string_in_file_url';
+        $selectValues_getWSdetailsByID[] = 'ws_database_url';
+        $selectValues_getWSdetailsByID[] = 'ws_file_list_url';
         
         $whereValues__ws_details[] = array('where_field' => 'id_ws_details', 'where_value' => $ws_id_details);
 
         $getWSdetailsByID = $this->db_mng->getDataByWhere($selectedTable__ws_details, $selectValues_getWSdetailsByID, $whereValues__ws_details);
 
-        return array_merge($getWSdetailsByID['response_columns'][0]);
+        if(isset($getWSdetailsByID['response_columns'][0])){
+            return array_merge($getWSdetailsByID['response_columns'][0]);
+        }else{
+            return false;
+        }
     }
 }
