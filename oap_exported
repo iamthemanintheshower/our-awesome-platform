@@ -236,6 +236,7 @@ DROP TABLE IF EXISTS `oap__timetracker`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `oap__timetracker` (
   `id_timetracker` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(100) NOT NULL,
   `project_id` int(11) NOT NULL,
   `tab_id` int(11) NOT NULL,
   `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -327,8 +328,9 @@ CREATE TABLE `oap__ws_details` (
   `id_ws_details` int(11) NOT NULL AUTO_INCREMENT,
   `ws_user` varchar(200) NOT NULL,
   `ws_psw` varchar(200) NOT NULL,
-  `ws_find_string_in_file` text NOT NULL,
+  `ws_find_string_in_file_url` text NOT NULL,
   `ws_database_url` text NOT NULL,
+  `ws_file_list_url` text NOT NULL,
   PRIMARY KEY (`id_ws_details`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
