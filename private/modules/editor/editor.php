@@ -36,6 +36,7 @@ class editor extends page{
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/filesystem_navigation/filesystem_navigation.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/ftp_mng.php',
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'ws_consumer/ws_consumer.php'
             )
         ;
         return $this->_getFilesToInclude($files_to_include);
@@ -124,14 +125,28 @@ class editor extends page{
                 $id_project = 0;;
             }
         }
+
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+        if($getProjectWSDetails){
+            $ws_details = array(
+                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_file_list_url'],
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+            );
+            $_filelist_ws = $this->_filelist_ws(new WSConsumer, $ws_details);
+        }else{
+            $_filelist_ws = false;
+        }
 
         return array(
             'type' => 'view', 
             'response' => $application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].$module.'/tmpl/'.$application_configs['tmpl'].$action.'.php', 
             'data' => array(
                 'userbean' => $_SESSION['userbean-Q4rp'],
-                'project' => $project
+                'project' => $project,
+                'filelist_ws' => $_filelist_ws
             )
         );
     }
@@ -156,7 +171,6 @@ class editor extends page{
             )
         );
     }
-
     
     public function _action_setFile($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $this->getProjectID($post);
@@ -189,8 +203,8 @@ class editor extends page{
 
         $user = $getProjectWSDetails['ws_user'];
         $password = $getProjectWSDetails['ws_psw'];
-        $ws_find_string_in_file = $getProjectWSDetails['ws_find_string_in_file'];
-        $url = $project['website'].$ws_find_string_in_file.'?searchstring='.$searchstring;
+        $ws_find_string_in_file_url = $getProjectWSDetails['ws_find_string_in_file_url'];
+        $url = $project['website'].$ws_find_string_in_file_url.'?searchstring='.$searchstring;
         
         $url = str_replace('https://', '', $url);
         $stream = fopen("https://$user:$password@$url", "r");
@@ -313,5 +327,9 @@ class editor extends page{
         curl_close($ch);
 
         return json_decode($r, true);
+    }
+
+    private function _filelist_ws($WSConsumer, $ws_details){
+        return $WSConsumer->filelist_ws($ws_details);
     }
 }

@@ -74,7 +74,11 @@ SOFTWARE.
                             $filesystem_navigation = new FileSystemNavigation();
                             echo $filesystem_navigation->filesystem_navigation($application_configs['ROOT_PATH']);
                         }else{
-                            echo file_get_contents($website.'/WS-filelist-dsohfidskjf.php');
+                            if($page_data['filelist_ws']){
+                                echo $page_data['filelist_ws'];
+                            }else{
+                                //# TODO: create label in localize to say 'Configure FTP details'
+                            }
                         }
                     ?>
                     </div>
