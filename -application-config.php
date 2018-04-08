@@ -39,6 +39,8 @@ $application_configs['PUBLIC_FOLDER'] = 'public_html/';
 $application_configs['PRIVATE_FOLDER'] = 'private/';
 $application_configs['PRIVATE_FOLDER_MODULES'] = 'private/modules/';
 $application_configs['PRIVATE_FOLDER_CLASSES'] = 'private/_classes/';
+$application_configs['PRIVATE_FOLDER_DATA'] = 'private/data/';
+$application_configs['PRIVATE_FOLDER_LOGS'] = 'logs/';
 
 $application_configs['APPLICATION_ROOT'] = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/';
 $application_configs['APPLICATION_URL'] = $application_configs['APPLICATION_DOMAIN_PROTOCOL'].$application_configs['APPLICATION_SLUG'].'/';
