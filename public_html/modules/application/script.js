@@ -184,10 +184,11 @@ function getProjectsByGroupID(APPLICATION_URL, token, current_group){
 }
 
 function show_tabs(tabs){
+    var div_tabs = '';
     $( tabs ).each(function( index, value ) {
-        $('#' + value.html_id).removeClass('active-action-button');
-        $('#' + value.html_id).show();
+        div_tabs = div_tabs + value.button;
     });
+    $('#tabs').html(div_tabs);
 }
 
 function reset_project(){
