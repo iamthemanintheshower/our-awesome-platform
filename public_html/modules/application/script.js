@@ -32,7 +32,6 @@ $( document ).ready(function() {
 
     getProjectsByGroupID(APPLICATION_URL, token, current_group);
 
-
     $('body').on('click', '.project-button', function() {
         if(current_project !== $(this).data('id_project')){
             opened_iframes = new Array();
@@ -40,26 +39,21 @@ $( document ).ready(function() {
         current_project = $(this).data('id_project');
         current_action = 'ftp_action';
 
-        console.log(current_project);
-        console.log(current_action);
-
         getProjectActionData(APPLICATION_URL, token, current_project, current_action);
-
     });
     
     $('body').on('click', '.action-button', function() {
         current_action = $(this).data('action');
 
-        console.log(current_project);
-        console.log(current_action);
-
         getProjectActionData(APPLICATION_URL, token, current_project, current_action);
     });
 
-    $( "iframe" ).height( $( window ).height() - 150 );
+    var header_height = 100; // parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
+//    console.log($('#div_header_bar').height());
+    $( "iframe" ).height( $( window ).height() - header_height );
 
     window.addEventListener('resize', function () {
-        $( "iframe" ).height( $( window ).height() - 150 );
+        $( "iframe" ).height( $( window ).height() - header_height );
     });
 
 });

@@ -45,7 +45,7 @@ class home extends page{
         $css = 
             array(
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
-                    'bootstrap-3.3.7-dist/css/bootstrap.min.css',
+                    'bootstrap-4.0.0-dist/css/bootstrap.min.css',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].
                     'application/tmpl/clear/css/application.css',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].'fonts/SourceSansPro.css'
@@ -59,6 +59,8 @@ class home extends page{
             array(
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
                     'jquery/jquery-3.3.1.min',
+                $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
+                    'bootstrap-4.0.0-dist/js/bootstrap.min.js',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].
                     'application/script.js'
             )

@@ -36,25 +36,44 @@ SOFTWARE.
 
         //# JS
         echo $page->getJs($application_configs);
+
+        $button = $page_data['button'];
+        $userbean = unserialize($page_data['userbean']);
         ?>
     </head>
 
     <body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="navbar-brand dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <div id="projects_by_group_id"></div>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <span id="current_project"></span>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+            </form>
+            <ul class="navbar-nav px-3">
+                <li class="nav-item">
+                    <span class="nav-link disabled"><?php echo $userbean->getEmailAndUser();?></span>
+                </li>
+                <li class="nav-item text-nowrap">
+                    <a class="nav-link" href="<?php echo $application_configs['APPLICATION_URL'];?>login/login/index">logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
         <div class="container-fluid">
-            <div id="div_header_bar" class="row">
-                <div class="col-md-10">
-                    <?php
-                    $button = $page_data['button'];
-                    $userbean = unserialize($page_data['userbean']);
-                    ?>
-                    <div id="projects_by_group_id"></div>
-                </div>
-                <div class="col-md-2 text-right">
-                    <span><?php echo $userbean->getEmailAndUser();?></span>&nbsp;<span><a href="<?php echo $application_configs['APPLICATION_URL'];?>login/login/index">logout</a></span>
-                </div>
-            </div>
-
             <div id="div_body_bar" class="row">
                 <div class="col-md-12">
                     <div id="tabs"></div>
