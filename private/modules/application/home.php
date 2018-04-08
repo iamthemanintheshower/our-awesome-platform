@@ -58,7 +58,7 @@ class home extends page{
         $js =
             array(
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
-                    'jquery/jquery-1.12.4.min.js',
+                    'jquery/jquery-3.3.1.min',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].
                     'application/script.js'
             )
