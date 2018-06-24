@@ -61,7 +61,7 @@ class FileSystemNavigation{
                 if( $current_file !== '.' && $current_file !== '..' ) {
                     if( is_dir("$directory/$current_file") ) {
                         $filesystem_navigation .= '<li class="folder-nav" data-dir="'."$directory/$current_file".'">';
-                        $filesystem_navigation .= '<a href="javascript:;">';
+                        $filesystem_navigation .= '<a href="javascript:;" class="dir" data-dir="'."$directory/$current_file".'">';
                         $filesystem_navigation .= '<span class="glyphicon glyphicon-folder-close"></span>';
                         $filesystem_navigation .= htmlspecialchars($current_file) . '</a>';
                         $filesystem_navigation .= $this->filesystem_navigation_folder("$directory/$current_file", false);

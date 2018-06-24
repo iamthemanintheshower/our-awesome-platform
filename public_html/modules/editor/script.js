@@ -46,13 +46,26 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/getFile", values)
         .done(function( data ) {
+            console.log(data);
             if(opened_file_tabs.indexOf(dir+'/'+file) > -1){
                 console.log('already');
             }else{
                 console.log('added');
                 opened_file_tabs.push(dir+'/'+file);
+                $('.editor_history').hide();
+                $('#buttons_editor').html( $('#buttons_editor').html() + 
+                    '<span><a href="javascript:;" class="file" data-dir="' + dir + '" data-file="' + file + '" data-bookmarked_file="' + '">' + file + '</a></span>' +
+                    '<span class="pull-right editor_history"><a id="_history_' + dir + '__' + file + '" href="javascript:editor_history()">_history</a></span>'
+                );
             }
-            editor.setValue(data.file_content);
+            console.log(data);
+            if(file.indexOf('.php') > -1){
+                editor.setValue(data.file_content);
+            }else{
+                var url = dir + '//' + file;
+                url = 'https://' + url.replace($('#root_dir').val(), $('#edit_on_domain').html());
+                window.open(encodeURI(url), '_blank');
+            }
             enable_element(this_);
         })
         .fail(function( data ) {
@@ -61,33 +74,32 @@ $( document ).ready(function() {
         });
     });
 
+    $( ".file").contextmenu(function() {
+        var dir = $( this ).data('dir');
+        var file = $( this ).data('file');
+        var url = dir + '//' + file;
+
+        url = 'https://' + url.replace($('#root_dir').val(), $('#edit_on_domain').html());
+        window.open(encodeURI(url), '_blank');
+    });
+
+    $(document).on('click','.dir',function(){
+        var dir = $( this ).data('dir');
+        console.log(dir);
+        $( '#dir').val(dir);
+    });
+
     $('body').on('click', '#btnSaveHTML', function () {
         var this_ = $(this);
         disable_element(this_);
-
-        var dir = $( '#dir').val();
-        var file = $( '#file').val();
         var data = editor.getValue();
-
-        var values = {
-            id_project: current_project,
-            subfolder: dir,
-            file: file,
-            data: data,
-            token: token
-        };
-
-        $.post( APPLICATION_URL + "editor/editor/setFile", values)
-        .done(function( data ) {
-            alert('Saved');
-            enable_element(this_);
-        })
-        .fail(function( data ) {
-            console.log( data );
-            alert('************** failed ************************');
-            sendError('#btnSaveHTML', '', 'script.js', 'btnSaveHTML-fail', '0', data);
-        });
-
+        setFile(this_,data);
+    });
+    $('body').on('click', '#btnDeleteFile', function () {
+        var this_ = $(this);
+        disable_element(this_);
+        var data = editor.getValue();
+        deleteFile(this_,data);
     });
 
     $('body').on('click', '#btnSearchStringInFile', function () {
@@ -120,6 +132,7 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/collectEditedFiles", values)
         .done(function( data ) {
+            console.log(data);
             compressed_filename = data.compressed_filename;
             data = data.get_editorsavelog;
             var tblRow__edited_files = '<table>';
@@ -153,7 +166,113 @@ $( document ).ready(function() {
             sendError('#btnCollectEditedFiles', '', 'script.js', 'btnCollectEditedFiles-fail', '0', data);
         });
     });
+    
 
+    $('body').on('click', '#btnNewFile', function () {
+        if($('#dir').val() === ''){
+            $( '#dir').val($('#root_dir').val());
+        }
+        $('#new_file_dir').html($( '#dir').val());
+        $('#new_file_modal').modal();
+    });
+
+    $('body').on('click', '#btnSaveNewFile', function () {
+        var this_ = $(this);
+        disable_element(this_);
+        $( '#file').val($('#new_file').val());
+        setFile(this_, '');
+    });
+
+    $('body').on('click', '#btnNewDir', function () {
+        var newFolder = getFolderName();
+        if(newFolder === null){
+            return false;
+        }
+        var destination_folder = '';
+        if($('#dir').val() === ''){
+            destination_folder = $('#root_dir').val();
+        }else{
+            destination_folder = $('#dir').val();
+        }
+
+        var values = {
+            subfolder: destination_folder,
+            newFolder: newFolder,
+            token: 'token1'
+        };
+
+        $.post( APPLICATION_URL + "editor/editor/setDirectory/id_project/" + current_project, values)
+        .done(function( data ) {
+            console.log( data );
+        })
+        .fail(function( data ) {
+            console.log( "FAIL: " + data );
+        });
+        $('#new_file_modal').modal();
+    });
+
+    $('#upload').on('click', function() {
+        if($( '#dir').val() !== ''){
+            $( '#upload_dir').val($( '#dir').val());
+        }else{
+            $( '#upload_dir').val($( '#root_dir').val());
+        }
+        
+        var file = $( '#file').val();
+
+        if($( '#upload_dir').val() !== ''){
+            var confirm_upload = confirm("Sei sicuro di voler caricare " + $( '#upload_dir').val());
+            console.log(confirm_upload);
+            if(!confirm_upload){
+                return false;
+            }
+        }else{
+            alert('Seleziona una cartella');
+            return false;
+        }
+        var file_data = $('#sortpicture').prop('files')[0];   
+        var form_data = new FormData();                  
+        form_data.append('file', file_data);
+        form_data.append('action', 3);
+
+        form_data.append('subfolder', $( '#upload_dir').val());
+        form_data.append('file', file);
+        form_data.append('token', 'token');
+
+        $.ajax({
+            url: APPLICATION_URL + "editor/editor/uploadFile/id_project/" + current_project + "/subfolder/" + $( '#upload_dir').val() + "/file/" + file + "/data/" + file_data,
+            dataType: 'text',
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,                         
+            type: 'post',
+            success: function(php_script_response){
+                console.log(php_script_response);
+                alert('Upload completo');
+                location.reload();
+            }
+         });
+    });
+    $('body').on('click', '.view_file_in_history_content', function () {
+        console.log($(this).data('file'));
+        var file = $( this ).data('file');
+        var values = {
+            id_project: current_project,
+            get_backup: '1',
+            file: file,
+            token: 'token1'
+        };
+
+        $.post( APPLICATION_URL + "editor/editor/getFile", values)
+        .done(function( data ) {
+            console.log(data);
+            $('#file_change_history_content').text(data.file_content);
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });
+    });
 });
 
 
@@ -166,7 +285,71 @@ function getFolderName(){
     var newFolder = prompt("Enter folder name: ", "[directory]");
     return newFolder;
 }
+function setFile(this_, data){
+    var dir = $( '#dir').val();
+    var file = $( '#file').val();
 
+    var values = {
+        id_project: current_project,
+        subfolder: dir,
+        file: file,
+        data: data,
+        token: token
+    };
+console.log(values);
+    $.post( APPLICATION_URL + "editor/editor/setFile", values)
+    .done(function( data ) {
+        console.log(data);
+        alert('Saved');
+        enable_element(this_);
+    })
+    .fail(function( data ) {
+        console.log( data );
+        alert('************** failed ************************');
+        sendError('#btnSaveHTML', '', 'script.js', 'btnSaveHTML-fail', '0', data);
+    });
+}
+
+function deleteFile(this_, data){
+    var dir = $( '#dir').val();
+    var file = $( '#file').val();
+
+    var values = {
+        id_project: current_project,
+        subfolder: dir,
+        file: file,
+        data: data,
+        token: token
+    };
+
+    $.post( APPLICATION_URL + "editor/editor/deleteFile/id_project/" + current_project + "/subfolder/" + $( '#upload_dir').val() + "/file/" + file, values)
+    .done(function( data ) {
+        console.log(data);
+        alert('Deleted');
+        enable_element(this_);
+        location.reload();
+    })
+    .fail(function( data ) {
+        console.log( data );
+        alert('************** failed ************************');
+        sendError('#btnSaveHTML', '', 'script.js', 'btnSaveHTML-fail', '0', data);
+    });
+}
+function editor_history() {
+
+    var file = $( '#file').val();
+    var values = {file: file, id_project: current_project, token: 'token1'};
+
+    $.post( APPLICATION_URL + "editor/editor/getFileHistory", values)
+    .done(function( data ) {
+        console.log(data);
+        $('#file_change_history_result').html(data.getFileHistory);
+        $('#file_change_history_result_modal').modal();
+    })
+    .fail(function( data ) {
+        console.log( data );
+    });
+}
 
 //# Code Mirror https://codemirror.net
 var editor;

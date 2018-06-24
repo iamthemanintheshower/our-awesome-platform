@@ -32,6 +32,7 @@ include($application_configs['PRIVATE_FOLDER_CLASSES'].'page.php');
 include($application_configs['PRIVATE_FOLDER_CLASSES'].'encryption.php');
 
 include($application_configs['PRIVATE_FOLDER_MODULES'].'errors_mng/errors_mng.php');
+include($application_configs['PRIVATE_FOLDER_MODULES'].'log_everything/log_everything.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'user/User.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'user/UserBean.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'user/login.php');
@@ -59,8 +60,12 @@ if(isset($get['q'])){
     $controller = _is_not_set_return_index($parameters[1]);
     $action = _is_not_set_return_index($parameters[2]);
 
+    $log_everything = new log_everything();
+    $log_everything->log($application_configs, $session, $module, $controller, $action, $parameters, $post);
+
     $user = new User();
     $user->ifNotLoggedThenLogin($session, $controller, $application_configs);
+    $user->ifNotAutorizedThenLogin($session, $module, $controller, $action, $application_configs);
 
     $optional_parameters = _get_optional_parameters($parameters);
 

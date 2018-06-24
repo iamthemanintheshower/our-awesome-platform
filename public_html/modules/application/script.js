@@ -49,13 +49,14 @@ $( document ).ready(function() {
     });
 
     var header_height = 100; // parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
-//    console.log($('#div_header_bar').height());
     $( "iframe" ).height( $( window ).height() - header_height );
 
     window.addEventListener('resize', function () {
         $( "iframe" ).height( $( window ).height() - header_height );
     });
-
+    $("iframe").on('load', function(){
+        $('#spinner').hide();
+    });
 });
 
 function getProjectActionData(APPLICATION_URL, token, current_project, current_action){
@@ -81,6 +82,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                 $('#ftp_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
+                    $('#spinner').show();
                     $('#ftp_iframe').attr('src', ftp_src);
                     opened_iframes.push(current_action);
                 }
@@ -133,6 +135,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                 $('#time_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
+                    $('#spinner').show();
                     $('#time_iframe').attr('src', timetracker_src);
                     opened_iframes.push(current_action);
                 }
@@ -203,5 +206,6 @@ function trackProjectAction(current_project, current_action){
         console.log( "error" );
         console.log(data.responseText);
         sendError(position, '', 'script.js', 'trackProjectAction-fail', '0', data.responseText);
+        $('#spinner').hide();
     });
 }

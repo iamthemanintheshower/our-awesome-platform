@@ -41,20 +41,39 @@ class FTP_mng {
     public function getFileViaFTP($post, $remote__root_folder, $local__root_folder){
         if(isset($post) && isset($post['subfolder']) && isset($post['file']) && isset($post['token'])){
             $subfolder = $this->_cleanSubfolder($post['subfolder']);
-            $file_to_be_downloaded = $post['file'];
-            return $this->_ftp_download($remote__root_folder.$subfolder.'/', $local__root_folder, $file_to_be_downloaded);    
+            return $this->_ftp_download($remote__root_folder.$subfolder.'/', $local__root_folder, $post['file']);
+       }
+    }
+
+    public function setDirViaFTP($post, $remote__root_folder, $new_dir, $website, $db_mng, $id_project){
+        if(isset($post) && isset($post['subfolder']) && isset($post['token'])){
+            $subfolder = $this->_cleanSubfolder($post['subfolder']);
+            $bkup_file = $this->_ftp_mkdir($remote__root_folder.$subfolder.'/', $new_dir);
+            
+            return $bkup_file;
        }
     }
 
     public function setFileViaFTP($post, $remote__root_folder, $local__root_folder, $website, $db_mng, $id_project){
         if(isset($post) && isset($post['subfolder']) && isset($post['token'])){
             $subfolder = $this->_cleanSubfolder($post['subfolder']);
-            $data = $post['data'];
             $file_to_be_uploaded = $post['file'];
-
-            file_put_contents($local__root_folder.$file_to_be_uploaded, $data);
-
+            file_put_contents($local__root_folder.$file_to_be_uploaded, $post['data']);
             $bkup_file = $this->_ftp_upload($remote__root_folder.$subfolder.'/', $local__root_folder, $file_to_be_uploaded, $website);
+
+            if($bkup_file){
+                $this->_set_editorsavelog($subfolder, $file_to_be_uploaded, $post['token'], $id_project, $bkup_file, $db_mng);
+            }
+            
+            return $bkup_file;
+       }
+    }
+
+    public function deleteFileViaFTP($post, $remote__root_folder, $local__root_folder, $website, $db_mng, $id_project){
+        if(isset($post) && isset($post['subfolder']) && isset($post['token'])){
+            $subfolder = $this->_cleanSubfolder($post['subfolder']);
+            $file_to_be_uploaded = $post['file'];
+            $bkup_file = $this->_ftp_delete($post, $remote__root_folder.$subfolder.'/', $local__root_folder, $website);
 
             if($bkup_file){
                 $this->_set_editorsavelog($subfolder, $file_to_be_uploaded, $post['token'], $id_project, $bkup_file, $db_mng);
@@ -68,9 +87,16 @@ class FTP_mng {
         $ftp_connection = $this->__ftp_getConnection();
         if($ftp_connection !== FALSE){
             ftp_chdir($ftp_connection, $destination_folder);
+            $filename = $local__root_folder.$file_to_be_downloaded;
 
-            if (ftp_get($ftp_connection, $local__root_folder.$file_to_be_downloaded, $destination_folder.$file_to_be_downloaded, FTP_ASCII)){
-                $file_content = file_get_contents($local__root_folder.$file_to_be_downloaded);
+            if (ftp_get($ftp_connection, $filename, $destination_folder.$file_to_be_downloaded, FTP_ASCII)){
+                if($this->_supported_file($filename)){
+                    $handle = fopen($filename, "rb");
+                    $file_content = fread($handle, filesize($filename));
+                    fclose($handle);
+                }else{
+                    $file_content = '';
+                }
             }
         }
         ftp_close($ftp_connection);
@@ -82,13 +108,43 @@ class FTP_mng {
         $ftp_connection = $this->__ftp_getConnection();
         if($ftp_connection !== FALSE){
             ftp_chdir($ftp_connection, $destination_folder);
+
             if(ftp_size($ftp_connection, $file_to_be_uploaded) !== -1){
                 $bkup_file = $this->__ftp_make_backup($destination_folder, $file_to_be_uploaded, $website);
             }
-
-            if (ftp_put($ftp_connection, $file_to_be_uploaded, $local__root_folder.$file_to_be_uploaded, FTP_ASCII)){
+            if (ftp_put($ftp_connection, $file_to_be_uploaded, $local__root_folder.$file_to_be_uploaded, FTP_BINARY)){
                 ftp_close($ftp_connection);
-                return $bkup_file;
+                return $local__root_folder.$file_to_be_uploaded;
+            }else{
+                ftp_close($ftp_connection);
+                return false;
+            }
+        }
+    }
+
+    private function _ftp_mkdir($destination_folder, $new_dir){
+        $ftp_connection = $this->__ftp_getConnection();
+        if($ftp_connection !== FALSE){
+            ftp_chdir($ftp_connection, $destination_folder);
+
+            if (ftp_mkdir($ftp_connection, $destination_folder.'/'.$new_dir)){
+                ftp_close($ftp_connection);
+                return $destination_folder.'/'.$new_dir;
+            }else{
+                ftp_close($ftp_connection);
+                return false;
+            }
+        }
+    }
+
+    private function _ftp_delete($post, $destination_folder, $local__root_folder, $website){
+        $ftp_connection = $this->__ftp_getConnection();
+        if($ftp_connection !== FALSE){
+            ftp_chdir($ftp_connection, $destination_folder);
+
+            if (ftp_delete($ftp_connection, $post['file'])){
+                ftp_close($ftp_connection);
+                return $local__root_folder.$post['file'];
             }else{
                 ftp_close($ftp_connection);
                 return false;
@@ -125,9 +181,11 @@ class FTP_mng {
     }
 
     public function get_editorsavelog($db_mng, $id_project, $token){
-        $getEditorSaveLog = $db_mng->getDataByQuery(
-            'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert`, MAX( id_editorsavelog ) as max__id_editorsavelog FROM  `oap__editorsavelog` WHERE id_project = "'.$id_project.'" AND token = "'.$token.'" GROUP BY filename, folder', 'db'
-        );
+
+        $getEditorSaveLog__query = 
+            'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert` FROM  `oap__editorsavelog` WHERE id_project = "'.$id_project.'" AND token = "'.$token.'" GROUP BY filename, folder';
+
+        $getEditorSaveLog = $db_mng->getDataByQuery($getEditorSaveLog__query, 'db');
 
         $ids_max = $getEditorSaveLog['response'];
 
@@ -169,7 +227,7 @@ class FTP_mng {
             }else{
                 return false;
             }
-        }        
+        }
     }
     
     public function _compress_files($compressed_filename, $files){
@@ -185,5 +243,20 @@ class FTP_mng {
         
         $zip->close();
     }
+    private function _supported_file($file){
+        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+        $finfo_file = finfo_file($finfo, $file);
+        switch ($finfo_file) {
+            case 'text/x-php':
+            case 'text/php':
+            case 'plain/text':
+            case 'text/html':
+                return true;
 
+                break;
+
+            default:
+                break;
+        }
+    }
 }

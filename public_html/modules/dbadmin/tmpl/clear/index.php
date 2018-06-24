@@ -59,7 +59,7 @@ SOFTWARE.
                         <button id="db_query__action" data-action="db_query" class="db-query-action-button active" type="button">query</button>
                         <button id="db_structure__action" data-action="db_structure" class="db-query-action-button" type="button">structure</button>
                         <button id="db_insert__action" data-action="db_insert" class="db-query-action-button" type="button">insert</button>
-                        <button id="db_history__action" data-action="db_history" class="db-query-action-button pull-right" type="button">query history of page</button>
+                        <button id="db_history__action" data-action="db_history" class="db-query-action-button float-right" type="button">query history</button>
                     </div>
 
                     <div id="dbadmin">

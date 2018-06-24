@@ -82,6 +82,10 @@ class User {
             die('<a href="'.$application_configs['APPLICATION_URL_LOGIN'].'">'.$localization['not-logged'].'</a>');
         }
     }
+    
+    public function ifNotAutorizedThenLogin($session, $module, $controller, $action, $application_configs){
+        //# TO DO
+    }
 
     private function getLocalization($language, $module, $controller, $action){
         $localization = new localization();

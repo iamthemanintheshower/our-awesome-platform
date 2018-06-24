@@ -50,19 +50,31 @@ SOFTWARE.
 
     <body>
         <input type="hidden" id="upload_dir" name="upload_dir" />
-        <input type="hidden" id="dir" name="dir" />
+        <input type="hidden" id="dir" name="dir" value=""/>
         <input type="hidden" id="file" name="file" />
 
         <div class="container-fluid">
             <div id="div_header_bar" class="row">
-                <div class="col-sm-12 no-margin-no-padding">
-                    <span id="edit_on_domain" style="line-height: 12px;font-weight: bold" class="pull-left"><?php echo $project_domain;?>&nbsp;|&nbsp;</span>
-                    <input class="no-margin-no-padding" style="float:left;font-size: 7px" id="sortpicture" type="file" name="sortpic" />
-                    <button class="no-margin-no-padding" id="upload">UPLOAD</button>
-                    &nbsp;|&nbsp;
-                    <input type="text" id="searchstringinfile" name="serchstringinfile" /><button class="no-margin-no-padding" id="btnSearchStringInFile">CERCA</button>
-                    &nbsp;|&nbsp;&nbsp;<button class="no-margin-no-padding" id="btnCollectEditedFiles">SAVED-FILES</button>
-
+                <div class="col-sm-2 no-margin-no-padding">
+                    <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
+                </div>
+                <div class="col-sm-1 no-margin-no-padding">
+                    <button class="no-margin-no-padding" id="btnNewFile">NEW FILE</button>
+                    <button class="no-margin-no-padding" id="btnNewDir">NEW DIRECTORY</button>
+                </div>
+                <div class="col-sm-2">
+                    <input type="text" id="searchstringinfile" name="serchstringinfile" placeholder="Type text to search in files"/>
+                    <button class="no-margin-no-padding" id="btnSearchStringInFile">FIND IN FILES</button>
+                </div>
+                <div class="col-sm-2 no-margin-no-padding">
+                    <input class="no-margin-no-padding pull-left" id="sortpicture" type="file" name="sortpic" />
+                    <button class="no-margin-no-padding pull-right" id="upload">UPLOAD</button>
+                </div>
+                <div class="col-sm-2 no-margin-no-padding text-right">
+                    <button class="no-margin-no-padding" id="btnDeleteFile">DELETE</button>
+                    <button class="no-margin-no-padding" id="btnCollectEditedFiles">SAVED FILES</button>
+                </div>
+                <div class="col-sm-2 no-margin-no-padding pull-right">
                     <button class="no-margin-no-padding" id="btnSaveHTML">SAVE</button>
                 </div>
             </div>
@@ -83,7 +95,7 @@ SOFTWARE.
                     ?>
                     </div>
                 </div>
-                <div class="col-sm-10">
+                <div class="col-sm-10 no-margin-no-padding">
                     <div id="buttons_editor"></div>
                     <div id="editor"></div>
                 </div>
@@ -127,5 +139,40 @@ SOFTWARE.
             </div>
         </div>
 
+        <div class="modal fade" id="new_file_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create new file in the selected folder</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="new_file_dir"></div>
+                        <input type="text" id="new_file" name="new_file" placeholder="Type the file name with extension"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="btnSaveNewFile">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="file_change_history_result_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">History</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="file_change_history_result"></div>
+                        <textarea id="file_change_history_content"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

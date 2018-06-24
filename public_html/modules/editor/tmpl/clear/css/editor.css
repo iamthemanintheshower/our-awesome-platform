@@ -1,4 +1,4 @@
-#buttons_editor{width: 100%}
+#buttons_editor{width: 100%;height: 11px;}
 #buttons_editor span{list-style: none;min-width: 50px;padding-right: 10px;border-right: 1px solid #ccc;padding-left: 10px;background-color: #999}
 #buttons_editor span a{color:#fff}
 #buttons_editor span a {color: #fff;font-size: 11px;}
@@ -6,7 +6,7 @@
 .editor_history{background-color: #ddd !important;color:#666;line-height: 16px}
 .editor_history a{color: #777 !important;font-size: 10px !important;}
 
-#file_change_history_content{width: 100%;height: 300px;margin-top: 10px;color:#0000ff}
+#file_change_history_content{width: 100%;height: 300px;margin-top: 10px;color:#0000ff;font-family: monospace;}
 
 .view_file_in_history_content{cursor: pointer}
 
@@ -76,7 +76,10 @@ ul{display: block;padding-left: 15px;}
     border: none !important;
 }
 
+div#div_header_bar {font-size: 8px;height: 18px;}
+div#div_header_bar div {font-size: 8px;line-height: 8px;}
+div#div_header_bar button {font-size: 8px;line-height: 8px;}
+div#div_header_bar span {font-size: 8px;line-height: 8px;}
+div#div_header_bar input {font-size: 8px;line-height: 8px;}
 
-
-
-/*#div_header_bar{font-size: 8px}*/
+#new_file{width: 100%;}

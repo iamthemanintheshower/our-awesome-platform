@@ -79,10 +79,17 @@ $( document ).ready(function() {
     });
 
     $('body').on('click', '#execute_raw_query', function () {
-        get_query_result();
+        var button = $(this).html();
+        $(this).html('...loading...');
+        $(this).attr('disabled', true);
+        get_query_result($(this), button);
     });
     
     $('body').on('click', '.db_table', function () {
+        var button = $(this).html();
+        $(this).html('...loading...');
+        $(this).attr('disabled', true);
+
         var table = $(this).data('table');
         $('#query_text').val('SELECT * FROM  `' + table + '`');
 
@@ -90,7 +97,7 @@ $( document ).ready(function() {
         $('.db_table').removeClass('db_table_active');
         $(this).addClass('db_table_active');
         
-        get_query_result();
+        get_query_result($(this), button);
     });
     
     $('body').on('click', '.show_on_click', function () {
@@ -104,9 +111,13 @@ $( document ).ready(function() {
         });
         execute_insert_query();
     });
+    $('body').on('click', '#db_history__action', function () {
+        get_table_query_history();
+    });
 });
 
 function getDBTables(){
+    $('#spinner').show();
     var values = {
         id_project: current_project,
         token: token
@@ -123,6 +134,7 @@ function getDBTables(){
                 );
             }
         });
+        $('#spinner').hide();
     })
     .fail(function( data ) {
         console.log( data );
@@ -130,7 +142,8 @@ function getDBTables(){
     return false;
 }
 
-function get_table_query_history(tablename){
+function get_table_query_history(){
+    $('#spinner').show();
     var values = {
         id_project: current_project,
         token: token
@@ -138,17 +151,19 @@ function get_table_query_history(tablename){
   
     $.post( APPLICATION_URL + "dbadmin/dbadmin/getTableQueryHistory", values)
     .done(function( data ) {
+        console.log(data);
         var tblRow__history = '<table>';    
-        $.each(data.response, function( i, column ) {
+        $.each(data.getExecutedQueriesByProjectID.response, function( i, column ) {
             tblRow__history = tblRow__history + '<tr>';
             if(column.executed_query !== null && column.executed_query.length > 20){
-                tblRow__history = tblRow__history + '<td>' + column.id_executed_query + '</td>' + '<td class="show_on_click" data-field="' + column.executed_query + '">' + column.executed_query.substring(0,20) + '</td>' + '<td>' + column.insert_time + '</td>';
+                tblRow__history = tblRow__history + '<td>' + column.id_executed_query + '</td>' + '<td class="show_on_click" data-field="' + column.executed_query + '">' + column.executed_query.substring(0,60) + '</td>' + '<td class="show_on_click" data-field="' + column.query_values + '">' + column.query_values.substring(0,60) + '</td>' + '<td>' + column.insert_time + '</td>';
             }else{
-                tblRow__history = tblRow__history + '<td>' + column.id_executed_query + '</td>' + '<td class="show_on_click" data-field="' + column.executed_query + '">' + column.executed_query + '</td>' + '<td>' + column.insert_time + '</td>';
+                tblRow__history = tblRow__history + '<td>' + column.id_executed_query + '</td>' + '<td class="show_on_click" data-field="' + column.executed_query + '">' + column.executed_query + '</td>' + '<td>' + column.query_values + '</td>' + '<td>' + column.insert_time + '</td>';
             }
             tblRow__history = tblRow__history + '</tr>';
         });
         $('#tblRow__history').html(tblRow__history + '</table>');
+        $('#spinner').hide();
     })
     .fail(function( data ) {
         console.log( data );
@@ -156,41 +171,41 @@ function get_table_query_history(tablename){
     return false;
 }
 
-function get_query_result(){
+function get_query_result(element, button){
     var query_text_width = $('#query_text').width();
     var result_height = $(window).height() - ( $('#query_text').height() + $('#buttons_dbadmin').height() + 30);
     $('#tblRow__container').width(query_text_width);
     $('#tblRow__container').height(result_height);
+    $('#tblRow').html('...loading...');
 
     var values = {
         id_project: current_project,
         raw_query: $('#query_text').val(),
         token: token
     };
-
     
     $.post( APPLICATION_URL + "dbadmin/dbadmin/getQueryResult", values)
     .done(function( data ) {
-        console.log(data);
-        data = data.getQueryResult;
-        console.log(data);
         var tblRow = '<table>';
         tblRow = tblRow + '<tr>';
-        $.each(data.response_columns, function( field ) {
-            if(field !== null && field.length > 20){
-                tblRow = tblRow + '<th class="show_on_click" data-field="' + field + '">' + field.substring(0,8) + '</th>';
-            }else{
-                tblRow = tblRow + '<th data-field="' + field + '">' + field + '</th>';
-            }
-        });
+        if(typeof data.getQueryResult != 'undefined' && data.getQueryResult !== 'no-rows'){
+            $.each(data.getQueryResult.response_columns, function( field ) {
+                if(field !== null && field.length > 20){
+                    tblRow = tblRow + '<th class="show_on_click" data-field="' + field + '">' + field.substring(0,8) + '</th>';
+                }else{
+                    tblRow = tblRow + '<th data-field="' + field + '">' + field + '</th>';
+                }
+            });
+        }
         tblRow = tblRow + '</tr>';
 
-        data = data.response;
         console.log(data);
-        if(data !== 'no-rows'){
-            $.each(data, function( i, row ) {
+        if(typeof data.getQueryResult.response != 'undefined' && data.getQueryResult.response !== 'no-rows'){
+            $.each(data.getQueryResult.response, function( i, row ) {
+                console.log(row);
                 tblRow = tblRow + '<tr>';
                 $.each(row, function( i, field ) {
+                    console.log(row);
                     if(field !== null && field.length > 20){
                         tblRow = tblRow + '<td class="show_on_click" data-field="' + field + '">' + field.substring(0,20) + '</td>';
                     }else{
@@ -207,6 +222,8 @@ function get_query_result(){
         }else{
             $('#tblRow').html('no records found');
         }
+        element.html(button);
+        element.attr('disabled', false);
     })
     .fail(function( data ) {
         console.log( "FAIL: " + data );
@@ -215,6 +232,8 @@ function get_query_result(){
 }
 
 function get_table_description(tablename){
+    $('#spinner').show();
+    inputFields = new Array();
     var values = {
         id_project: current_project,
         tablename: tablename,
@@ -224,18 +243,25 @@ function get_table_description(tablename){
     
     $.post( APPLICATION_URL + "dbadmin/dbadmin/getTableDescription", values)
     .done(function( data ) {
+        console.log(data);
         var data_structure = data.getTableDescription;
         $('#li__db_structure').show();
         $('#li__db_insert').show();
 
         //#table structure
         var tblRow__structure = '<table>';
-        var response_columns = data_structure.response_columns;
+        if(typeof data_structure!= 'undefined' && typeof data_structure != 'undefined'){
+            var response_columns = data_structure.response_columns;
+        }
+
+        if(typeof data_structure.response_columns != 'undefined' && typeof data_structure.response_columns != 'undefined'){
+            $.each(response_columns, function( field ) {
+                tblRow__structure = tblRow__structure + '<th>' + field + '</th>';
+            });    
+        }
 
         tblRow__structure = tblRow__structure + '<tr>';
-        $.each(response_columns, function( field ) {
-            tblRow__structure = tblRow__structure + '<th>' + field + '</th>';
-        });
+        
         tblRow__structure = tblRow__structure + '</tr>';
 
         data_structure = data_structure.response;
@@ -268,6 +294,7 @@ function get_table_description(tablename){
         tblRow__insert = tblRow__insert + '<td colspan="2"><button id="execute_insert_query">Save</button></td>';
         tblRow__insert = tblRow__insert + '</tr>';
         $('#tblRow__insert').html(tblRow__insert + '</table>');
+        $('#spinner').hide();
 
     })
     .fail(function( data ) {
@@ -310,6 +337,7 @@ function _getInputField(column){
 }
 
 function execute_insert_query(){
+    $('#spinner').show();
     var values = {
         id_project: current_project,
         tablename: selectedTable,
@@ -320,13 +348,12 @@ function execute_insert_query(){
 console.log(values);    
     $.post( APPLICATION_URL + "dbadmin/dbadmin/executeInsertQuery", values)
     .done(function( data ) {
-console.log(data);
-        if(data > 0){
+        if(data.saveDataOnTable > 0){
             alert('Inserito');
-            raw_query();
         }else{
             alert('error');
         }
+        $('#spinner').hide();
     })
     .fail(function( data ) {
         console.log( data );

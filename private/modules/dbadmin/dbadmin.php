@@ -111,31 +111,11 @@ class dbadmin extends page{
         //# project's db details: direct connection to the database, use the stored db credentials
         $db_id_details = $project['db_id_details'];
         $getProjectDBDetails = $this->getProjectDBDetails($application_configs['db_mng'], $db_id_details);
-        $_project_db_mng = new DbMng(
-            array(
-                'Nrqtx0HHsX' => $getProjectDBDetails['db_server'],
-                'VxMO8N5kX4' => $encryption->decrypt($getProjectDBDetails['db_name']),
-                'qsPV6EwtzA' => $encryption->decrypt($getProjectDBDetails['db_user']),
-                'AQowahicz5' => $encryption->decrypt($getProjectDBDetails['db_psw'])
-            )
-        );
-        $getDBTables = $_project_db_mng->getDataByQuery('show tables', 'db');  //# not using $getDBTables in this example
+        $sql_query = 'show tables';
 
-        //# can't connect to the database server? use the ws...
-        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
-        $__project_db_mng = new DbMng(
-            false,
-            false,
-            array(
-                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
-                'user' => $getProjectWSDetails['ws_user'],
-                'psw' => $getProjectWSDetails['ws_psw'],
-                'WSConsumer' => new WSConsumer()
-            )
-        );
 
-        $getDBTables_via_ws = $__project_db_mng->getDataByQuery('show tables', 'ws');
-
+        $getDBTables_via_ws = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($sql_query, 'ws');
+        
         $_show_tables = array();
 
         foreach ($getDBTables_via_ws['response'] as $element){
@@ -156,14 +136,14 @@ class dbadmin extends page{
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
 
         $tablename = $post['tablename'];
-        
-        $getTableDescription = $application_configs['db_mng']->getDataByQuery('DESCRIBE `'.$tablename.'`', 'db');
+        $sql_query = 'DESCRIBE `'.$tablename.'`';
 
+        $getDBTables_via_ws = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($sql_query, 'ws');
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
-                'getTableDescription' => $getTableDescription
+                'getTableDescription' => $getDBTables_via_ws
             )
         );
     }
@@ -173,7 +153,8 @@ class dbadmin extends page{
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $raw_query = $post['raw_query'];
 
-        $getQueryResult = $application_configs['db_mng']->getDataByQuery($raw_query, 'db');
+        $getQueryResult = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($raw_query, 'ws');
+        $this->_log_executed_query($application_configs['db_mng'], $raw_query, $id_project, null, 'db');
 
         return array(
             'type' => 'ws', 
@@ -190,20 +171,43 @@ class dbadmin extends page{
         $tablename = $post['tablename'];
         $inputFields = $post['inputFields'];
         $inputValues = $post['inputValues'];
+
         $i = 0;
         foreach ($inputValues as $v){
             $_inputValues[] = array('field' => str_replace('__', '', $inputFields[$i]), 'typed_value' => str_replace('__', '', $v['typed_value']));
             $i++;
         }
 
-        $saveDataOnTable = $application_configs['db_mng']->saveDataOnTable($tablename, $_inputValues, 'db', 0);
-        
-
+        $saveDataOnTable = $this->getProjectDBMng($application_configs, $project)->saveDataOnTable($tablename, $_inputValues, 'ws', 0);
+        $this->_log_executed_query($application_configs['db_mng'], $tablename, $id_project, $_inputValues, 'db');
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
                 'saveDataOnTable' => $saveDataOnTable
+            )
+        );
+    }
+
+    public function _action_getTableQueryHistory($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+
+        //# oap__dbadminexecutedqueries
+        $selectedTable = 'oap__dbadminexecutedqueries';
+        $selectValues_getExecutedQueriesByProjectID[] = 'id_executed_query';
+        $selectValues_getExecutedQueriesByProjectID[] = 'executed_query';
+        $selectValues_getExecutedQueriesByProjectID[] = 'query_values';
+        $selectValues_getExecutedQueriesByProjectID[] = 'insert_time';
+
+        $whereValues[] = array('where_field' => 'project_id', 'where_value' => $id_project);
+        $orderBy = 'id_executed_query DESC';
+
+        $getExecutedQueriesByProjectID = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_getExecutedQueriesByProjectID, $whereValues, $orderBy);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'getExecutedQueriesByProjectID' => $getExecutedQueriesByProjectID
             )
         );
     }
@@ -228,12 +232,32 @@ class dbadmin extends page{
         $ws_id_details = $getProjectData['ws_id_details'];
         return $project->getProjectWSDetails($ws_id_details);
     }
+    private function getProjectDBMng($application_configs, $project){
+        //# can't connect to the database server? use the ws...
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
 
+        return new DbMng(
+            $application_configs['db_details'],
+            false,
+            array(
+                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+                'WSConsumer' => new WSConsumer()
+            )
+        );
+    }
     private function getProjectDBDetails($db_mng, $db_id_details){
         $project = new Project($db_mng);
         return $project->getProjectDBDetails($db_id_details);
     }
+    private function _log_executed_query($db_mng, $executed_query, $project_id, $query_values, $_dbType){
+        $inputValues[] = array('field' => 'executed_query', 'typed_value' => $executed_query);
+        $inputValues[] = array('field' => 'project_id', 'typed_value' => $project_id);
+        $inputValues[] = array('field' => 'query_values', 'typed_value' => print_r($query_values, true));
 
+        return $db_mng->saveDataOnTable('oap__dbadminexecutedqueries', $inputValues, 'db', 0);
+    }
     public function getInitScript($application_configs, $token){
         //# put here page related scripts
         $this->_getInitScript($application_configs, $token);

@@ -42,6 +42,26 @@ class DbMng {
     }
 
     public function saveDataOnTable($selectedTable, $inputValues, $_dbType, $_insert_update = 0){
+        try {
+
+            if($_insert_update === 0){
+                $_insert_into__ary = $this->_insert_into($selectedTable, $inputValues);
+                $query = $_insert_into__ary['query'];
+                $execute_ary = $_insert_into__ary['execute_ary'];
+            }else{
+                $_update__ary = $this->_update($selectedTable, $inputValues);
+                $query = $_update__ary['query'];
+                $execute_ary = $_update__ary['execute_ary'];
+            }
+
+        } catch(PDOException $pdoE) {
+            echo 'errorequery';
+            var_dump($pdoE);
+        } catch (Exception $e) {
+            echo 'Exception';
+            var_dump($e);
+        }
+
         switch ($_dbType) {
             case 'db':
                 if(!$this->db_details){return false;}
@@ -49,16 +69,6 @@ class DbMng {
                     if(!is_array($inputValues)){return 0;}
 
                     $db = $this->getDB();
-                    if($_insert_update === 0){
-                        $_insert_into__ary = $this->_insert_into($selectedTable, $inputValues);
-                        $query = $_insert_into__ary['query'];
-                        $execute_ary = $_insert_into__ary['execute_ary'];
-                    }else{
-                        $_update__ary = $this->_update($selectedTable, $inputValues);
-                        $query = $_update__ary['query'];
-                        $execute_ary = $_update__ary['execute_ary'];
-                    }
-
                     $stmt = $db->prepare($query);
                     $stmt->execute($execute_ary);
 
@@ -80,12 +90,18 @@ class DbMng {
             case 'file':
                 
                 break;
+
+            case 'ws':
+                $_select_insert_update = 'insert';
+                $_db_ws = $this->_db_ws($query, $_select_insert_update, $selectedTable, $inputValues);
+                return json_decode($_db_ws, true);
+
             default:
                 break;
         }
     }
 
-    public function getDataByWhere($selectedTable, $selectValues, $whereValues){
+    public function getDataByWhere($selectedTable, $selectValues, $whereValues, $orderBy = ''){
         $selectValuesLenght = sizeof($selectValues);
         $execute_ary = array();
         $i = 1;
@@ -139,7 +155,11 @@ class DbMng {
             }
         }
 
-        $query = $select;
+        if($orderBy !== ''){
+            $query = $select.' ORDER BY '.$orderBy;
+        }else{
+            $query = $select;
+        }
         $stmt = $db->prepare($query);
         $stmt->execute($execute_ary);
 
@@ -191,6 +211,12 @@ class DbMng {
 
                 } catch(PDOException $pdoE) {
                     error_log(print_r($pdoE, true),0);
+                }
+                if(!isset($response_columns)){
+                    $response_columns = array();
+                }
+                if(!isset($response)){
+                    $response = array();
                 }
                 return array('response_columns' => $response_columns, 'response'=>$response);
 
@@ -293,10 +319,10 @@ class DbMng {
         return array('query' => $update, 'execute_ary' => $execute_ary);
     }
 
-    private function _db_ws($query, $_select_insert_update){
+    private function _db_ws($query, $_select_insert_update, $selectedTable = null, $inputValues = null){
         $WSConsumer = $this->ws_details['WSConsumer'];
 
-        return $WSConsumer->db_ws($this->ws_details, $query, $_select_insert_update);
+        return $WSConsumer->db_ws($this->ws_details, $query, $_select_insert_update, $selectedTable, $inputValues);
     }
 
     public function getDB(){

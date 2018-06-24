@@ -30,10 +30,10 @@ SOFTWARE.
 
 class WSConsumer {
 
-    public function db_ws($ws_details, $query, $_select_insert_update){
+    public function db_ws($ws_details, $query, $_select_insert_update, $selectedTable, $inputValues){
 
-        $fields = array('query_type' => $_select_insert_update, 'query_string' => $query);
-        $post_ = 'query_type='.$_select_insert_update.'&query_string='.$query;
+        $fields = array('query_type' => $_select_insert_update, 'query_string' => $query, 'selectedTable' => $selectedTable, 'inputValues' => $inputValues);
+        $post_ = 'query_type='.$_select_insert_update.'&query_string='.$query.'&selectedTable='.$selectedTable.'&inputValues='. json_encode($inputValues);
 
         return $this->_ws($ws_details, $fields, $post_);
 
@@ -65,7 +65,7 @@ class WSConsumer {
 //        var_dump(curl_error($ch)); //# debug
 //        var_dump(curl_getinfo($ch)); //# debug
         curl_close($ch);
-
+//        var_dump($_ws);
         return $_ws;
     }
 }

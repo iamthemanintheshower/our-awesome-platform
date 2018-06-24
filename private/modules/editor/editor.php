@@ -155,13 +155,16 @@ class editor extends page{
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
-
+        
         $remote__root_folder = '/';
-        $local__root_folder = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_temp-file-to-be-uploaded/';
-
-        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-        $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder);
-
+        if(isset($post['get_backup']) && $post['get_backup'] === '1'){
+            $url = str_replace('https://', '', $project['website']);
+            $file_content = file_get_contents(__DIR__.'/_backup-on-save/'.$url.'/'.$post['file']);
+        }else{
+            $local__root_folder = $application_configs['editor__temp-file-to-be-uploaded'];
+            $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+            $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder);
+        }
 
         return array(
             'type' => 'ws', 
@@ -172,13 +175,37 @@ class editor extends page{
         );
     }
     
+    public function _action_getFileHistory($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $page_in_editor = $post['file'];
+        $url = str_replace('https://', '', $project['website']);
+        $bkup_folder = __DIR__.'/_backup-on-save/'.$url.'/';
+        $bkup_files = scandir($bkup_folder);
+
+        foreach ($bkup_files as $f){
+            if($this->_startsWith($f, '_'.$url.'___'.$page_in_editor)){
+                $ary_file_history[] = '<div class="view_file_in_history_content" data-file="'.$f.'">'.$f.' - '. date("d/m/Y H:i:s",filemtime($bkup_folder.$f)) . '</div>';
+            }
+        }
+        $getFileHistory = array_reverse($ary_file_history);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'project' => $project,
+                'getFileHistory' => $getFileHistory
+            )
+        );
+    }
     public function _action_setFile($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
 
         $remote__root_folder = '/';
-        $local__root_folder = $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/_temp-file-to-be-uploaded/';
+        $local__root_folder = $application_configs['editor__temp-file-to-be-uploaded'];
 
         $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
         $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
@@ -268,6 +295,98 @@ class editor extends page{
             $this->_sendToDropbox($application_configs, $compressed_filename);
         }
     }
+    
+    public function _action_uploadFile($application_configs, $module, $action, $post, $optional_parameters){
+        if ( 0 < $_FILES['file']['error'] ) {
+            echo 'Error: ' . $_FILES['file']['error'] . '<br>';
+        }else{
+            $local__root_folder = $application_configs['editor__temp-file-to-be-uploaded'];
+            move_uploaded_file($_FILES['file']['tmp_name'], $local__root_folder . $_FILES['file']['name']);
+            if($optional_parameters){
+                $parameter_key = $optional_parameters[0];
+                if($parameter_key === 'id_project'){
+                    $id_project = $optional_parameters[1];
+                }else{
+                    $id_project = 0;
+                }
+                $post['subfolder'] = $post['subfolder'];
+                $filename = $local__root_folder . $_FILES['file']['name'];
+                $handle = fopen($filename, "rb");
+                $post['data'] = fread($handle, filesize($filename));
+                fclose($handle);
+                $post['file'] = $_FILES['file']['name'];
+
+                file_put_contents($filename, $post['data']);
+            }
+            $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+            $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
+
+            $remote__root_folder = '/';
+
+            $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+            $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+
+        }
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'file' => $_FILES['file']['tmp_name'],
+                'upload_response' => $upload_response
+            )
+        );
+    }
+    public function _action_setDirectory($application_configs, $module, $action, $post, $optional_parameters){
+        if($optional_parameters){
+            $parameter_key = $optional_parameters[0];
+            if($parameter_key === 'id_project'){
+                $id_project = $optional_parameters[1];
+            }else{
+                $id_project = 0;
+            }
+        }
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
+
+        $remote__root_folder = '/';
+
+        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+        $upload_response = $ftp->setDirViaFTP($post, $remote__root_folder, $post['newFolder'], $project['website'], $application_configs['db_mng'], $id_project);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'upload_response' => $upload_response
+            )
+        );
+    }
+    
+    public function _action_deleteFile($application_configs, $module, $action, $post, $optional_parameters){
+        $local__root_folder = $application_configs['editor__temp-file-to-be-uploaded'];
+        if($optional_parameters){
+            $parameter_key = $optional_parameters[0];
+            if($parameter_key === 'id_project'){
+                $id_project = $optional_parameters[1];
+            }else{
+                $id_project = 0;
+            }
+            $post['subfolder'] = $post['subfolder'];
+        }
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
+
+        $remote__root_folder = '/';
+
+        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+        $upload_response = $ftp->deleteFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'file' => $post['file'],
+                'upload_response' => $upload_response
+            )
+        );
+    }
 
     private function _sendToDropbox($application_configs, $compressed_filename){
         if (file_exists($application_configs['editor__temp-download-collected-files'].$compressed_filename)) {
@@ -281,7 +400,7 @@ class editor extends page{
             $headers = array('Dropbox-API-Arg: {"path":"/'.$compressed_filename.'", "mode":"add"}','Content-Type: application/octet-stream',);
             $endpoint = 'https://content.dropboxapi.com/2/files/upload';
 
-            $postdata = file_get_contents($filename); //
+            $postdata = file_get_contents($filename);
             $this->_dropbox_postRequest($endpoint, $headers, $postdata, $application_configs);
         }
     }
@@ -331,5 +450,9 @@ class editor extends page{
 
     private function _filelist_ws($WSConsumer, $ws_details){
         return $WSConsumer->filelist_ws($ws_details);
+    }
+    private function _startsWith($haystack, $needle){
+        $length = strlen($needle);
+        return (substr($haystack, 0, $length) === $needle);
     }
 }

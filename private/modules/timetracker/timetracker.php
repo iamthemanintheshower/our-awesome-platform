@@ -45,7 +45,7 @@ class timetracker extends page{
             array(
                 //#bootstrap
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
-                    'bootstrap-4.0.0-distcss/bootstrap.min.css',
+                    'bootstrap-4.0.0-dist/css/bootstrap.min.css',
 
                 //#timetracker
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].
@@ -67,7 +67,7 @@ class timetracker extends page{
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
                     'jquery/jquery-3.3.1.min',
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
-                    'bootstrap-4.0.0-distjs/bootstrap.min.js',
+                    'bootstrap-4.0.0-dist/js/bootstrap.min.js',
 
                 //# timetracker
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].

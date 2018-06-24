@@ -56,6 +56,7 @@ class InputChecker {
             'application/home/getProjectsByGroupID' => 'no-parameters',
             'editor/editor/index' => 'no-parameters',
             'editor/editor/getFile' => 'no-parameters',
+            'editor/editor/getFileHistory' => 'no-parameters', //#TODO
             'editor/editor/setFile' => 'no-parameters',
             'editor/editor/searchStringInFile' => array(
                 'id_project', 'searchstring', 'token'
@@ -67,6 +68,10 @@ class InputChecker {
                 'id_project', 'send_to_dropbox__files', 'token'
             ),
             'editor/editor/collectEditedFilesgetFileZIP' => 'no-parameters',
+            'editor/editor/uploadFile' => 'no-parameters', //#TODO
+            'editor/editor/deleteFile' => 'no-parameters', //#TODO
+            'editor/editor/setDirectory' => 'no-parameters', //#TODO
+            
             'dbadmin/dbadmin/index' => 'no-parameters',
             'dbadmin/dbadmin/getDBTables' => array(
                 'id_project', 'token'
@@ -79,6 +84,9 @@ class InputChecker {
             ),
             'dbadmin/dbadmin/executeInsertQuery' => array(
                 'id_project', 'tablename', 'inputFields', 'inputValues', 'token'
+            ),
+            'dbadmin/dbadmin/getTableQueryHistory' => array(
+                'id_project', 'token'
             ),
 
             'timetracker/timetracker/trackProjectAndAction' => array(

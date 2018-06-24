@@ -84,3 +84,7 @@ table tr td {
 #db_structure{display: none}
 #db_insert{display: none}
 #db_history{display: none}
+
+div#tblRow__history table tr td {
+    border: 1px solid #ccc;
+}
