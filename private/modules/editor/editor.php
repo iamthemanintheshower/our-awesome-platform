@@ -122,7 +122,7 @@ class editor extends page{
             if($parameter_key === 'id_project'){
                 $id_project = $optional_parameters[1];
             }else{
-                $id_project = 0;;
+                $id_project = 0;
             }
         }
 
@@ -135,7 +135,14 @@ class editor extends page{
                 'user' => $getProjectWSDetails['ws_user'],
                 'psw' => $getProjectWSDetails['ws_psw'],
             );
-            $_filelist_ws = $this->_filelist_ws(new WSConsumer, $ws_details);
+
+            $filelist_cache = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'editor/cache_'.$id_project;
+            if(file_exists($filelist_cache)){
+                $_filelist_ws = file_get_contents($filelist_cache);
+            }else{
+                $_filelist_ws = $this->_filelist_ws(new WSConsumer, $ws_details);
+                file_put_contents($filelist_cache, $_filelist_ws);
+            }
         }else{
             $_filelist_ws = false;
         }
@@ -150,7 +157,40 @@ class editor extends page{
             )
         );
     }
-    
+
+    public function _action_refreshFilelistCacheByProject($application_configs, $module, $action, $post, $optional_parameters){
+        if($optional_parameters){
+            $parameter_key = $optional_parameters[0];
+            if($parameter_key === 'id_project'){
+                $id_project = $optional_parameters[1];
+            }else{
+                $id_project = 0;
+            }
+        }
+
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+
+        $ws_details = array(
+            'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_file_list_url'],
+            'user' => $getProjectWSDetails['ws_user'],
+            'psw' => $getProjectWSDetails['ws_psw'],
+        );
+
+        $filelist_cache = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'editor/cache_'.$id_project;
+        $_filelist_ws = $this->_filelist_ws(new WSConsumer, $ws_details);
+
+        file_put_contents($filelist_cache, $_filelist_ws);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'filelist_ws' => $_filelist_ws
+            )
+        );
+    }
+
     public function _action_getFile($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);

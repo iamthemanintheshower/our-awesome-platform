@@ -30,9 +30,24 @@ var opened_iframes = new Array();
 $( document ).ready(function() {
     'use strict';
 
+    getProjectGroups(APPLICATION_URL, token);
+
+    $('body').on('click', '.group-button', function() {
+        if($(this).data('id_group') === 'new_group'){
+            $('#new_group_modal').modal();
+            return false;
+        }
+        opened_iframes = new Array(); //# reset 
+        getProjectsByGroupID(APPLICATION_URL, token, current_group);
+    });
+
     getProjectsByGroupID(APPLICATION_URL, token, current_group);
 
     $('body').on('click', '.project-button', function() {
+        if($(this).data('id_project') === 'new_project'){
+            $('#new_project_modal').modal();
+            return false;
+        }
         if(current_project !== $(this).data('id_project')){
             opened_iframes = new Array();
         }
@@ -82,7 +97,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                 $('#ftp_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
-                    $('#spinner').show();
+                    $('#spinner').html('FTP manager is loading the file tree <br> <a href="javascript:$(\'#spinner\').hide();">cancel</a>');
                     $('#ftp_iframe').attr('src', ftp_src);
                     opened_iframes.push(current_action);
                 }
@@ -135,7 +150,6 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                 $('#time_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
-                    $('#spinner').show();
                     $('#time_iframe').attr('src', timetracker_src);
                     opened_iframes.push(current_action);
                 }
@@ -160,18 +174,49 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
     });
 }
 
+function getProjectGroups(APPLICATION_URL, token){
+    var position = 'getProjectGroups';
+
+    $.post( APPLICATION_URL + "/application/home/getProjectGroups", { token: token })
+    .done(function(data) {
+        console.log(data);
+        var groups = data.groups;
+        var group_buttons = data.group_buttons;
+        $('#groups').html(group_buttons);
+        if(groups !== 'no-groups'){
+            $('#id_' + groups[0].id_group).addClass('active-action-button');
+            current_group = groups[0].id_group;
+        }else{
+            $('#spinner').hide();
+        }
+    })
+    .fail(function(data) {
+        console.log( "error" );
+        console.log(data.responseText);
+        sendError(position, '', 'script.js', 'getProjectsByGroupID-fail', '0', data.responseText);
+    });
+}
+
 function getProjectsByGroupID(APPLICATION_URL, token, current_group){
     var position = 'getProjectsByGroupID';
 
-    $.post( APPLICATION_URL + "/application/home/getProjectsByGroupID", { token: token, id_group: current_group, current_action: current_action})
+    $.post( APPLICATION_URL + "/application/home/getProjectsByGroupID", { token: token, group_id: current_group, current_action: current_action})
     .done(function(data) {
+        console.log(data);
         var projects = data.projects;
         var project_buttons = data.project_buttons;
         $('#projects_by_group_id').html(project_buttons);
-        $('#id_' + projects[0].id_project).addClass('active-action-button');
-        current_project = projects[0].id_project;
+        if(projects !== 'no-projects'){
+            $('#id_' + projects[0].id_project).addClass('active-action-button');
+            current_project = projects[0].id_project;
 
-        getProjectActionData(APPLICATION_URL, token, current_project, current_action);
+            getProjectActionData(APPLICATION_URL, token, current_project, current_action);
+        }else{
+            $('#message_h4').html('Info');
+            $('#message_body').html('No projects in the selected group');
+            $('#message_modal').modal();
+            $('#spinner').hide();
+        }
     })
     .fail(function(data) {
         console.log( "error" );

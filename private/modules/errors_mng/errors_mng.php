@@ -84,27 +84,31 @@ register_shutdown_function('shutDownFunction', $application_configs);
 
 set_error_handler('myErrorHandler');
 
-function myErrorHandler($errno, $errstr, $errfile, $errline) {
+function myErrorHandler($errno, $errstr, $errfile, $errline, $application_configs) {
     if (!(error_reporting() & $errno)) {return false;}
 
     $date = new DateTime();
     switch ($errno) {
         case E_USER_ERROR:
-            error_log('!PHP-ERROR|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, __DIR__."/logs/php-exception.log");
+            error_log('!PHP-ERROR|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+                $application_configs['PRIVATE_FOLDER_LOGS']."php-exception.log");
             exit(1);
             break;
 
         case E_USER_WARNING:
-            error_log('!PHP-WARNING|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, __DIR__."/logs/php-exception.log");
+            error_log('!PHP-WARNING|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+                $application_configs['PRIVATE_FOLDER_LOGS']."php-exception.log");
             break;
 
         case E_USER_NOTICE:
-            error_log('!PHP-NOTICE|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, __DIR__."/logs/php-exception.log");
+            error_log('!PHP-NOTICE|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile, 3, $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+                $application_configs['PRIVATE_FOLDER_LOGS']."php-exception.log");
             break;
 
         default:
             $str_error = '!PHP-DEFAULT|'.$date->getTimestamp().'|'.$errno.'|'.$errstr.'|'.$errline.'|'.$errfile;
-            error_log($str_error, 3, __DIR__."/logs/php-exception.log");
+            error_log($str_error, 3, $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+                $application_configs['PRIVATE_FOLDER_LOGS']."php-exception.log");
             die($str_error);
             break;
     }

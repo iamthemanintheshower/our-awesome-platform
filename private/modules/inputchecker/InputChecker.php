@@ -54,7 +54,9 @@ class InputChecker {
             'application/home/index' => 'no-parameters',
             'application/home/getProject' => 'no-parameters',
             'application/home/getProjectsByGroupID' => 'no-parameters',
+            'application/home/getProjectGroups' => 'no-parameters',
             'editor/editor/index' => 'no-parameters',
+            'editor/editor/refreshFilelistCacheByProject' => 'no-parameters',
             'editor/editor/getFile' => 'no-parameters',
             'editor/editor/getFileHistory' => 'no-parameters', //#TODO
             'editor/editor/setFile' => 'no-parameters',

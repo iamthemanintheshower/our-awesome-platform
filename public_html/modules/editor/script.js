@@ -87,6 +87,7 @@ $( document ).ready(function() {
         var dir = $( this ).data('dir');
         console.log(dir);
         $( '#dir').val(dir);
+        $( '#current_dir' ).html(dir);
     });
 
     $('body').on('click', '#btnSaveHTML', function () {
@@ -166,8 +167,28 @@ $( document ).ready(function() {
             sendError('#btnCollectEditedFiles', '', 'script.js', 'btnCollectEditedFiles-fail', '0', data);
         });
     });
-    
 
+    $('body').on('click', '#refreshFilelistCacheByProject', function () {
+        var values = {};
+        $('#spinner').html('FTP manager is refreshing the file tree, wait until it\'s done');
+        $('#spinner').show();
+        $.post( APPLICATION_URL + "editor/editor/refreshFilelistCacheByProject/id_project/" + current_project, values)
+        .done(function( data ) {
+            console.log( data );
+            $('#left-sidebar').html(data.filelist_ws);
+            $('.filesystem-nav').find('ul').hide();
+
+            $('.folder-nav a').click( function() {
+                $(this).parent().find('ul:first').slideToggle('fast');
+                if($(this).parent().attr('className') === 'folder-nav') return false;
+            });
+            $('#spinner').hide();
+        })
+        .fail(function( data ) {
+            console.log( "FAIL: " + data );
+        });
+    });
+    
     $('body').on('click', '#btnNewFile', function () {
         if($('#dir').val() === ''){
             $( '#dir').val($('#root_dir').val());

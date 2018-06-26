@@ -35,7 +35,9 @@ class log_everything {
         $user_id = '';
         if(isset($session) && isset($session['userbean-Q4rp'])){
             $userbean = unserialize($session['userbean-Q4rp']);
-            $user_id = $userbean->getId();
+            if(isset($userbean) && is_object($userbean)){
+                $user_id = $userbean->getId();
+            }
         }
         error_log(
             'time:'.$date->getTimestamp().'|'.

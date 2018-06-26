@@ -52,8 +52,14 @@ SOFTWARE.
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
-                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_groups" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Groups</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown_groups">
+                            <div id="groups"></div>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_projects" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown_projects">
                             <div id="projects_by_group_id"></div>
                         </div>
                     </li>
@@ -94,6 +100,86 @@ SOFTWARE.
             <div class="row footer">
                 <div>
 
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="new_project_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">New project</h4>
+                    </div>
+                    <div class="modal-body" id="new_project">
+
+                        - oap__projects
+                        project
+                        website_id
+                        
+                        - oap__websites
+                        website
+                        wp_admin
+                        ftp_id_details
+                        db_id_details
+                        ws_id_details
+                        
+                        - oap__ftp_details
+                        ftp_server
+                        ftp_user
+                        ftp_psw
+
+                        - oap__db_details
+                        db_server
+                        db_name
+                        db_user
+                        db_psw
+
+                        - oap__projects_groups
+                        project_id
+                        group_id
+                        
+                        - oap__projects_tabs
+                        project_id
+                        tab_id
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="modal fade" id="new_group_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">New group</h4>
+                    </div>
+                    <div class="modal-body" id="new_group">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="message_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 id="message_h4" class="modal-title">New group</h4>
+                    </div>
+                    <div class="modal-body" id="message_body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

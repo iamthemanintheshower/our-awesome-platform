@@ -85,22 +85,52 @@ class home extends page{
         );
     }
 
+    public function _action_getProjectGroups($application_configs, $module, $action, $post, $optional_parameters){
+        $button = new Button();
+        $getProjectGroups = $this->getProjectGroups($application_configs['db_mng']);
+        $groups = 'no-groups';
+
+        if(is_array($getProjectGroups)){
+            $groups = array();
+            foreach ($getProjectGroups as $group){
+                $groups[] = $this->getProjectByID($application_configs['db_mng'], $group['id_group']);
+            }
+            foreach ($getProjectGroups as $group){
+                $group_buttons[] = $button->getResponse($group['project_group'], 'id_'.$group['id_group'], 'group-button', 'data-id_group="'.$group['id_group'].'"');
+            }
+        }
+
+        $group_buttons[] = $button->getResponse('New group', 'id_group', 'group-button', 'data-id_group="new_group"');
+        
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'groups' => $groups,
+                'group_buttons' => $group_buttons
+            )
+        );
+    }
+
     public function _action_getProjectsByGroupID($application_configs, $module, $action, $post, $optional_parameters){
         $button = new Button();
-        $group_id = $this->getProjectGroupID($optional_parameters);
+        $group_id = $post['group_id'];
         $projects_id_by_group_id = $this->getProjectsIDByGroupID($application_configs['db_mng'], $group_id);
+        $projects = 'no-projects';
 
-        if(!is_array($projects_id_by_group_id)){
-            $group_id = 1; //#default group
-            $projects_id_by_group_id = $this->getProjectsIDByGroupID($application_configs['db_mng'], $group_id);
+        if(is_array($projects_id_by_group_id)){
+            $projects = array();
+            foreach ($projects_id_by_group_id as $project_id){
+                $projects[] = $this->getProjectByID($application_configs['db_mng'], $project_id['project_id']);
+            }
+            foreach ($projects as $project){
+                $project_buttons[] = $button->getResponse($project['project'], 'id_'.$project['id_project'], 'project-button', 'data-id_project="'.$project['id_project'].'"');
+            }
+        }else{
+            
         }
 
-        foreach ($projects_id_by_group_id as $project_id){
-            $projects[] = $this->getProjectByID($application_configs['db_mng'], $project_id['project_id']);
-        }
-        foreach ($projects as $project){
-            $project_buttons[] = $button->getResponse($project['project'], 'id_'.$project['id_project'], 'project-button', 'data-id_project="'.$project['id_project'].'"');
-        }
+        $project_buttons[] = $button->getResponse('New project', 'id_newproject', 'project-button', 'data-id_project="new_project"');
+        
         return array(
             'type' => 'ws', 
             'response' => array(
@@ -109,7 +139,7 @@ class home extends page{
             )
         );
     }
-    
+
     public function _action_getProject($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
@@ -127,7 +157,7 @@ class home extends page{
     private function getProjectGroupID($optional_parameters){
         if($optional_parameters){
             $parameter_key = $optional_parameters[0];
-            if($parameter_key === 'group'){
+            if($parameter_key === 'id_group'){
                 return $optional_parameters[1];
             }else{
                 return false;
@@ -137,7 +167,17 @@ class home extends page{
 
     private function getProjectsIDByGroupID($db_mng, $group_id){
         $project_group = new ProjectGroup($db_mng);
-        return $project_group->getProjectsIDByGroupID($group_id);
+        $_getProjectsIDByGroupID = $project_group->getProjectsIDByGroupID($group_id);
+        if($_getProjectsIDByGroupID){
+            return $_getProjectsIDByGroupID;
+        }else{
+            return 'no-project-in-group';
+        }
+    }
+
+    private function getProjectGroups($db_mng){
+        $project_group = new ProjectGroup($db_mng);
+        return $project_group->getProjectGroups();
     }
 
     private function getProjectID($optional_parameters){

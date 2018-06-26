@@ -49,6 +49,7 @@ SOFTWARE.
     </head>
 
     <body>
+        <div id="spinner"><i class="fa fa-spinner fa-spin"></i></div>
         <input type="hidden" id="upload_dir" name="upload_dir" />
         <input type="hidden" id="dir" name="dir" value=""/>
         <input type="hidden" id="file" name="file" />
@@ -57,6 +58,8 @@ SOFTWARE.
             <div id="div_header_bar" class="row">
                 <div class="col-sm-2 no-margin-no-padding">
                     <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
+                    <span id="current_dir" class="pull-left"></span>
+                    <button class="no-margin-no-padding pull-right" id="refreshFilelistCacheByProject">R</button>
                 </div>
                 <div class="col-sm-1 no-margin-no-padding">
                     <button class="no-margin-no-padding" id="btnNewFile">NEW FILE</button>
@@ -71,7 +74,7 @@ SOFTWARE.
                     <button class="no-margin-no-padding pull-right" id="upload">UPLOAD</button>
                 </div>
                 <div class="col-sm-2 no-margin-no-padding text-right">
-                    <button class="no-margin-no-padding" id="btnDeleteFile">DELETE</button>
+                    <button class="no-margin-no-padding" id="btnDeleteFile">DELETE FILE</button>
                     <button class="no-margin-no-padding" id="btnCollectEditedFiles">SAVED FILES</button>
                 </div>
                 <div class="col-sm-2 no-margin-no-padding pull-right">

@@ -36,6 +36,16 @@ class ProjectGroup {
         $this->db_mng = $db_mng;
     }
 
+    public function getProjectGroups(){
+        $selectedTable = 'oap__groups';
+        $selectValues_getProjectGroups[] = 'id_group';
+        $selectValues_getProjectGroups[] = 'project_group';
+        $selectValues_getProjectGroups[] = 'group_color';
+
+        $getProjectGroups = $this->db_mng->getDataByWhere($selectedTable, $selectValues_getProjectGroups, null);
+
+        return $getProjectGroups['response_columns'];
+    }
 
     public function getProjectsIDByGroupID($group_id){
         $selectedTable = 'oap__projects_groups';
