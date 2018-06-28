@@ -84,6 +84,7 @@ SOFTWARE.
             <div id="div_body_bar" class="row">
                 <div class="col-md-12">
                     <div id="tabs"></div>
+                    <span id="blur_action" data-action="blur_action" data-id_tab="7"></span>
                 </div>
             </div>
 

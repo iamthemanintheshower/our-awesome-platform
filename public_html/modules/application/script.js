@@ -72,6 +72,9 @@ $( document ).ready(function() {
     $("iframe").on('load', function(){
         $('#spinner').hide();
     });
+    $(window).blur(function(e) {
+        trackProjectAction(current_project, 'blur_action');
+    });
 });
 
 function getProjectActionData(APPLICATION_URL, token, current_project, current_action){
@@ -245,6 +248,7 @@ function trackProjectAction(current_project, current_action){
 
     $.post( APPLICATION_URL + "/timetracker/timetracker/trackProjectAndAction", { token: token, current_project: current_project, current_action: $('#' + current_action).data('id_tab')})
     .done(function(data) {
+        console.log({ token: token, current_project: current_project, current_action: $('#' + current_action).data('id_tab')});
         console.log(data);
     })
     .fail(function(data) {

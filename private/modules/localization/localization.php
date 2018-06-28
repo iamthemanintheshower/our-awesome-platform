@@ -119,6 +119,9 @@ class localization{
             )
         );
 
+        if($action === 'default'){
+            $module = $controller = 'default';
+        }
         return $_language[$language][$module][$controller][$action];
     }
 }
