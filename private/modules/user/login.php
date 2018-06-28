@@ -114,7 +114,7 @@ class login extends page{
 
     public function getInitScript($application_configs, $token){
         //# put here page related scripts
-        $localization = $this->getLocalization($application_configs['language'], '', '', 'login');
+        $localization = $this->getLocalization($application_configs['language'], 'user', 'login', 'getInitScript');
         $page_related_scripts = 'var empty = "'.$localization['empty'].'";';
         $page_related_scripts .= 'var email_or_password_error = "'.$localization['email_or_password_error'].'";';
         $this->_getInitScript($application_configs, $token, $page_related_scripts);

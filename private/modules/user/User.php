@@ -78,7 +78,7 @@ class User {
     
     public function ifNotLoggedThenLogin($session, $controller, $application_configs){
         if($controller !== 'login' && !$this->getLoggedUserOrFalse($session)){
-            $localization = $this->getLocalization($application_configs['language'], '', '', 'default');
+            $localization = $this->getLocalization($application_configs['language'], 'default', 'default', 'default');
             die('<a href="'.$application_configs['APPLICATION_URL_LOGIN'].'">'.$localization['not-logged'].'</a>');
         }
     }

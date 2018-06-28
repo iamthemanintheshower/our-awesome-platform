@@ -31,33 +31,94 @@ SOFTWARE.
 class localization{
     public function getLocalization($language, $module, $controller, $action){
         $_language = array(
+
             'IT' => array(
-                'login' => 
+                'application' =>
                     array(
-                        'empty' => 'Devi indicare nome utente e password',
-                        'email_or_password_error' => 'Credenziali errate'
+                        'home' =>
+                            array(
+                                'index' => 
+                                    array(
+                                        'groups' => 'Groups',
+                                        'projects' => 'Projects',
+                                        'search' => 'Search',
+                                        'new-project' => 'New project',
+                                        'new-group' => 'New group',
+                                        'logout' =>'logout',
+                                        'close' => 'Close'
+                                    ),
+                            )
                     ),
-                'default' => 
+                
+                'user' =>
                     array(
-                        'error-log-done' => 'Qualcosa è successo e ho avvertito un amministratore. Riceverai una notiica quando il problema verrà analizzato.',
-                        'error-log-fail' => 'Qualcosa è successo, ma NON sono riuscito ad avvertire alcun amministratore per via di altri problemi. Se non mandi tu una mail a problems@ourawesomeplatform.com, nessun amministratore lo saprà mai e non potrà gestire il problema...',
-                        'not-logged' => 'clicca qui per accedere'
-                    )
+                        'login' =>
+                            array(
+                                'getInitScript' => 
+                                    array(
+                                        'empty' => 'Devi indicare nome utente e password',
+                                        'email_or_password_error' => 'Credenziali errate'
+                                    ),
+                            )
+                    ),
+                'default' =>
+                    array(
+                        'default' =>
+                            array(
+                                'default' => 
+                                    array(
+                                        'error-log-done' => 'Qualcosa è successo e ho avvertito un amministratore. Riceverai una notiica quando il problema verrà analizzato.',
+                                        'error-log-fail' => 'Qualcosa è successo, ma NON sono riuscito ad avvertire alcun amministratore per via di altri problemi. Se non mandi tu una mail a problems@ourawesomeplatform.com, nessun amministratore lo saprà mai e non potrà gestire il problema...',
+                                        'not-logged' => 'clicca qui per accedere'
+                                    )
+                            )
+                    ),
             ),
+
             'EN' => array(
-                'login' => 
+                'application' =>
                     array(
-                        'empty' => 'Something is wrong',
-                        'email_or_password_error' => 'Something is wrong',
-                        'not-logged' => 'Click here to login'
+                        'home' =>
+                            array(
+                                'index' => 
+                                    array(
+                                        'groups' => 'Groups',
+                                        'projects' => 'Projects',
+                                        'search' => 'Search',
+                                        'new-project' => 'New project',
+                                        'new-group' => 'New group',
+                                        'logout' =>'logout',
+                                        'close' => 'Close'
+                                    ),
+                            )
                     ),
-                'default' => 
+                
+                'user' =>
                     array(
-                        'error-log-done' => 'Something is wrong',
-                        'error-log-fail' => 'Something is wrong'
-                    )
+                        'login' =>
+                            array(
+                                'getInitScript' => 
+                                    array(
+                                        'empty' => 'Something is wrong',
+                                        'email_or_password_error' => 'Something is wrong'
+                                    ),
+                            )
+                    ),
+                'default' =>
+                    array(
+                        'default' =>
+                            array(
+                                'default' => 
+                                    array(
+                                        'error-log-done' => 'Something is wrong',
+                                        'error-log-fail' => 'Something is wrong',
+                                        'not-logged' => 'Click here to login'
+                                    )
+                            )
+                    ),
             )
         );
-        return $_language[$language][$action];
+
+        return $_language[$language][$module][$controller][$action];
     }
 }

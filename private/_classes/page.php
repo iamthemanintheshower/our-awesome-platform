@@ -72,7 +72,7 @@ class page {
     }
 
     public function _getInitScript($application_configs, $token, $page_related_scripts = ''){
-        $localization = $this->getLocalization($application_configs['language'], '', '', 'default');
+        $localization = $this->getLocalization($application_configs['language'], 'default', 'default', 'default');
         ?>
         <script>
             var token = "<?php if(isset($token) && $token !== ''){echo $token;}else{echo '';}?>";

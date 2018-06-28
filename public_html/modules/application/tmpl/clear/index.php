@@ -52,13 +52,13 @@ SOFTWARE.
             <div class="collapse navbar-collapse" id="navbarsExampleDefault">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item dropdown">
-                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_groups" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Groups</a>
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_groups" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['groups'];?></a>
                         <div class="dropdown-menu" aria-labelledby="dropdown_groups">
                             <div id="groups"></div>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_projects" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Projects</a>
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_projects" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['projects'];?></a>
                         <div class="dropdown-menu" aria-labelledby="dropdown_projects">
                             <div id="projects_by_group_id"></div>
                         </div>
@@ -68,14 +68,14 @@ SOFTWARE.
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+                    <input class="form-control mr-sm-2" type="text" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['search'];?>" aria-label="Search">
                 </form>
                 <ul class="navbar-nav px-3">
                     <li class="nav-item">
                         <span class="nav-link disabled"><?php echo $userbean->getEmailAndUser();?></span>
                     </li>
                     <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="<?php echo $application_configs['APPLICATION_URL'];?>login/login/index">logout</a>
+                        <a class="nav-link" href="<?php echo $application_configs['APPLICATION_URL'];?>login/login/index"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['logout'];?></a>
                     </li>
                 </ul>
             </div>
@@ -109,7 +109,7 @@ SOFTWARE.
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">New project</h4>
+                        <h4 class="modal-title"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['new-project'];?></h4>
                     </div>
                     <div class="modal-body" id="new_project">
 
@@ -145,7 +145,7 @@ SOFTWARE.
                         
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
                     </div>
                 </div>
             </div>
@@ -156,13 +156,13 @@ SOFTWARE.
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title">New group</h4>
+                        <h4 class="modal-title"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['new-group'];?></h4>
                     </div>
                     <div class="modal-body" id="new_group">
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
                     </div>
                 </div>
             </div>
@@ -172,13 +172,11 @@ SOFTWARE.
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 id="message_h4" class="modal-title">New group</h4>
+                        <h4 id="message_h4" class="modal-title"></h4>
                     </div>
-                    <div class="modal-body" id="message_body">
-
-                    </div>
+                    <div class="modal-body" id="message_body"></div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
                     </div>
                 </div>
             </div>

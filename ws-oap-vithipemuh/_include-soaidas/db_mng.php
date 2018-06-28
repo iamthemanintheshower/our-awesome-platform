@@ -57,6 +57,7 @@ class DbMng {
                         $newId = $stmt->rowCount();
                     }
                     $db = null;
+
                 } catch(PDOException $pdoE) {
                     echo 'errorequery';
                     var_dump($pdoE);
@@ -281,33 +282,36 @@ class DbMng {
         $execute_ary = array();
         $i = 1;
         foreach ($inputValues as $v){
-            if($v['typed_value'] === NULL){
+            if(!isset($v['typed_value'])){
                 $inputValuesLenght--;
             }
         }
         foreach ($inputValues as $v){
-            $field = $v['field'];
-            if($v['typed_value'] !== NULL){
-                if($i < $inputValuesLenght){
-                    $update .= '`'.$field.'` = :'.$field.', ';
-                }else{
-                    $update .= '`'.$field.'` = :'.$field;
+            if(isset($v['field'])){
+                $field = $v['field'];
+                if($v['typed_value'] !== NULL){
+                    if($i < $inputValuesLenght){
+                        $update .= '`'.$field.'` = :'.$field.', ';
+                    }else{
+                        $update .= '`'.$field.'` = :'.$field;
+                    }
                 }
             }
-            if($v['where_value'] !== NULL){
+            if(isset($v['where_value'])){
                 $where_field = $v['where_field'];
                 $update .= ' WHERE `'.$where_field.'` = :'.$where_field;
             }
             $i++;
         }
-
         $i = 1;
         foreach ($inputValues as $v){
-            $field = $v['field'];
-            if($v['typed_value'] !== NULL){
-                $execute_ary[$field] = $v['typed_value'];
+            if(isset($v['field'])){
+                $field = $v['field'];
+                if(isset($v['typed_value'])){
+                    $execute_ary[$field] = $v['typed_value'];
+                }
             }
-            if($v['where_value'] !== NULL){
+            if(isset($v['where_value'])){
                 $execute_ary[$v['where_field']] = $v['where_value'];
             }
             $i++;
