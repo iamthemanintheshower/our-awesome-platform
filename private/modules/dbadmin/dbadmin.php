@@ -126,6 +126,7 @@ class dbadmin extends page{
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
+                'db_name' => $encryption->decrypt($getProjectDBDetails['db_name']),
                 'getDBTables' => $_show_tables
             )
         );
@@ -168,18 +169,24 @@ class dbadmin extends page{
     public function _action_executeInsertQuery($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
-        $tablename = $post['tablename'];
-        $inputFields = $post['inputFields'];
-        $inputValues = $post['inputValues'];
 
-        $i = 0;
-        foreach ($inputValues as $v){
-            $_inputValues[] = array('field' => str_replace('__', '', $inputFields[$i]), 'typed_value' => str_replace('__', '', $v['typed_value']));
-            $i++;
-        }
+        $saveDataOnTable = $this->_executeQuery($application_configs, $post, $project, $id_project);
 
-        $saveDataOnTable = $this->getProjectDBMng($application_configs, $project)->saveDataOnTable($tablename, $_inputValues, 'ws', 0);
-        $this->_log_executed_query($application_configs['db_mng'], $tablename, $id_project, $_inputValues, 'db');
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'project' => $project,
+                'saveDataOnTable' => $saveDataOnTable
+            )
+        );
+    }
+
+    public function _action_executeUpdateQuery($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $saveDataOnTable = $this->_executeQuery($application_configs, $post, $project, $id_project);
+
         return array(
             'type' => 'ws', 
             'response' => array(
@@ -212,7 +219,44 @@ class dbadmin extends page{
         );
     }
 
+    public function _action_downloaddatabase($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $this->getProjectID($post);
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
 
+        $getDBDump = $this->getProjectDBMng($application_configs, $project)->getDBDump('ws');
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'getDBDump' => $getDBDump
+            )
+        );
+    }
+
+    private function _executeQuery($application_configs, $post, $project, $id_project){
+        $tablename = $post['tablename'];
+        $inputFields = $post['inputFields'];
+        $inputValues = $post['inputValues'];
+        $prefix = $post['prefix'];
+
+        $i = 0;
+        foreach ($inputValues as $v){
+            $_inputValues[] = array('field' => str_replace($prefix.'__', '', $inputFields[$i]), 'typed_value' => str_replace($prefix.'__', '', $v['typed_value']));
+            $i++;
+        }
+
+        if(isset($post['field_id__update']) && $post['field_id__update'] !== ''){
+            $_insert_update = 1;
+            $_inputValues[] = array('where_field' => $post['field_id__update'], 'where_value' => $post['row_id']);
+        }else{
+            $_insert_update = 0;
+        }
+
+        $this->_log_executed_query($application_configs['db_mng'], $tablename, $id_project, $_inputValues, 'db');
+
+        return $this->getProjectDBMng($application_configs, $project)->saveDataOnTable($tablename, $_inputValues, 'ws', $_insert_update);
+
+    }
 
     private function getProjectID($optional_parameters){
         if($optional_parameters){

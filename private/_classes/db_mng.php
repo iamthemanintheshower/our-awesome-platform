@@ -92,7 +92,12 @@ class DbMng {
                 break;
 
             case 'ws':
-                $_select_insert_update = 'insert';
+                if($_insert_update === 0){
+                    $_select_insert_update = 'insert';
+                }
+                if($_insert_update === 1){
+                    $_select_insert_update = 'update';
+                }
                 $_db_ws = $this->_db_ws($query, $_select_insert_update, $selectedTable, $inputValues);
                 return json_decode($_db_ws, true);
 
@@ -233,7 +238,25 @@ class DbMng {
                 break;
         }
     }
-    
+
+    public function getDBDump($_dbType){
+        switch ($_dbType) {
+            case 'db':
+
+            case 'file':
+                
+                break;
+
+            case 'ws':
+                $_select_insert_update = 'dump';
+                $_db_ws = $this->_db_ws('', $_select_insert_update, '', null);
+                return json_decode($_db_ws, true);
+
+            default:
+                break;
+        }
+    }
+
     private function _insert_into($selectedTable, $inputValues){
         $insert_into = "INSERT INTO `".$selectedTable."` ";
         $insert_into .= '(';
@@ -284,33 +307,36 @@ class DbMng {
         $execute_ary = array();
         $i = 1;
         foreach ($inputValues as $v){
-            if($v['typed_value'] === NULL){
+            if(!isset($v['typed_value'])){
                 $inputValuesLenght--;
             }
         }
         foreach ($inputValues as $v){
-            $field = $v['field'];
-            if($v['typed_value'] !== NULL){
-                if($i < $inputValuesLenght){
-                    $update .= '`'.$field.'` = :'.$field.', ';
-                }else{
-                    $update .= '`'.$field.'` = :'.$field;
+            if(isset($v['field'])){
+                $field = $v['field'];
+                if($v['typed_value'] !== NULL){
+                    if($i < $inputValuesLenght){
+                        $update .= '`'.$field.'` = :'.$field.', ';
+                    }else{
+                        $update .= '`'.$field.'` = :'.$field;
+                    }
                 }
             }
-            if($v['where_value'] !== NULL){
+            if(isset($v['where_value'])){
                 $where_field = $v['where_field'];
                 $update .= ' WHERE `'.$where_field.'` = :'.$where_field;
             }
             $i++;
         }
-
         $i = 1;
         foreach ($inputValues as $v){
-            $field = $v['field'];
-            if($v['typed_value'] !== NULL){
-                $execute_ary[$field] = $v['typed_value'];
+            if(isset($v['field'])){
+                $field = $v['field'];
+                if(isset($v['typed_value'])){
+                    $execute_ary[$field] = $v['typed_value'];
+                }
             }
-            if($v['where_value'] !== NULL){
+            if(isset($v['where_value'])){
                 $execute_ary[$v['where_field']] = $v['where_value'];
             }
             $i++;

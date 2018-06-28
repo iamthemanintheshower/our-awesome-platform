@@ -40,7 +40,46 @@ $application_configs['db_details'] = array(
 
 $application_configs['db_mng'] = new DbMng($application_configs['db_details']);
 
-$_ = $application_configs['db_mng']->getDataByQuery($query_string, 'db');
+switch ($query_type) {
+    case 'select':
+        $_ = $application_configs['db_mng']->getDataByQuery($query_string, 'db');
+
+        break;
+
+    case 'insert':
+        $tablename = $post['selectedTable'];
+        $_inputValues = json_decode($post['inputValues'], true);
+        $_ = $application_configs['db_mng']->saveDataOnTable($tablename, $_inputValues, 'db', 0);
+
+        break;
+
+    case 'update':
+        $tablename = $post['selectedTable'];
+        $_inputValues = json_decode($post['inputValues'], true);
+        $_ = $application_configs['db_mng']->saveDataOnTable($tablename, $_inputValues, 'db', 1);
+
+        break;
+
+    case 'dump':
+        $_ = __DIR__. '/dump-nokinekusi.sql';
+        $exec_string = 
+            "mysqldump "
+            . "--user={$application_configs['db_details']['qsPV6EwtzA']} "
+            . "--password={$application_configs['db_details']['AQowahicz5']} "
+            . "--host={$application_configs['db_details']['Nrqtx0HHsX']} "
+            . "{$application_configs['db_details']['VxMO8N5kX4']} "
+            . "--result-file={$_} 2>&1";
+  
+        exec($exec_string, $output);        
+        $_ = file_get_contents($_);
+
+        break;
+
+    default:
+        break;
+}
+
+
 response($_);
 
 

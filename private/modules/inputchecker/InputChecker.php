@@ -81,12 +81,15 @@ class InputChecker {
             'dbadmin/dbadmin/getTableDescription' => array(
                 'id_project', 'tablename', 'token'
             ),
+            'dbadmin/dbadmin/downloaddatabase' => 'no-parameters', //#TODO
+            
             'dbadmin/dbadmin/getQueryResult' => array(
                 'id_project', 'raw_query', 'token'
             ),
             'dbadmin/dbadmin/executeInsertQuery' => array(
-                'id_project', 'tablename', 'inputFields', 'inputValues', 'token'
+                'id_project', 'tablename', 'inputFields', 'inputValues', 'prefix', 'token'
             ),
+            'dbadmin/dbadmin/executeUpdateQuery' => 'no-parameters', //#TODO
             'dbadmin/dbadmin/getTableQueryHistory' => array(
                 'id_project', 'token'
             ),

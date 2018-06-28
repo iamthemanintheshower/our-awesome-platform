@@ -7,15 +7,17 @@
     line-height: 7px;
     max-height: 12px;
 }
+.no-margin{
+    margin:  0px !important;
+}
+.no-padding{
+    padding:  0px !important;
+}
 
 #left-sidebar{
     overflow: auto;
 }
 ul{display: block;padding-left: 15px;}
-
-
-
-#db_query{padding: 5px}
 
 #query_text {
     width: 100%;
@@ -88,3 +90,24 @@ table tr td {
 div#tblRow__history table tr td {
     border: 1px solid #ccc;
 }
+
+#text_dump{
+    overflow: auto;
+    resize: vertical;
+    width: 100%;
+    height: 300px;
+    font-size: 10px;
+}
+.db-button{
+    background-color: #f6f6f6;
+    border-color: buttonface;
+    color: #333333;
+    padding: 1px;
+    margin: 3px;
+    text-align: center;
+    margin-right: 1px;
+    font-size: 11px;
+    border: none;
+}
+
+.edit_row{cursor: pointer}

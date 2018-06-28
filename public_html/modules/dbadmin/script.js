@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-var inputFields = new Array();
-var inputValues = new Array();
+var inputFields = new Array(new Array(), new Array());
+var inputValues = new Array(new Array(), new Array());
 var selectedTable = '';
 
 $( document ).ready(function() {
@@ -105,14 +105,54 @@ $( document ).ready(function() {
     });
 
     $('body').on('click', '#execute_insert_query', function () {
-        inputValues = new Array();
-        $.each(inputFields, function( o, field ) {
-            inputValues.push({field:field, typed_value:$('#' + field).val()});
+        inputValues = new Array(new Array(), new Array());
+        $.each(inputFields[0], function( o, field ) {
+            inputValues[0].push({field:field, typed_value:$('#' + field).val()});
         });
         execute_insert_query();
     });
+
     $('body').on('click', '#db_history__action', function () {
         get_table_query_history();
+    });
+
+    $('body').on('click', '#execute_update_query', function () {
+        inputValues = new Array(new Array(), new Array());
+        $.each(inputFields[1], function( o, field ) {
+            inputValues[1].push({field:field, typed_value:$('#' + field).val()});
+        });
+        execute_update_query(this);
+    });
+
+    $('body').on('click', '.edit_row', function () {
+        var tr = $(this).parent();
+        var td_s = tr.find('td');
+
+        $.each(td_s, function( i, field ) {
+            console.log('#__' + $(field).data('column'));
+
+            $('#update__' + $(field).data('column')).val($(field).data('field'));
+        });
+        $('#update_row_modal').modal();
+    });
+    $('body').on('click', '#download_database', function () {
+        $('#spinner').show();
+        var values = {
+            id_project: current_project,
+            token: token
+        };
+        $.post( APPLICATION_URL + "dbadmin/dbadmin/downloaddatabase", values)
+        .done(function( data ) {
+            $('#text_dump').val(data.getDBDump);
+
+            $('#db_dump_modal').modal();
+
+            $('#spinner').hide();
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });
+        return false;
     });
 });
 
@@ -126,6 +166,7 @@ function getDBTables(){
     $.post( APPLICATION_URL + "dbadmin/dbadmin/getDBTables", values)
     .done(function( data ) {
         console.log(data);
+        var db_name = data.db_name;
         data = data.getDBTables;
         $.each(data, function( i, table_in_db ) {
             if(typeof table_in_db != 'undefined'){
@@ -134,6 +175,19 @@ function getDBTables(){
                 );
             }
         });
+
+        $('#left-sidebar').html(
+            '<div class="row no-margin">' +
+                '<div class="col-md-9 no-margin no-padding">' +
+                    '<div class="db_name db_table">' + db_name + '</div>' + $('#left-sidebar').html() +
+                '</div>' +
+                '<div class="col-md-3 text-center no-margin no-padding">' +
+                    '<div><button class="btn db-button" id="download_database">Dw</button></div>' +
+                '</div>' +
+            '</div>'
+        );
+
+        $('.db_name').html(db_name);
         $('#spinner').hide();
     })
     .fail(function( data ) {
@@ -199,20 +253,18 @@ function get_query_result(element, button){
         }
         tblRow = tblRow + '</tr>';
 
-        console.log(data);
         if(typeof data.getQueryResult.response != 'undefined' && data.getQueryResult.response !== 'no-rows'){
             $.each(data.getQueryResult.response, function( i, row ) {
-                console.log(row);
+
                 tblRow = tblRow + '<tr>';
-                $.each(row, function( i, field ) {
-                    console.log(row);
+                $.each(row, function( column, field ) {
                     if(field !== null && field.length > 20){
-                        tblRow = tblRow + '<td class="show_on_click" data-field="' + field + '">' + field.substring(0,20) + '</td>';
+                        tblRow = tblRow + '<td class="show_on_click" data-column="' + column +'" data-id_row="' + $('#field_id__update').val() + '" data-field="' + field + '">' + field.substring(0,20) + '</td>';
                     }else{
                         if(field === null){
                             tblRow = tblRow + '<td></td>';
                         }else{
-                            tblRow = tblRow + '<td>' + field + '</td>';
+                            tblRow = tblRow + '<td class="edit_row" data-column="' + column +'" data-id_row="' + $('#field_id__update').val() + '" data-field="' + field + '">' + field + '</td>';
                         }
                     }
                 });
@@ -233,7 +285,7 @@ function get_query_result(element, button){
 
 function get_table_description(tablename){
     $('#spinner').show();
-    inputFields = new Array();
+    inputFields = new Array(new Array(), new Array());
     var values = {
         id_project: current_project,
         tablename: tablename,
@@ -243,7 +295,6 @@ function get_table_description(tablename){
     
     $.post( APPLICATION_URL + "dbadmin/dbadmin/getTableDescription", values)
     .done(function( data ) {
-        console.log(data);
         var data_structure = data.getTableDescription;
         $('#li__db_structure').show();
         $('#li__db_insert').show();
@@ -287,7 +338,7 @@ function get_table_description(tablename){
         var tblRow__insert = '<table>';
         $.each(data_structure, function( i, column ) {
             tblRow__insert = tblRow__insert + '<tr>';
-            tblRow__insert = tblRow__insert + '<td>' + column.Field + '</td>' + '<td>' + _getInputField(column) + '</td>';
+            tblRow__insert = tblRow__insert + '<td>' + column.Field + '</td>' + '<td>' + _getInputField(column, 'insert') + '</td>';
             tblRow__insert = tblRow__insert + '</tr>';
         });
         tblRow__insert = tblRow__insert + '<tr>';
@@ -296,15 +347,31 @@ function get_table_description(tablename){
         $('#tblRow__insert').html(tblRow__insert + '</table>');
         $('#spinner').hide();
 
+        //#table update
+        var tblRow__update = '<table>';
+        $.each(data_structure, function( i, column ) {
+            tblRow__update = tblRow__update + '<tr>';
+            var getInputField = _getInputField(column, 'update');
+            console.log(column);
+            tblRow__update = tblRow__update + '<td>' + column.Field + '</td>' + '<td>' + getInputField + '</td>';
+            tblRow__update = tblRow__update + '</tr>';
+        });
+        tblRow__update = tblRow__update + '<tr>';
+        tblRow__update = tblRow__update + '<td colspan="2"><button id="execute_update_query">Save</button></td>';
+        tblRow__update = tblRow__update + '</tr>';
+        tblRow__update = tblRow__update + '<input type="hidden" id="field_id__update" name="field_id__update" value=""/>'
+                    + '<input type="hidden" id="field_row_id" name="field_row_id" value=""/>';
+        $('#tblRow__update').html(tblRow__update + '</table>');
     })
     .fail(function( data ) {
         console.log( data );
     });
     return false;
 }
-
-function _getInputField(column){
+var field_id__update = '-';
+function _getInputField(column, prefix){
     var field_type = '';
+    var prefix_ = 0;
     if(typeof column.Type != 'undefined' && typeof column.Type != 'undefined'){
         var column_type = column.Type;
         var column_type_ary = column_type.split('(');
@@ -317,21 +384,28 @@ function _getInputField(column){
         case 'int':
         case 'bigint':
         case 'datetime':
-            field_type = '<input id="__' + column.Field + '" type="text" value=""/>';
+            field_type = '<input id="' + prefix + '__' + column.Field + '" type="text" value=""/>';
             break;
 
         case 'text':
-            field_type = '<textarea id="__' + column.Field + '" value=""></textarea>';
+            field_type = '<textarea id="' + prefix + '__' + column.Field + '" value=""></textarea>';
             break;
 
         default:
 
             break;
     }
-    if(column.Extra === 'auto_increment'){
+    
+    if(column.Extra === 'auto_increment' && prefix === 'update'){
+        $('#field_id__update').val(column.Field);
+        field_id__update = column.Field;
+    }
+    if(column.Extra === 'auto_increment' && prefix === 'insert'){
         return 'auto_increment';
     }else{
-        inputFields.push('__' + column.Field);
+        if(prefix === 'insert'){prefix_ = 0;}
+        if(prefix === 'update'){prefix_ = 1;console.log(column.Field);}
+        inputFields[prefix_].push(prefix + '__' + column.Field);
         return field_type;
     }
 }
@@ -341,13 +415,45 @@ function execute_insert_query(){
     var values = {
         id_project: current_project,
         tablename: selectedTable,
-        inputFields: inputFields,
-        inputValues: inputValues,
+        inputFields: inputFields[0],
+        inputValues: inputValues[0],
+        prefix: 'insert',
         token: token
     };
-console.log(values);    
+console.log(values);
     $.post( APPLICATION_URL + "dbadmin/dbadmin/executeInsertQuery", values)
     .done(function( data ) {
+        console.log(data);
+        if(data.saveDataOnTable > 0){
+            alert('Inserito');
+        }else{
+            alert('error');
+        }
+        $('#spinner').hide();
+    })
+    .fail(function( data ) {
+        console.log( data );
+    });
+    return false;
+}
+
+function execute_update_query(this_obj){
+    $('#spinner').show();
+    var values = {
+        id_project: current_project,
+        tablename: selectedTable,
+        inputFields: inputFields[1],
+        inputValues: inputValues[1],
+        prefix: 'update',
+        token: token,
+
+        field_id__update: field_id__update,
+        row_id: $('#update__' + field_id__update).val() //$('#field_row_id').val()
+    };
+    console.log(values);    
+    $.post( APPLICATION_URL + "dbadmin/dbadmin/executeUpdateQuery", values)
+    .done(function( data ) {
+        console.log(data);
         if(data.saveDataOnTable > 0){
             alert('Inserito');
         }else{

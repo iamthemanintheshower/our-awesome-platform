@@ -64,7 +64,7 @@ SOFTWARE.
 
                     <div id="dbadmin">
                         <div id="db_query">
-                            <textarea type="text" id="query_text" name="query_text"></textarea>
+                            <textarea id="query_text" name="query_text"></textarea>
                             <button id="execute_raw_query">Execute</button>
                             <div id="tblRow__container">
                                 <div id="tblRow"></div>
@@ -79,6 +79,38 @@ SOFTWARE.
                         <div id="db_history">
                             <div id="tblRow__history"></div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal fade" id="update_row_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Update row</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="tblRow__update"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="db_dump_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">DB Dump - <span class="db_name"></span></h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea id="text_dump" name="text_dump"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
