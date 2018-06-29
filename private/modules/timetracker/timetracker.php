@@ -91,16 +91,47 @@ class timetracker extends page{
                 $id_project = 0;;
             }
         }
-        $getTimeTracker = $this->_getTimeTracker($application_configs['db_mng'], $id_project);
-        $project = $this->_getProjectByID($application_configs['db_mng'], $id_project);
+        $getTimeTracker = $this->_getTimeTracker($application_configs['db_mng'], $id_project)['response'];
+        $_getProjectByID = $this->_getProjectByID($application_configs['db_mng'], $id_project);
+
+        //# project/tabs
+        $selectedTable = 'oap__projects_tabs';
+        $selectValues_getTabsByProjectID[] = 'tab_id';
+
+        $whereValues[] = array('where_field' => 'project_id', 'where_value' => $id_project);
+
+        $getTabsByProjectID = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_getTabsByProjectID, $whereValues)['response'];
+
+        $_tabs_time = array();
+
+        for($i=0; $i<sizeof($getTimeTracker); $i++){
+            $_current = $getTimeTracker[$i];
+            if(isset($getTimeTracker[$i + 1])){
+                $_next = $getTimeTracker[$i + 1];
+                $date_a = new DateTime($_current['insert']);
+                $date_b = new DateTime($_next['insert']);
+
+                $interval = date_diff($date_a,$date_b);
+
+                $getTimeTracker[$i]['interval'] = $interval->format('%h:%i:%s');
+
+                if(isset($_tabs_time[$getTimeTracker[$i]['tab']])){
+                    $_tabs_time[$getTimeTracker[$i]['tab']] = $_tabs_time[$getTimeTracker[$i]['tab']] + $interval->format('%s');
+                }else{
+                    $_tabs_time[$getTimeTracker[$i]['tab']] = $interval->format('%s');
+                }
+            }
+        }
 
         return array(
             'type' => 'view', 
             'response' => $application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].$module.'/tmpl/'.$application_configs['tmpl'].$action.'.php', 
             'data' => array(
                 'userbean' => $_SESSION['userbean-Q4rp'],
-                'project' => $project,
-                'getTimeTracker' => $getTimeTracker
+                '_getProjectByID' => $_getProjectByID,
+                'getTimeTracker' => $getTimeTracker,
+                'tabs_time' => $_tabs_time,
+                'tabs_by_project_id' => $getTabsByProjectID
             )
         );
     }

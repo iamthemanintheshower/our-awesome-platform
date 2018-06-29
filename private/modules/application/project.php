@@ -120,21 +120,12 @@ class Project {
     }
 
     public function getProjectTimetracker($project_id){
-        //# ftp
-        $selectedTable__ftp_details = 'oap__timetracker';
-        $selectValues_getProjectTimetracker[] = 'id_timetracker';
-        $selectValues_getProjectTimetracker[] = 'project_id';
-        $selectValues_getProjectTimetracker[] = 'tab_id';
-        $selectValues_getProjectTimetracker[] = 'insert';
-        $selectValues_getProjectTimetracker[] = 'update';
-
-        $whereValues__ftp_details[] = array('where_field' => 'project_id', 'where_value' => $project_id);
-
-        $getProjectTimetracker = $this->db_mng->getDataByWhere(
-            $selectedTable__ftp_details, $selectValues_getProjectTimetracker, $whereValues__ftp_details
-        );
-
-        return array_merge($getProjectTimetracker['response_columns']);
+        $sql_query = 'SELECT timetracker.id_timetracker, projects.project, tabs.tab, timetracker.insert
+        FROM `oap__timetracker` timetracker
+        LEFT JOIN oap__projects projects ON projects.id_project = timetracker.project_id
+        LEFT JOIN oap__tabs tabs ON tabs.id_tab = timetracker.tab_id
+        WHERE timetracker.project_id="'.$project_id.'"';
+        return $this->db_mng->getDataByQuery($sql_query, 'db');
     }
 
     public function getProjectDBDetails($db_id_details){

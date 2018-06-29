@@ -38,13 +38,14 @@ SOFTWARE.
         echo $page->getJs($application_configs);        
 
         //#custom on page
-        $project = $page_data['project'];
-        $website = $project['website'];
+        $_getProjectByID = $page_data['_getProjectByID'];
+        $website = $_getProjectByID['website'];
         $getTimeTracker = $page_data['getTimeTracker'];
         $project_domain = str_replace('https://', '', $website);
+        $tabs_by_project_id = $page_data['tabs_by_project_id']; //# TODO
         ?>
         <script>
-            var current_project = "<?php echo $project['id_project'];?>"
+            var current_project = "<?php echo $_getProjectByID['id_project'];?>"
         </script>
     </head>
 
@@ -55,8 +56,15 @@ SOFTWARE.
             <div id="div_body" class="row">
                 <div class="col-md-12">
                     <?php
+                    echo 'FTP: '.gmdate("H:i:s", $page_data['tabs_time']['FTP']).'<br>';
+                    echo 'View: '.gmdate("H:i:s", $page_data['tabs_time']['View']).'<br>';
+                    echo 'DB: '.gmdate("H:i:s", $page_data['tabs_time']['DB']).'<br>';
+                    echo 'Time: '.gmdate("H:i:s", $page_data['tabs_time']['Time']).'<br><br>';
+                    
                     foreach ($getTimeTracker as $tracker){
-                        echo $tracker['insert'].'<br>';
+                        if(isset($tracker['id_timetracker']) && isset($tracker['interval'])){
+                            echo $tracker['id_timetracker'].'|'.$tracker['project'].'|'.$tracker['tab'].'|'.$tracker['insert'].'|'.$tracker['interval'].'<br>';
+                        }
                     }
                     ?>
                 </div>

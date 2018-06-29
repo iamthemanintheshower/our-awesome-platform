@@ -73,7 +73,12 @@ $( document ).ready(function() {
         $('#spinner').hide();
     });
     $(window).blur(function(e) {
+        console.log('blur'); 
         trackProjectAction(current_project, 'blur_action');
+    });
+    $(window).focus(function(e) {
+        console.log('load'); 
+        trackProjectAction(current_project, current_action);
     });
 });
 
