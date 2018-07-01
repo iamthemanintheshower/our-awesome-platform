@@ -153,7 +153,23 @@ class home extends page{
             )
         );
     }
-    
+
+    public function _action_saveNewGroup($application_configs, $module, $action, $post, $optional_parameters){
+        
+        $inputValues[] = array('field' => 'project_group', 'typed_value' => $post['project_group']);
+        $inputValues[] = array('field' => 'group_color', 'typed_value' => $post['group_color']);
+
+        $_saveNewGroup = $application_configs['db_mng']->saveDataOnTable('oap__groups', $inputValues, 'db', 0);
+        
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'saveNewGroup' => $_saveNewGroup
+            )
+        );
+    }
+
+
     private function getProjectGroupID($optional_parameters){
         if($optional_parameters){
             $parameter_key = $optional_parameters[0];

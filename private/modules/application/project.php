@@ -37,6 +37,8 @@ class Project {
     }
     
     public function getProjectDataByID($id_project){
+        $_getProjectDataByID = $_getWebsiteByID = array();
+        
         //# project
         $selectedTable = 'oap__projects';
         $selectValues_getProjectDataByID[] = 'id_project';
@@ -62,7 +64,13 @@ class Project {
 
         $getWebsiteByID = $this->db_mng->getDataByWhere($selectedTable__website, $selectValues_getWebsiteByID, $whereValues__website);
 
-        return array_merge($getProjectDataByID['response_columns'][0], $getWebsiteByID['response_columns'][0]);
+        if(isset($getProjectDataByID['response_columns'][0])){
+            $_getProjectDataByID = $getProjectDataByID['response_columns'][0];
+        }
+        if(isset($getWebsiteByID['response_columns'][0])){
+            $_getWebsiteByID = $getWebsiteByID['response_columns'][0];
+        }
+        return array_merge($_getProjectDataByID, $_getWebsiteByID);
     }
     
     public function getTabsByProjectID($id_project){

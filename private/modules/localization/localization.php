@@ -43,7 +43,24 @@ class localization{
                                         'projects' => 'Projects',
                                         'search' => 'Search',
                                         'new-project' => 'New project',
+
+                                        //# New project modal
+                                        'project' => 'Project',
+                                        'website' => 'Website',
+                                        'wp-admin' => 'wp_admin',
+                                        'ftp-server' => 'ftp_server',
+                                        'ftp-user' => 'FTP user',
+                                        'ftp-psw' => 'FTP psw',
+                                        
+                                        'db-host' => 'DB host',
+                                        'db-name' => 'DB name',
+                                        'db-user' => 'DB user',
+                                        'db-psw' => 'DB psw',
+
                                         'new-group' => 'New group',
+                                        'project-group' => 'Group',
+                                        'group-color' => 'Color (in HEX)',
+
                                         'logout' =>'logout',
                                         'close' => 'Close'
                                     ),

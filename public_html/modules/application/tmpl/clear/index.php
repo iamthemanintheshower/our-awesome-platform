@@ -114,36 +114,68 @@ SOFTWARE.
                     </div>
                     <div class="modal-body" id="new_project">
 
-                        - oap__projects
-                        project
-                        website_id
-                        
-                        - oap__websites
-                        website
-                        wp_admin
-                        ftp_id_details
-                        db_id_details
-                        ws_id_details
-                        
-                        - oap__ftp_details
-                        ftp_server
-                        ftp_user
-                        ftp_psw
+                        <form> <!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+                            - oap__projects<br>
+                            <div class="form-group">
+                                <label for="project" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project'];?></label>
+                                <input type="text" class="form-control" id="project" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project'];?>">
+                            </div>
+                            website_id<br>
+                            <br>
+                            - oap__websites<br>
+                            <div class="form-group">
+                                <label for="website" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['website'];?></label>
+                                <input type="text" class="form-control" id="website" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['website'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="wp_admin" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wp-admin'];?></label>
+                                <input type="text" class="form-control" id="wp_admin" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wp-admin'];?>">
+                            </div>
+                                ftp_id_details<br>
+                                db_id_details<br>
+                                ws_id_details<br>
+                                <br>
+                            - oap__ftp_details<br>
+                            <div class="form-group">
+                                <label for="ftp_server" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-server'];?></label>
+                                <input type="text" class="form-control" id="ftp_server" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-server'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp_user" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-user'];?></label>
+                                <input type="text" class="form-control" id="ftp_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-user'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-psw'];?></label>
+                                <input type="text" class="form-control" id="ftp_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-psw'];?>">
+                            </div>
+                            <br>
+                            - oap__db_details<br>
+                            <div class="form-group">
+                                <label for="db_host" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-host'];?></label>
+                                <input type="text" class="form-control" id="db_host" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-host'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_name" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-name'];?></label>
+                                <input type="text" class="form-control" id="db_name" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-name'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_user" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-user'];?></label>
+                                <input type="text" class="form-control" id="db_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-user'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="db_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-user'];?></label>
+                                <input type="text" class="form-control" id="db_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-psw'];?>">
+                            </div>
+                            <br>
+                            - oap__projects_tabs<br>
+                            project_id<br>
+                            tab_id<br>
+                            <br>
+                            - oap__projects_groups<br>
+                            project_id<br>
+                            group_id<br>
 
-                        - oap__db_details
-                        db_server
-                        db_name
-                        db_user
-                        db_psw
-
-                        - oap__projects_groups
-                        project_id
-                        group_id
-                        
-                        - oap__projects_tabs
-                        project_id
-                        tab_id
-                        
+                        </form>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
@@ -160,9 +192,19 @@ SOFTWARE.
                         <h4 class="modal-title"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['new-group'];?></h4>
                     </div>
                     <div class="modal-body" id="new_group">
-
+                        <form> <!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+                            <div class="form-group">
+                                <label for="project_group" class="col-form-label">Group</label>
+                                <input type="text" class="form-control" id="project_group" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project-group'];?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="group_color" class="col-form-label">Group color</label>
+                                <input type="text" class="form-control" id="group_color" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['group-color'];?>">
+                            </div>
+                        </form>
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="save-new-group">Save</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
                     </div>
                 </div>

@@ -63,6 +63,24 @@ $( document ).ready(function() {
         getProjectActionData(APPLICATION_URL, token, current_project, current_action);
     });
 
+    $('body').on('click', '#save-new-group', function() {
+        var position = 'save-new-group';
+
+        $.post( APPLICATION_URL + "/application/home/saveNewGroup", { token: token, project_group: $('#project_group').val(), group_color: $('#group_color').val() })
+        .done(function(data) {
+            console.log(data);
+            $('#message_h4').html('Info');
+            $('#message_body').html('New Group created');
+            $('#message_modal').modal();
+            $('#spinner').hide();
+        })
+        .fail(function(data) {
+            console.log( "error" );
+            console.log(data.responseText);
+            sendError(position, '', 'script.js', 'save-new-group-fail', '0', data.responseText);
+        });
+    });
+
     var header_height = 100; // parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
     $( "iframe" ).height( $( window ).height() - header_height );
 
