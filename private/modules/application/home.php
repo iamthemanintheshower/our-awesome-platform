@@ -169,6 +169,82 @@ class home extends page{
         );
     }
 
+    public function _action_saveNewProject($application_configs, $module, $action, $post, $optional_parameters){
+
+        $_group_id = $post['current_group'];
+
+        $encryption = new Encryption($application_configs['encryption_details']);
+
+        //#- oap__ftp_details
+        $ivFTPDetails[] = array('field' => 'ftp_host', 'typed_value' => $post['ftp_host']);
+        $ivFTPDetails[] = array('field' => 'ftp_user', 'typed_value' => $encryption->encrypt($post['ftp_user']));
+        $ivFTPDetails[] = array('field' => 'ftp_psw', 'typed_value' => $encryption->encrypt($post['ftp_psw']));
+
+        $_id_ftp_details = $application_configs['db_mng']->saveDataOnTable('oap__ftp_details', $ivFTPDetails, 'db', 0);
+
+        //#- oap__db_details
+        $ivDBDetails[] = array('field' => 'db_host', 'typed_value' => $post['db_host']);
+        $ivDBDetails[] = array('field' => 'db_name', 'typed_value' => $encryption->encrypt($post['db_name']));
+        $ivDBDetails[] = array('field' => 'db_user', 'typed_value' => $encryption->encrypt($post['db_user']));
+        $ivDBDetails[] = array('field' => 'db_psw', 'typed_value' => $encryption->encrypt($post['db_psw']));
+
+        $_id_db_details = $application_configs['db_mng']->saveDataOnTable('oap__db_details', $ivDBDetails, 'db', 0);
+
+        //#- oap__ws_details
+        $ivWSDetails[] = array('field' => 'ws_user', 'typed_value' => $post['ws_user']);
+        $ivWSDetails[] = array('field' => 'ws_psw', 'typed_value' => $post['ws_psw']);
+        $ivWSDetails[] = array('field' => 'ws_find_string_in_file_url', 'typed_value' => $post['ws_find_string_in_file_url']);
+        $ivWSDetails[] = array('field' => 'ws_database_url', 'typed_value' => $post['ws_database_url']);
+        $ivWSDetails[] = array('field' => 'ws_file_list_url', 'typed_value' => $post['ws_file_list_url']);
+
+        $_id_ws_details = $application_configs['db_mng']->saveDataOnTable('oap__ws_details', $ivWSDetails, 'db', 0);
+
+        //#- oap__websites
+        $ivWebsite[] = array('field' => 'website', 'typed_value' => $post['website']);
+        $ivWebsite[] = array('field' => 'wp_admin', 'typed_value' => $post['wp_admin']);
+        $ivWebsite[] = array('field' => 'ftp_id_details', 'typed_value' => $_id_ftp_details);
+        $ivWebsite[] = array('field' => 'db_id_details', 'typed_value' => $_id_db_details);
+        $ivWebsite[] = array('field' => 'ws_id_details', 'typed_value' => $_id_ws_details);
+
+        $_website_id = $application_configs['db_mng']->saveDataOnTable('oap__websites', $ivWebsite, 'db', 0);
+        
+        //#- oap__projects
+        $ivProject[] = array('field' => 'project', 'typed_value' => $post['project']);
+        $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
+
+        $_project_id = $application_configs['db_mng']->saveDataOnTable('oap__projects', $ivProject, 'db', 0);
+
+        //#- oap__projects_tabs
+        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
+        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+        $ivProjectTabs = null;
+        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
+        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+        $ivProjectTabs = null;
+        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
+        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+        $ivProjectTabs = null;
+        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
+        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+        $ivProjectTabs = null;
+        
+        //#- oap__projects_groups
+        $ivProjectsGroups[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+        $ivProjectsGroups[] = array('field' => 'group_id', 'typed_value' => $_group_id);
+
+        $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'project_id' => $_project_id
+            )
+        );
+    }
 
     private function getProjectGroupID($optional_parameters){
         if($optional_parameters){

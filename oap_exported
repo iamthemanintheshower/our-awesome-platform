@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `oap__db_details`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `oap__db_details` (
   `id_db_details` int(11) NOT NULL AUTO_INCREMENT,
-  `db_server` varchar(50) NOT NULL,
+  `db_host` varchar(50) NOT NULL,
   `db_name` varchar(200) NOT NULL,
   `db_user` varchar(200) NOT NULL,
   `db_psw` varchar(200) NOT NULL,
@@ -79,7 +79,7 @@ DROP TABLE IF EXISTS `oap__ftp_details`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `oap__ftp_details` (
   `id_ftp_details` int(11) NOT NULL AUTO_INCREMENT,
-  `ftp_server` varchar(50) NOT NULL,
+  `ftp_host` varchar(50) NOT NULL,
   `ftp_user` varchar(200) NOT NULL,
   `ftp_psw` varchar(200) NOT NULL,
   PRIMARY KEY (`id_ftp_details`)

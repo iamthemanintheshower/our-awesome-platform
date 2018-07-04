@@ -81,6 +81,50 @@ $( document ).ready(function() {
         });
     });
 
+    $('body').on('click', '#save-new-project', function() {
+        var position = 'save-new-project';
+        current_group = 1;
+        var values = { 
+            token: token,
+
+            current_group: current_group,
+
+            ftp_host: $('#ftp_host').val(),
+            ftp_user: $('#ftp_user').val(),
+            ftp_psw: $('#ftp_psw').val(),
+
+            db_host: $('#db_host').val(),
+            db_name: $('#db_name').val(),
+            db_user: $('#db_user').val(),
+            db_psw: $('#db_psw').val(),
+
+            ws_user: $('#ws_user').val(),
+            ws_psw: $('#ws_psw').val(),
+            ws_find_string_in_file_url: $('#ws_find_string_in_file_url').val(),
+            ws_database_url: $('#ws_database_url').val(),
+            ws_file_list_url: $('#ws_file_list_url').val(),
+
+            website: $('#website').val(),
+            wp_admin: $('#wp_admin').val(),
+
+            project: $('#project').val()  
+        };
+
+        $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
+        .done(function(data) {
+            console.log(data);
+            $('#message_h4').html('Info');
+            $('#message_body').html('New Project created');
+            $('#message_modal').modal();
+            $('#spinner').hide();
+        })
+        .fail(function(data) {
+            console.log( "error" );
+            console.log(data.responseText);
+            sendError(position, '', 'script.js', 'save-new-project-fail', '0', data.responseText);
+        });
+    });
+
     var header_height = 100; // parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
     $( "iframe" ).height( $( window ).height() - header_height );
 

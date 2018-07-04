@@ -116,7 +116,7 @@ class Project {
         //# ftp
         $selectedTable__ftp_details = 'oap__ftp_details';
         $selectValues_getFTPdetailsByID[] = 'id_ftp_details';
-        $selectValues_getFTPdetailsByID[] = 'ftp_server';
+        $selectValues_getFTPdetailsByID[] = 'ftp_host';
         $selectValues_getFTPdetailsByID[] = 'ftp_user';
         $selectValues_getFTPdetailsByID[] = 'ftp_psw';
         
@@ -140,7 +140,7 @@ class Project {
         //# db
         $selectedTable__db_details = 'oap__db_details';
         $selectValues_getDBdetailsByID[] = 'id_db_details';
-        $selectValues_getDBdetailsByID[] = 'db_server';
+        $selectValues_getDBdetailsByID[] = 'db_host';
         $selectValues_getDBdetailsByID[] = 'db_name';
         $selectValues_getDBdetailsByID[] = 'db_user';
         $selectValues_getDBdetailsByID[] = 'db_psw';

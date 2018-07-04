@@ -154,11 +154,11 @@ class FTP_mng {
 
     private function __ftp_getConnection(){
         $encryption = new Encryption($this->application_configs['encryption_details']);
-        $ftp_server = $this->ftp_details['ftp_server'];
+        $ftp_host = $this->ftp_details['ftp_host'];
         $ftp_user = $encryption->decrypt($this->ftp_details['ftp_user']);
         $ftp_psw = $encryption->decrypt($this->ftp_details['ftp_psw']);
 
-        $conn = ftp_connect($ftp_server) or die("Couldn't connect to $ftp_server"); 
+        $conn = ftp_connect($ftp_host) or die("Couldn't connect to $ftp_host"); 
         if (ftp_login($conn, $ftp_user, $ftp_psw)) { return $conn; }else{ return false; }
     }
 

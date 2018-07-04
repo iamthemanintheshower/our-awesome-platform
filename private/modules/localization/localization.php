@@ -47,8 +47,15 @@ class localization{
                                         //# New project modal
                                         'project' => 'Project',
                                         'website' => 'Website',
-                                        'wp-admin' => 'wp_admin',
-                                        'ftp-server' => 'ftp_server',
+                                        'wp-admin' => 'WP admin',
+
+                                        'ws-user' => 'WS user',
+                                        'ws-psw' => 'WS psw',
+                                        'ws-find-string-in-file' => 'WS find-string-in-file',
+                                        'ws-database-file' => 'WS database-file',
+                                        'ws-file-list' => 'WS file-list',
+                                        
+                                        'ftp-host' => 'FTP host',
                                         'ftp-user' => 'FTP user',
                                         'ftp-psw' => 'FTP psw',
                                         
@@ -57,6 +64,7 @@ class localization{
                                         'db-user' => 'DB user',
                                         'db-psw' => 'DB psw',
 
+                                        //# New group modal
                                         'new-group' => 'New group',
                                         'project-group' => 'Group',
                                         'group-color' => 'Color (in HEX)',
