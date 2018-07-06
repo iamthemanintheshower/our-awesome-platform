@@ -255,7 +255,6 @@ function getProjectGroups(APPLICATION_URL, token){
 
     $.post( APPLICATION_URL + "/application/home/getProjectGroups", { token: token })
     .done(function(data) {
-        console.log(data);
         var groups = data.groups;
         var group_buttons = data.group_buttons;
         $('#groups').html(group_buttons);
