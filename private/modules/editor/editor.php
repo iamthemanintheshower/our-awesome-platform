@@ -195,7 +195,8 @@ class editor extends page{
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
-        
+        $_supported_by_the_editor = true;
+
         $remote__root_folder = '/';
         if(isset($post['get_backup']) && $post['get_backup'] === '1'){
             $url = str_replace('https://', '', $project['website']);
@@ -206,11 +207,15 @@ class editor extends page{
             $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder);
         }
 
+        if($file_content === 'filetype-not-supported-chaslachap'){
+            $_supported_by_the_editor = false;
+        }
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
-                'file_content' => $file_content
+                'file_content' => $file_content,
+                'supported_by_the_editor' => $_supported_by_the_editor 
             )
         );
     }

@@ -95,7 +95,7 @@ class FTP_mng {
                     $file_content = fread($handle, filesize($filename));
                     fclose($handle);
                 }else{
-                    $file_content = '';
+                    $file_content = 'filetype-not-supported-chaslachap';
                 }
             }
         }
@@ -250,6 +250,7 @@ class FTP_mng {
             case 'text/x-php':
             case 'text/php':
             case 'plain/text':
+            case 'text/plain':
             case 'text/html':
                 return true;
 
@@ -258,5 +259,6 @@ class FTP_mng {
             default:
                 break;
         }
+        return false;
     }
 }

@@ -69,8 +69,14 @@ $( document ).ready(function() {
         $.post( APPLICATION_URL + "/application/home/saveNewGroup", { token: token, project_group: $('#project_group').val(), group_color: $('#group_color').val() })
         .done(function(data) {
             console.log(data);
-            $('#message_h4').html('Info');
-            $('#message_body').html('New Group created');
+            if(typeof data.valid === "undefined"){
+                $('#message_h4').html('Info');
+                $('#message_body').html('New Group created');
+            }else{
+                $('#message_h4').html('Error');
+                $('#message_body').html(data.field + ': ' + data.message);
+            }
+
             $('#message_modal').modal();
             $('#spinner').hide();
         })
@@ -109,7 +115,8 @@ $( document ).ready(function() {
 
             project: $('#project').val()  
         };
-
+console.log('values');
+console.log(values);
         $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
         .done(function(data) {
             console.log(data);

@@ -58,8 +58,8 @@ $( document ).ready(function() {
                     '<span class="pull-right editor_history"><a id="_history_' + dir + '__' + file + '" href="javascript:editor_history()">_history</a></span>'
                 );
             }
-            console.log(data);
-            if(file.indexOf('.php') > -1){
+
+            if(data.supported_by_the_editor){
                 editor.setValue(data.file_content);
             }else{
                 var url = dir + '//' + file;

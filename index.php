@@ -72,7 +72,9 @@ if(isset($get['q'])){
     $inputchecker = new InputChecker();
     $checkParameters = $inputchecker->checkParameters($application_configs, $module, $controller, $action, $post);
 
-    if(!$checkParameters){die();}
+    if(!$checkParameters['valid']){
+        response($checkParameters);
+    }
 
     $class_name = &$controller;
 
