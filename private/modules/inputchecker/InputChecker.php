@@ -32,15 +32,17 @@ class InputChecker {
 
     public function checkParameters($application_configs, $module, $controller, $action, $post){
         $position = $module.'/'.$controller.'/'.$action;
-        $getParametersWhitelist = $this->getParametersWhitelist($position);
+        $getParametersWhitelist = $this->getParametersWhitelist($position, $application_configs['parameters_whitelist']);
         $post_keys = array_keys($post);
 
         if($getParametersWhitelist){
             if($this->checkIfThePostKeysAreEqual($post_keys, $getParametersWhitelist)){
-                return true;
+
+                $_checkIfPostDataIsValid = $this->checkIfPostDataIsValid($position, $post, $application_configs['parameters_whitelist']);
+                return $_checkIfPostDataIsValid;
             }else{
                 $localization = $this->getLocalization($application_configs['language'], $module, $controller, 'default');
-                die('<a href="'.$application_configs['APPLICATION_URL_LOGIN'].'">'.$localization['error-log-done'].'</a>');
+                die('1<a href="'.$application_configs['APPLICATION_URL_LOGIN'].'">'.$localization['error-log-done'].'</a>');
             }
         }else{
             $localization = $this->getLocalization($application_configs['language'], $module, $controller, 'default');
@@ -48,72 +50,58 @@ class InputChecker {
         }
     }
 
-    private function getParametersWhitelist($position){
-        $parameters_whitelist = array(
-            'errors_mng/errors_mng/log' => 'no-parameters',
-            'application/home/index' => 'no-parameters',
-            'application/home/getProject' => 'no-parameters',
-            'application/home/getProjectsByGroupID' => 'no-parameters',
-            'application/home/getProjectGroups' => 'no-parameters',
-            'editor/editor/index' => 'no-parameters',
-            'editor/editor/refreshFilelistCacheByProject' => 'no-parameters',
-            'editor/editor/getFile' => 'no-parameters',
-            'editor/editor/getFileHistory' => 'no-parameters', //#TODO
-            'editor/editor/setFile' => 'no-parameters',
-            'editor/editor/searchStringInFile' => array(
-                'id_project', 'searchstring', 'token'
-            ),
-            'editor/editor/collectEditedFiles' => array(
-                'id_project', 'token'
-            ),
-            'editor/editor/sendToDropbox' => array(
-                'id_project', 'send_to_dropbox__files', 'token'
-            ),
-            'editor/editor/collectEditedFilesgetFileZIP' => 'no-parameters',
-            'editor/editor/uploadFile' => 'no-parameters', //#TODO
-            'editor/editor/deleteFile' => 'no-parameters', //#TODO
-            'editor/editor/setDirectory' => 'no-parameters', //#TODO
-            
-            'dbadmin/dbadmin/index' => 'no-parameters',
-            'dbadmin/dbadmin/getDBTables' => array(
-                'id_project', 'token'
-            ),
-            'dbadmin/dbadmin/getTableDescription' => array(
-                'id_project', 'tablename', 'token'
-            ),
-            'dbadmin/dbadmin/downloaddatabase' => 'no-parameters', //#TODO
-            
-            'dbadmin/dbadmin/getQueryResult' => array(
-                'id_project', 'raw_query', 'token'
-            ),
-            'dbadmin/dbadmin/executeInsertQuery' => array(
-                'id_project', 'tablename', 'inputFields', 'inputValues', 'prefix', 'token'
-            ),
-            'dbadmin/dbadmin/executeUpdateQuery' => 'no-parameters', //#TODO
-            'dbadmin/dbadmin/getTableQueryHistory' => array(
-                'id_project', 'token'
-            ),
-
-            'timetracker/timetracker/trackProjectAndAction' => array(
-                'token', 'current_project', 'current_action'
-            ),
-            'timetracker/timetracker/index' => 'no-parameters',
-
-            'login/login/index' => 'no-parameters',
-            'login/login/checklogin' => array(
-                'token', 'username', 'password'
-            )
-        );
+    private function getParametersWhitelist($position, $parameters_whitelist){
         if(isset($parameters_whitelist[$position])){
             return $parameters_whitelist[$position];
         }else{
             return false;
         }
     }
-    
+
     private function checkIfThePostKeysAreEqual($post_keys, $whitelist_keys){
         if($whitelist_keys === 'no-parameters'){return true;}
-        if($post_keys === $whitelist_keys){return true;}else{return false;}
+
+        if($post_keys === array_keys($whitelist_keys)){return true;}else{return false;}
+    }
+
+    private function checkIfPostDataIsValid($form, $post, $parameters_whitelist){
+        $_valid = false;
+        if(isset($parameters_whitelist[$form])){
+            $form_fields = $parameters_whitelist[$form];
+            if(is_array($form_fields)){
+                foreach ($form_fields as $key => $value){
+                    if(is_array($value) && $value['require']['required']){
+                        if($post[$key] !== ''){
+                            $_valid = true;
+                        }else{
+                            $_valid = false;
+                        }
+                        $value_message = $value['require']['message'];
+                    }else{
+                        $_valid = true;
+                        $value_message = '';
+                    }
+                    if(!$_valid){
+                        return array('field' => $key, 'valid' => $_valid, 'message' => $value_message);
+                    }
+
+                    if(is_array($value) && $value['valid']['required']){
+                        if (preg_match($value['valid']['regular_expression'], $post[$key])){
+                            $_valid = true;
+                        }else{
+                            $_valid = false;
+                        }
+                        $value_message = $value['valid']['message'];
+                    }else{
+                        $value_message = '';
+                    }
+                    if(!$_valid){
+                        return array('field' => $key, 'valid' => $_valid, 'message' => $value_message);
+                    }
+                }
+            }
+        }
+        return array('field' => '', 'valid' => true, 'message' => 'ok');
     }
 
 
