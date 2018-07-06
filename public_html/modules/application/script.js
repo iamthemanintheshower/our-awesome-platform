@@ -115,8 +115,7 @@ $( document ).ready(function() {
 
             project: $('#project').val()  
         };
-console.log('values');
-console.log(values);
+
         $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
         .done(function(data) {
             console.log(data);
