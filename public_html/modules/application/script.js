@@ -131,7 +131,7 @@ $( document ).ready(function() {
         });
     });
 
-    var header_height = 100; // parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
+    var header_height = 100; //#TODO parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
     $( "iframe" ).height( $( window ).height() - header_height );
 
     window.addEventListener('resize', function () {
