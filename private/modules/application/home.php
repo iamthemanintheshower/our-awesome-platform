@@ -35,7 +35,8 @@ class home extends page{
             array(                
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project_group.php',
-                $application_configs['PRIVATE_FOLDER_CLASSES'].'button.php'
+                $application_configs['PRIVATE_FOLDER_CLASSES'].'button.php',
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/ftp_mng.php'
             )
         ;
         return $this->_getFilesToInclude($files_to_include);
@@ -170,6 +171,7 @@ class home extends page{
     }
 
     public function _action_saveNewProject($application_configs, $module, $action, $post, $optional_parameters){
+        ini_set('max_execution_time', 300);
 
         $_group_id = $post['current_group'];
 
@@ -191,11 +193,15 @@ class home extends page{
         $_id_db_details = $application_configs['db_mng']->saveDataOnTable('oap__db_details', $ivDBDetails, 'db', 0);
 
         //#- oap__ws_details
-        $ivWSDetails[] = array('field' => 'ws_user', 'typed_value' => $post['ws_user']);
-        $ivWSDetails[] = array('field' => 'ws_psw', 'typed_value' => $post['ws_psw']);
-        $ivWSDetails[] = array('field' => 'ws_find_string_in_file_url', 'typed_value' => $post['ws_find_string_in_file_url']);
-        $ivWSDetails[] = array('field' => 'ws_database_url', 'typed_value' => $post['ws_database_url']);
-        $ivWSDetails[] = array('field' => 'ws_file_list_url', 'typed_value' => $post['ws_file_list_url']);
+        $strings = new Strings();
+        $_ws_find_string_in_file_url = 'ws-oap-'.$strings->getRandomString().'/WS-find-string-in-file-'.$strings->getRandomString().'.php';
+        $_ws_database_url = 'ws-oap-'.$strings->getRandomString().'/WS-database-url-'.$strings->getRandomString().'.php';
+        $_ws_file_list_url = 'ws-oap-'.$strings->getRandomString().'/WS-file-list-url-'.$strings->getRandomString().'.php';
+        $ivWSDetails[] = array('field' => 'ws_user', 'typed_value' => $strings->getRandomString());
+        $ivWSDetails[] = array('field' => 'ws_psw', 'typed_value' => $strings->getRandomString());
+        $ivWSDetails[] = array('field' => 'ws_find_string_in_file_url', 'typed_value' => $_ws_find_string_in_file_url);
+        $ivWSDetails[] = array('field' => 'ws_database_url', 'typed_value' => $_ws_database_url);
+        $ivWSDetails[] = array('field' => 'ws_file_list_url', 'typed_value' => $_ws_file_list_url);
 
         $_id_ws_details = $application_configs['db_mng']->saveDataOnTable('oap__ws_details', $ivWSDetails, 'db', 0);
 
@@ -238,10 +244,52 @@ class home extends page{
 
         $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
 
+        //# Upload the WS folders
+        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_db_details);
+
+        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+        $ftp->uploadFileViaFTP('#TODO retrieve the remote root', $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']); //#TODO
+        
+        //# Inspired by https://github.com/iamthemanintheshower/custom-wp-installer
+        //# TODO: create the WP instance only if asked
+        //# Create and Upload WP instance
+        mkdir($application_configs['wp_install']['temp'].$post['project']);
+
+        $wp_config_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_config_tmpl_filename']);
+        $htaccess_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['htaccess_tmpl_filename']);
+        $WP_db_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_db_template']);
+
+        //wp-config.php
+        $wp_config = str_replace('#DB-NAME#', $post['db_name'], $wp_config_tmpl_content);
+        $wp_config = str_replace('#DB-USER#', $post['db_user'], $wp_config);
+        $wp_config = str_replace('#DB-PSW#', $post['db_psw'], $wp_config);
+        $wp_config = str_replace('#DB-HOST#', $post['db_host'], $wp_config);
+        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/wp-config.php', $wp_config);
+
+        //use an already customized .htaccess
+        $htaccess = str_replace('#SITE-NAME#', $post['project'], $htaccess_tmpl_content);
+        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess);
+
+        //use the WP instance from template
+        $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
+
+        //customize the DB from a template
+        $WP_db = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
+        $WP_db = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
+        $WP_db = str_replace('#WP-USR#', $post['website'], $WP_db_content);
+        $WP_db = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
+        $WP_db = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
+
+        //create the customized DB
+        $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
+        $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db, 'ws');
+
+
         return array(
             'type' => 'ws', 
             'response' => array(
-                'project_id' => $_project_id
+                'project_id' => $_project_id,
+                '_import' => $_import
             )
         );
     }
@@ -289,7 +337,28 @@ class home extends page{
         $project = new Project($db_mng);
         return $project->getTabsByProjectID($project_id);
     }
-    
+
+    private function recurse_copy($src,$dst) { 
+        $dir = opendir($src); 
+        @mkdir($dst); 
+        while(false !== ( $file = readdir($dir)) ) { 
+            if (( $file != '.' ) && ( $file != '..' )) { 
+                if ( is_dir($src . '/' . $file) ) { 
+                    $this->recurse_copy($src . '/' . $file,$dst . '/' . $file); 
+                } 
+                else { 
+                    copy($src . '/' . $file,$dst . '/' . $file); 
+                } 
+            } 
+        } 
+        closedir($dir); 
+    }
+
+    private function getProjectFTPDetails($db_mng, $_id_db_details){
+        $project = new Project($db_mng);
+        return $project->getProjectFTPDetails($_id_db_details);
+    }
+
     public function getInitScript($application_configs, $token){
         $this->_getInitScript($application_configs, $token);
     }

@@ -119,8 +119,14 @@ $( document ).ready(function() {
         $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
         .done(function(data) {
             console.log(data);
-            $('#message_h4').html('Info');
-            $('#message_body').html('New Project created');
+            if(typeof data.valid === "undefined"){
+                $('#message_h4').html('Info');
+                $('#message_body').html('New Project created');
+            }else{
+                $('#message_h4').html('Error');
+                $('#message_body').html(data.field + ': ' + data.message);
+            }
+
             $('#message_modal').modal();
             $('#spinner').hide();
         })

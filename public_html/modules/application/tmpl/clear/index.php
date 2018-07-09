@@ -170,33 +170,6 @@ SOFTWARE.
                                     <input type="text" class="form-control" id="db_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-psw'];?>">
                                 </div>
                             </div>
-
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="ws_user" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-user'];?></label>
-                                    <input type="text" class="form-control" id="ws_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-user'];?>">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="ws_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-psw'];?></label>
-                                    <input type="text" class="form-control" id="ws_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-psw'];?>">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="ws_find_string_in_file_url" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-find-string-in-file'];?></label>
-                                    <input type="text" class="form-control" id="ws_find_string_in_file_url" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-find-string-in-file'];?>">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="ws_database_url" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-database-file'];?></label>
-                                    <input type="text" class="form-control" id="ws_database_url" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-database-file'];?>">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="ws_file_list_url" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-file-list'];?></label>
-                                    <input type="text" class="form-control" id="ws_file_list_url" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ws-file-list'];?>">
-                                </div>
-                            </div>
-
-
                         </form>
                     </div>
                     <div class="modal-footer">

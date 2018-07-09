@@ -54,6 +54,13 @@ class FTP_mng {
        }
     }
 
+    public function uploadFileViaFTP($remote__root_folder, $file_to_be_uploaded, $website){
+        $local__root_folder = str_replace(basename($file_to_be_uploaded), '', $file_to_be_uploaded);
+        $_ftp_upload = $this->_ftp_upload($this->_cleanSubfolder($remote__root_folder), $local__root_folder, basename($file_to_be_uploaded), $website);
+
+        return $_ftp_upload;
+    }
+
     public function setFileViaFTP($post, $remote__root_folder, $local__root_folder, $website, $db_mng, $id_project){
         if(isset($post) && isset($post['subfolder']) && isset($post['token'])){
             $subfolder = $this->_cleanSubfolder($post['subfolder']);
@@ -181,7 +188,6 @@ class FTP_mng {
     }
 
     public function get_editorsavelog($db_mng, $id_project, $token){
-
         $getEditorSaveLog__query = 
             'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert` FROM  `oap__editorsavelog` WHERE id_project = "'.$id_project.'" AND token = "'.$token.'" GROUP BY filename, folder';
 
@@ -243,6 +249,19 @@ class FTP_mng {
         
         $zip->close();
     }
+
+    public function _uncompress_file($compressed_filename, $extract_to_folder){
+        $zip = new ZipArchive;
+
+        if ($zip->open($compressed_filename, ZipArchive::CREATE)!== TRUE) {
+            exit("cannot open <$compressed_filename>\n");
+        }
+
+        $zip->extractTo($extract_to_folder);
+
+        $zip->close();
+    }
+
     private function _supported_file($file){
         $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
         $finfo_file = finfo_file($finfo, $file);

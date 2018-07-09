@@ -30,6 +30,7 @@ include('-application-config.php');
 include($application_configs['PRIVATE_FOLDER_CLASSES'].'db_mng.php');
 include($application_configs['PRIVATE_FOLDER_CLASSES'].'page.php');
 include($application_configs['PRIVATE_FOLDER_CLASSES'].'encryption.php');
+include($application_configs['PRIVATE_FOLDER_CLASSES'].'strings.php');
 
 include($application_configs['PRIVATE_FOLDER_MODULES'].'errors_mng/errors_mng.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'log_everything/log_everything.php');
