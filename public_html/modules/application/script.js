@@ -90,12 +90,14 @@ $( document ).ready(function() {
     $('body').on('click', '#save-new-project', function() {
         var position = 'save-new-project';
         current_group = 1;
+        $('#spinner').show();
         var values = { 
             token: token,
 
             current_group: current_group,
 
             ftp_host: $('#ftp_host').val(),
+            ftp_root: $('#ftp_root').val(),
             ftp_user: $('#ftp_user').val(),
             ftp_psw: $('#ftp_psw').val(),
 

@@ -56,6 +56,7 @@ class localization{
                                         'ws-file-list' => 'WS file-list',
                                         
                                         'ftp-host' => 'FTP host',
+                                        'ftp-root' => 'FTP root folder',
                                         'ftp-user' => 'FTP user',
                                         'ftp-psw' => 'FTP psw',
                                         

@@ -162,6 +162,7 @@ class FTP_mng {
     private function __ftp_getConnection(){
         $encryption = new Encryption($this->application_configs['encryption_details']);
         $ftp_host = $this->ftp_details['ftp_host'];
+        $ftp_root = $this->ftp_details['ftp_root'];
         $ftp_user = $encryption->decrypt($this->ftp_details['ftp_user']);
         $ftp_psw = $encryption->decrypt($this->ftp_details['ftp_psw']);
 
@@ -188,33 +189,20 @@ class FTP_mng {
     }
 
     public function get_editorsavelog($db_mng, $id_project, $token){
-        $getEditorSaveLog__query = 
-            'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert` FROM  `oap__editorsavelog` WHERE id_project = "'.$id_project.'" AND token = "'.$token.'" GROUP BY filename, folder';
 
-        $getEditorSaveLog = $db_mng->getDataByQuery($getEditorSaveLog__query, 'db');
+        $getEditorSaveLog__query = 'SELECT distinct filename, folder FROM `oap__editorsavelog` WHERE token = "'.$token.'"';
+        $getEditorSaveLog = $db_mng->getDataByQuery($getEditorSaveLog__query, 'db')['response'];
 
-        $ids_max = $getEditorSaveLog['response'];
+        foreach ($getEditorSaveLog as $save_log){
+            $query = 'SELECT max(id_editorsavelog) as max__id_editorsavelog FROM `oap__editorsavelog` WHERE filename = "'.$save_log['filename'].'" AND folder="'.$save_log['folder'].'"';
+            $getEditorSaveLog_ = $db_mng->getDataByQuery($query, 'db')['response'][0];
 
-        foreach ($ids_max as $id_max){
-            $max__id_editorsavelog[] = $id_max['max__id_editorsavelog'];
-        }
-        
-        $query = 'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert` FROM `oap__editorsavelog` WHERE id_project = "'.$id_project.'" AND token = "'.$token.'" ';
-        $query .= ' AND (';
-        $i = 1;
-        foreach ($max__id_editorsavelog as $id){
-            if($i < count($max__id_editorsavelog)){
-                $query .=  'id_editorsavelog = '.$id.' OR ';
-            }else{
-                $query .=  'id_editorsavelog = '.$id.' )';
-            }
-            $i++;
+            $getEditorSaveLogLine__query = 
+            'SELECT id_editorsavelog, filename, folder, bkup_file, token, `insert` FROM  `oap__editorsavelog` WHERE id_editorsavelog = "'.$getEditorSaveLog_['max__id_editorsavelog'].'"';
+            $getEditorSaveLog__[] = $db_mng->getDataByQuery($getEditorSaveLogLine__query, 'db')['response'];
         }
 
-        $getEditorSaveLog = $db_mng->getDataByQuery(
-            $query, 'db'
-        );
-        return $getEditorSaveLog['response'];
+        return $getEditorSaveLog__;
     }
     
     private function __ftp_make_backup($destination_folder, $file_to_be_uploaded__local, $website){

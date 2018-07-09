@@ -71,6 +71,28 @@ class page {
         return $this->$method($application_configs, $module, $action, $post, $optional_parameters);
     }
 
+    public function getProjectDBMng($application_configs, $project){
+        //# can't connect to the database server? use the ws...
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+
+        return new DbMng(
+            $application_configs['db_details'],
+            false,
+            array(
+                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+                'WSConsumer' => new WSConsumer()
+            )
+        );
+    }
+
+    public function getProjectWSDetails($db_mng, $getProjectData){
+        $project = new Project($db_mng);
+        $ws_id_details = $getProjectData['ws_id_details'];
+        return $project->getProjectWSDetails($ws_id_details);
+    }
+
     public function _getInitScript($application_configs, $token, $page_related_scripts = ''){
         $localization = $this->getLocalization($application_configs['language'], 'default', 'default', 'default');
         ?>

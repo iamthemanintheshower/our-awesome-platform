@@ -271,26 +271,6 @@ class dbadmin extends page{
         return $project->getProjectDataByID($project_id);
     }
 
-    private function getProjectWSDetails($db_mng, $getProjectData){
-        $project = new Project($db_mng);
-        $ws_id_details = $getProjectData['ws_id_details'];
-        return $project->getProjectWSDetails($ws_id_details);
-    }
-    private function getProjectDBMng($application_configs, $project){
-        //# can't connect to the database server? use the ws...
-        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
-
-        return new DbMng(
-            $application_configs['db_details'],
-            false,
-            array(
-                'ws_url' => $project['website'].'/'.$getProjectWSDetails['ws_database_url'],
-                'user' => $getProjectWSDetails['ws_user'],
-                'psw' => $getProjectWSDetails['ws_psw'],
-                'WSConsumer' => new WSConsumer()
-            )
-        );
-    }
     private function getProjectDBDetails($db_mng, $db_id_details){
         $project = new Project($db_mng);
         return $project->getProjectDBDetails($db_id_details);

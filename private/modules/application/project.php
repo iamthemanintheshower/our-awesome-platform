@@ -117,6 +117,7 @@ class Project {
         $selectedTable__ftp_details = 'oap__ftp_details';
         $selectValues_getFTPdetailsByID[] = 'id_ftp_details';
         $selectValues_getFTPdetailsByID[] = 'ftp_host';
+        $selectValues_getFTPdetailsByID[] = 'ftp_root';
         $selectValues_getFTPdetailsByID[] = 'ftp_user';
         $selectValues_getFTPdetailsByID[] = 'ftp_psw';
         

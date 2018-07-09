@@ -31,23 +31,24 @@ SOFTWARE.
 class WSConsumer {
 
     public function db_ws($ws_details, $query, $_select_insert_update, $selectedTable, $inputValues){
-
         $fields = array('query_type' => $_select_insert_update, 'query_string' => $query, 'selectedTable' => $selectedTable, 'inputValues' => $inputValues);
         $post_ = 'query_type='.$_select_insert_update.'&query_string='.$query.'&selectedTable='.$selectedTable.'&inputValues='. json_encode($inputValues);
 
         return $this->_ws($ws_details, $fields, $post_);
-
     }
 
     public function filelist_ws($ws_details){
-
         $fields = array();
         $post_ = '';
 
         return $this->_ws($ws_details, $fields, $post_);
-
     }
 
+    public function uncompressfile_ws($ws_details, $fields, $post_){
+        $ws_details['ws_url'] = 'http://www.itmits.com/WS-uncompress-jeuastod.php';
+
+        return $this->_ws($ws_details, $fields, $post_);
+    }
 
     private function _ws($ws_details, $fields, $post_){
         $ws_url = $ws_details['ws_url'];

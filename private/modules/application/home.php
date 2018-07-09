@@ -36,7 +36,8 @@ class home extends page{
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project_group.php',
                 $application_configs['PRIVATE_FOLDER_CLASSES'].'button.php',
-                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/ftp_mng.php'
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/ftp_mng.php',
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'ws_consumer/ws_consumer.php'
             )
         ;
         return $this->_getFilesToInclude($files_to_include);
@@ -124,7 +125,9 @@ class home extends page{
                 $projects[] = $this->getProjectByID($application_configs['db_mng'], $project_id['project_id']);
             }
             foreach ($projects as $project){
-                $project_buttons[] = $button->getResponse($project['project'], 'id_'.$project['id_project'], 'project-button', 'data-id_project="'.$project['id_project'].'"');
+                if(isset($project) && isset($project['project'])){
+                    $project_buttons[] = $button->getResponse($project['project'], 'id_'.$project['id_project'], 'project-button', 'data-id_project="'.$project['id_project'].'"');
+                }
             }
         }else{
             
@@ -179,6 +182,7 @@ class home extends page{
 
         //#- oap__ftp_details
         $ivFTPDetails[] = array('field' => 'ftp_host', 'typed_value' => $post['ftp_host']);
+        $ivFTPDetails[] = array('field' => 'ftp_root', 'typed_value' => $post['ftp_root']);
         $ivFTPDetails[] = array('field' => 'ftp_user', 'typed_value' => $encryption->encrypt($post['ftp_user']));
         $ivFTPDetails[] = array('field' => 'ftp_psw', 'typed_value' => $encryption->encrypt($post['ftp_psw']));
 
@@ -219,6 +223,7 @@ class home extends page{
         $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
 
         $_project_id = $application_configs['db_mng']->saveDataOnTable('oap__projects', $ivProject, 'db', 0);
+        $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
 
         //#- oap__projects_tabs
         $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
@@ -248,8 +253,19 @@ class home extends page{
         $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_db_details);
 
         $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-        $ftp->uploadFileViaFTP('#TODO retrieve the remote root', $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']); //#TODO
-        
+        $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+        if($getProjectWSDetails){
+            $ws_details = array(
+                'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+            );
+            $fields = array('compressed_filename');
+            $post_ = 'compressed_filename=project-oaisdakwhe.zip';
+            $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+        }
+
         //# Inspired by https://github.com/iamthemanintheshower/custom-wp-installer
         //# TODO: create the WP instance only if asked
         //# Create and Upload WP instance
@@ -274,24 +290,54 @@ class home extends page{
         $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
 
         //customize the DB from a template
-        $WP_db = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
-        $WP_db = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
-        $WP_db = str_replace('#WP-USR#', $post['website'], $WP_db_content);
-        $WP_db = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
-        $WP_db = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
+        $WP_db_content = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
+        $WP_db_content = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
+        $WP_db_content = str_replace('#WP-USR#', $post['website'], $WP_db_content);
+        $WP_db_content = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
+        $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
 
         //create the customized DB
-        $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
-        $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db, 'ws');
+        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
+        $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db_content, 'ws');
 
+        //#Upload WP customized instance
+        $files = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($application_configs['wp_install']['temp'].$post['project']),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        foreach ($files as $file){
+            if(!$file->isDir()){
+                $_files[] = $file;
+            }
+        }
+        $_website_compressed_filename = $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip';
+        $ftp->_compress_files($_website_compressed_filename, $_files);
+        $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip', $post['website']);
+
+        //# Uncompress files via WS
+        if($getProjectWSDetails){
+            $ws_details = array(
+                'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                'user' => $getProjectWSDetails['ws_user'],
+                'psw' => $getProjectWSDetails['ws_psw'],
+            );
+            $fields = array('compressed_filename');
+            $post_ = 'compressed_filename=project-oaisdakwhe.zip';
+            $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+        }
 
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project_id' => $_project_id,
-                '_import' => $_import
+                '_import' => $_import,
+                '_uncompressfile_ws' => $_uncompressfile_ws
             )
         );
+    }
+
+    private function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
+        return $WSConsumer->uncompressfile_ws($ws_details, $fields, $post_);
     }
 
     private function getProjectGroupID($optional_parameters){

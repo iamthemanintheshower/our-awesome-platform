@@ -135,18 +135,17 @@ $( document ).ready(function() {
         .done(function( data ) {
             console.log(data);
             compressed_filename = data.compressed_filename;
-            data = data.get_editorsavelog;
             var tblRow__edited_files = '<table>';
-            $.each(data, function( i, column ) {
+            $.each(data.get_editorsavelog, function( i, column ) {
                 tblRow__edited_files = tblRow__edited_files + '<tr>';
                 $.each(column, function( n, field ) {
-                    if(field !== null && field.length > 8){
-                        tblRow__edited_files = tblRow__edited_files + '<td class="show_on_click" data-field="' + field + '">' + field.substring(0,20) + '</td>';
+                    if(field !== null && field.filename.length > 8){
+                        tblRow__edited_files = tblRow__edited_files + '<td class="show_on_click" data-field="' + field.bkup_file + '">' + field.bkup_file.substring(0,20) + '</td>';
                     }else{
                         if(field === null){
                             tblRow__edited_files = tblRow__edited_files + '<td></td>';
                         }else{
-                            tblRow__edited_files = tblRow__edited_files + '<td>' + field + '</td>';
+                            tblRow__edited_files = tblRow__edited_files + '<td>' + field.bkup_file + '</td>';
                         }
                     }
                 });
@@ -170,8 +169,8 @@ $( document ).ready(function() {
 
     $('body').on('click', '#refreshFilelistCacheByProject', function () {
         var values = {};
-        $('#spinner').html('FTP manager is refreshing the file tree, wait until it\'s done');
-        $('#spinner').show();
+        $('#spinner', window.parent.document).html('FTP manager is refreshing the file tree, wait until it\'s done');
+        $('#spinner', window.parent.document).show();
         $.post( APPLICATION_URL + "editor/editor/refreshFilelistCacheByProject/id_project/" + current_project, values)
         .done(function( data ) {
             console.log( data );
@@ -182,7 +181,7 @@ $( document ).ready(function() {
                 $(this).parent().find('ul:first').slideToggle('fast');
                 if($(this).parent().attr('className') === 'folder-nav') return false;
             });
-            $('#spinner').hide();
+            $('#spinner', window.parent.document).hide();
         })
         .fail(function( data ) {
             console.log( "FAIL: " + data );

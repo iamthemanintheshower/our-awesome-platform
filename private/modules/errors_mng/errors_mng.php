@@ -84,7 +84,10 @@ register_shutdown_function('shutDownFunction', $application_configs);
 
 set_error_handler('myErrorHandler');
 
-function myErrorHandler($errno, $errstr, $errfile, $errline, $application_configs) {
+global $application_configs;
+
+function myErrorHandler($errno, $errstr, $errfile, $errline) {
+    global $application_configs;
     if (!(error_reporting() & $errno)) {return false;}
 
     $date = new DateTime();

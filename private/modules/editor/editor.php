@@ -136,7 +136,7 @@ class editor extends page{
                 'psw' => $getProjectWSDetails['ws_psw'],
             );
 
-            $filelist_cache = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'editor/cache_'.$id_project;
+            $filelist_cache = $application_configs['editor__cache'].$id_project;
             if(file_exists($filelist_cache)){
                 $_filelist_ws = file_get_contents($filelist_cache);
             }else{
@@ -303,7 +303,7 @@ class editor extends page{
         $get_editorsavelog = $ftp->get_editorsavelog($application_configs['db_mng'], $id_project, $token);
 
         foreach ($get_editorsavelog as $file){
-            $bkup_file[] = $file['bkup_file'];
+            $bkup_file[] = $file[0]['bkup_file'];
         }
 
         $compressed_filename = 'bkup-'.date('d-m-Y_H:i:s').'-'.$website.'-'.$token.'.zip';
@@ -467,12 +467,6 @@ class editor extends page{
         $project = new Project($db_mng);
         $ftp_id_details = $getProjectData['ftp_id_details'];
         return $project->getProjectFTPDetails($ftp_id_details);
-    }
-
-    private function getProjectWSDetails($db_mng, $getProjectData){
-        $project = new Project($db_mng);
-        $ws_id_details = $getProjectData['ws_id_details'];
-        return $project->getProjectWSDetails($ws_id_details);
     }
 
     public function getInitScript($application_configs, $token){

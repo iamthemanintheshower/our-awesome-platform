@@ -133,10 +133,14 @@ SOFTWARE.
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <div class="form-row">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
                                     <label for="ftp_host" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-host'];?></label>
                                     <input type="text" class="form-control" id="ftp_host" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-host'];?>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="ftp_root" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-root'];?></label>
+                                    <input type="text" class="form-control" id="ftp_root" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftp-root'];?>">
                                 </div>
                             </div>
                             <div class="form-row">
