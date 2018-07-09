@@ -90,6 +90,7 @@ $( document ).ready(function() {
     $('body').on('click', '#save-new-project', function() {
         var position = 'save-new-project';
         current_group = 1;
+        $('#spinner').html('Wait for the project setup');
         $('#spinner').show();
         var values = { 
             token: token,
@@ -106,15 +107,8 @@ $( document ).ready(function() {
             db_user: $('#db_user').val(),
             db_psw: $('#db_psw').val(),
 
-            ws_user: $('#ws_user').val(),
-            ws_psw: $('#ws_psw').val(),
-            ws_find_string_in_file_url: $('#ws_find_string_in_file_url').val(),
-            ws_database_url: $('#ws_database_url').val(),
-            ws_file_list_url: $('#ws_file_list_url').val(),
-
+            radioProjectType: $('input[name=radioProjectType]:checked', '#saveNewProject').val(),
             website: $('#website').val(),
-            wp_admin: $('#wp_admin').val(),
-
             project: $('#project').val()  
         };
 

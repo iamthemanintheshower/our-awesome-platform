@@ -224,7 +224,7 @@ class FTP_mng {
         }
     }
     
-    public function _compress_files($compressed_filename, $files){
+    public function _compress_files($compressed_filename, $files, $root_dir = ''){
         $zip = new ZipArchive;
 
         if ($zip->open($compressed_filename, ZipArchive::CREATE)!== TRUE) {
@@ -232,7 +232,8 @@ class FTP_mng {
         }
 
         foreach ($files as $file){
-            $zip->addFile($file);
+            $new_filename = str_replace($root_dir, '', $file);
+            $zip->addFile($file, $new_filename);
         }
         
         $zip->close();

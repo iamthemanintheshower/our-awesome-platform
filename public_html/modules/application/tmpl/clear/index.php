@@ -123,13 +123,9 @@ SOFTWARE.
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group col-md-9">
+                                <div class="form-group col-md-12">
                                     <label for="website" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['website'];?></label>
                                     <input type="text" class="form-control" id="website" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['website'];?>">
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <label for="wp_admin" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wp-admin'];?></label>
-                                    <input type="text" class="form-control" id="wp_admin" value="wp-admin">
                                 </div>
                             </div>
 
@@ -172,6 +168,31 @@ SOFTWARE.
                                 <div class="form-group col-md-6">
                                     <label for="db_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-psw'];?></label>
                                     <input type="text" class="form-control" id="db_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['db-psw'];?>">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    Project Type - Auto generated code
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="radioWP" name="radioProjectType" value="WP" class="custom-control-input">
+                                        <label class="custom-control-label" for="radioWP"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project-type-WP'];?></label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="radioBlankProject" name="radioProjectType" value="BlankProject" class="custom-control-input">
+                                        <label class="custom-control-label" for="radioBlankProject"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project-type-BlankProject'];?></label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <div class="custom-control custom-radio">
+                                        <input type="radio" id="radioNone" name="radioProjectType" value="None" class="custom-control-input">
+                                        <label class="custom-control-label" for="radioNone"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project-type-None'];?></label>
+                                    </div>
                                 </div>
                             </div>
                         </form>

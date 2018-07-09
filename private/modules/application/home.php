@@ -174,156 +174,162 @@ class home extends page{
     }
 
     public function _action_saveNewProject($application_configs, $module, $action, $post, $optional_parameters){
-        ini_set('max_execution_time', 300);
+        if(file_exists($application_configs['wp_install']['temp'].$post['project']) && is_dir($application_configs['wp_install']['temp'].$post['project'])){
+            $_message = array('field' => '', 'valid' => false, 'message' => 'Project already exists');
+        }else{
+            ini_set('max_execution_time', 300);
 
-        $_group_id = $post['current_group'];
+            $_group_id = $post['current_group'];
 
-        $encryption = new Encryption($application_configs['encryption_details']);
+            $encryption = new Encryption($application_configs['encryption_details']);
 
-        //#- oap__ftp_details
-        $ivFTPDetails[] = array('field' => 'ftp_host', 'typed_value' => $post['ftp_host']);
-        $ivFTPDetails[] = array('field' => 'ftp_root', 'typed_value' => $post['ftp_root']);
-        $ivFTPDetails[] = array('field' => 'ftp_user', 'typed_value' => $encryption->encrypt($post['ftp_user']));
-        $ivFTPDetails[] = array('field' => 'ftp_psw', 'typed_value' => $encryption->encrypt($post['ftp_psw']));
+            //#- oap__ftp_details
+            $ivFTPDetails[] = array('field' => 'ftp_host', 'typed_value' => $post['ftp_host']);
+            $ivFTPDetails[] = array('field' => 'ftp_root', 'typed_value' => $post['ftp_root']);
+            $ivFTPDetails[] = array('field' => 'ftp_user', 'typed_value' => $encryption->encrypt($post['ftp_user']));
+            $ivFTPDetails[] = array('field' => 'ftp_psw', 'typed_value' => $encryption->encrypt($post['ftp_psw']));
 
-        $_id_ftp_details = $application_configs['db_mng']->saveDataOnTable('oap__ftp_details', $ivFTPDetails, 'db', 0);
+            $_id_ftp_details = $application_configs['db_mng']->saveDataOnTable('oap__ftp_details', $ivFTPDetails, 'db', 0);
 
-        //#- oap__db_details
-        $ivDBDetails[] = array('field' => 'db_host', 'typed_value' => $post['db_host']);
-        $ivDBDetails[] = array('field' => 'db_name', 'typed_value' => $encryption->encrypt($post['db_name']));
-        $ivDBDetails[] = array('field' => 'db_user', 'typed_value' => $encryption->encrypt($post['db_user']));
-        $ivDBDetails[] = array('field' => 'db_psw', 'typed_value' => $encryption->encrypt($post['db_psw']));
+            //#- oap__db_details
+            $ivDBDetails[] = array('field' => 'db_host', 'typed_value' => $post['db_host']);
+            $ivDBDetails[] = array('field' => 'db_name', 'typed_value' => $encryption->encrypt($post['db_name']));
+            $ivDBDetails[] = array('field' => 'db_user', 'typed_value' => $encryption->encrypt($post['db_user']));
+            $ivDBDetails[] = array('field' => 'db_psw', 'typed_value' => $encryption->encrypt($post['db_psw']));
 
-        $_id_db_details = $application_configs['db_mng']->saveDataOnTable('oap__db_details', $ivDBDetails, 'db', 0);
+            $_id_db_details = $application_configs['db_mng']->saveDataOnTable('oap__db_details', $ivDBDetails, 'db', 0);
 
-        //#- oap__ws_details
-        $strings = new Strings();
-        $_ws_find_string_in_file_url = 'ws-oap-'.$strings->getRandomString().'/WS-find-string-in-file-'.$strings->getRandomString().'.php';
-        $_ws_database_url = 'ws-oap-'.$strings->getRandomString().'/WS-database-url-'.$strings->getRandomString().'.php';
-        $_ws_file_list_url = 'ws-oap-'.$strings->getRandomString().'/WS-file-list-url-'.$strings->getRandomString().'.php';
-        $ivWSDetails[] = array('field' => 'ws_user', 'typed_value' => $strings->getRandomString());
-        $ivWSDetails[] = array('field' => 'ws_psw', 'typed_value' => $strings->getRandomString());
-        $ivWSDetails[] = array('field' => 'ws_find_string_in_file_url', 'typed_value' => $_ws_find_string_in_file_url);
-        $ivWSDetails[] = array('field' => 'ws_database_url', 'typed_value' => $_ws_database_url);
-        $ivWSDetails[] = array('field' => 'ws_file_list_url', 'typed_value' => $_ws_file_list_url);
+            //#- oap__ws_details
+            $strings = new Strings();
+            $_ws_oap_folder = 'ws-oap-'.$strings->getRandomString();
+            $_ws_find_string_in_file_url = $_ws_oap_folder.'/WS-find-string-in-file-'.$strings->getRandomString().'.php';
+            $_ws_database_url = $_ws_oap_folder.'/WS-database-url-'.$strings->getRandomString().'.php';
+            $_ws_file_list_url = $_ws_oap_folder.'/WS-file-list-url-'.$strings->getRandomString().'.php';
+            $ivWSDetails[] = array('field' => 'ws_user', 'typed_value' => $strings->getRandomString());
+            $ivWSDetails[] = array('field' => 'ws_psw', 'typed_value' => $strings->getRandomString());
+            $ivWSDetails[] = array('field' => 'ws_find_string_in_file_url', 'typed_value' => $_ws_find_string_in_file_url);
+            $ivWSDetails[] = array('field' => 'ws_database_url', 'typed_value' => $_ws_database_url);
+            $ivWSDetails[] = array('field' => 'ws_file_list_url', 'typed_value' => $_ws_file_list_url);
 
-        $_id_ws_details = $application_configs['db_mng']->saveDataOnTable('oap__ws_details', $ivWSDetails, 'db', 0);
+            $_id_ws_details = $application_configs['db_mng']->saveDataOnTable('oap__ws_details', $ivWSDetails, 'db', 0);
 
-        //#- oap__websites
-        $ivWebsite[] = array('field' => 'website', 'typed_value' => $post['website']);
-        $ivWebsite[] = array('field' => 'wp_admin', 'typed_value' => $post['wp_admin']);
-        $ivWebsite[] = array('field' => 'ftp_id_details', 'typed_value' => $_id_ftp_details);
-        $ivWebsite[] = array('field' => 'db_id_details', 'typed_value' => $_id_db_details);
-        $ivWebsite[] = array('field' => 'ws_id_details', 'typed_value' => $_id_ws_details);
+            //#- oap__websites
+            $ivWebsite[] = array('field' => 'website', 'typed_value' => $post['website']);
+            $ivWebsite[] = array('field' => 'wp_admin', 'typed_value' => 'wp_admin'); //#TODO: take a decision about this field
+            $ivWebsite[] = array('field' => 'ftp_id_details', 'typed_value' => $_id_ftp_details);
+            $ivWebsite[] = array('field' => 'db_id_details', 'typed_value' => $_id_db_details);
+            $ivWebsite[] = array('field' => 'ws_id_details', 'typed_value' => $_id_ws_details);
 
-        $_website_id = $application_configs['db_mng']->saveDataOnTable('oap__websites', $ivWebsite, 'db', 0);
-        
-        //#- oap__projects
-        $ivProject[] = array('field' => 'project', 'typed_value' => $post['project']);
-        $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
+            $_website_id = $application_configs['db_mng']->saveDataOnTable('oap__websites', $ivWebsite, 'db', 0);
 
-        $_project_id = $application_configs['db_mng']->saveDataOnTable('oap__projects', $ivProject, 'db', 0);
-        $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
+            //#- oap__projects
+            $ivProject[] = array('field' => 'project', 'typed_value' => $post['project']);
+            $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
 
-        //#- oap__projects_tabs
-        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
-        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
-        $ivProjectTabs = null;
-        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
-        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
-        $ivProjectTabs = null;
-        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
-        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
-        $ivProjectTabs = null;
-        $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-        $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
-        $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
-        $ivProjectTabs = null;
-        
-        //#- oap__projects_groups
-        $ivProjectsGroups[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-        $ivProjectsGroups[] = array('field' => 'group_id', 'typed_value' => $_group_id);
+            $_project_id = $application_configs['db_mng']->saveDataOnTable('oap__projects', $ivProject, 'db', 0);
+            $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
 
-        $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
+            //#- oap__projects_tabs
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
 
-        //# Upload the WS folders
-        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_db_details);
+            //#- oap__projects_groups
+            $ivProjectsGroups[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectsGroups[] = array('field' => 'group_id', 'typed_value' => $_group_id);
 
-        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-        $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
-        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
-        if($getProjectWSDetails){
-            $ws_details = array(
-                'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
-                'user' => $getProjectWSDetails['ws_user'],
-                'psw' => $getProjectWSDetails['ws_psw'],
-            );
-            $fields = array('compressed_filename');
-            $post_ = 'compressed_filename=project-oaisdakwhe.zip';
-            $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
-        }
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
 
-        //# Inspired by https://github.com/iamthemanintheshower/custom-wp-installer
-        //# TODO: create the WP instance only if asked
-        //# Create and Upload WP instance
-        mkdir($application_configs['wp_install']['temp'].$post['project']);
-
-        $wp_config_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_config_tmpl_filename']);
-        $htaccess_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['htaccess_tmpl_filename']);
-        $WP_db_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_db_template']);
-
-        //wp-config.php
-        $wp_config = str_replace('#DB-NAME#', $post['db_name'], $wp_config_tmpl_content);
-        $wp_config = str_replace('#DB-USER#', $post['db_user'], $wp_config);
-        $wp_config = str_replace('#DB-PSW#', $post['db_psw'], $wp_config);
-        $wp_config = str_replace('#DB-HOST#', $post['db_host'], $wp_config);
-        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/wp-config.php', $wp_config);
-
-        //use an already customized .htaccess
-        $htaccess = str_replace('#SITE-NAME#', $post['project'], $htaccess_tmpl_content);
-        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess);
-
-        //use the WP instance from template
-        $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
-
-        //customize the DB from a template
-        $WP_db_content = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
-        $WP_db_content = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
-        $WP_db_content = str_replace('#WP-USR#', $post['website'], $WP_db_content);
-        $WP_db_content = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
-        $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
-
-        //create the customized DB
-        file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
-        $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db_content, 'ws');
-
-        //#Upload WP customized instance
-        $files = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($application_configs['wp_install']['temp'].$post['project']),
-            RecursiveIteratorIterator::LEAVES_ONLY
-        );
-        foreach ($files as $file){
-            if(!$file->isDir()){
-                $_files[] = $file;
+            //# Upload the WS folders
+            $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_db_details);
+            $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+            $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
+            $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+            if($getProjectWSDetails){
+                $ws_details = array(
+                    'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                    'user' => $getProjectWSDetails['ws_user'],
+                    'psw' => $getProjectWSDetails['ws_psw'],
+                );
+                $fields = array('compressed_filename', 'ws_oap_folder');
+                $post_ = 'compressed_filename=ws-oap.zip&ws_oap_folder='.$_ws_oap_folder;
+                $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
             }
-        }
-        $_website_compressed_filename = $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip';
-        $ftp->_compress_files($_website_compressed_filename, $_files);
-        $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip', $post['website']);
 
-        //# Uncompress files via WS
-        if($getProjectWSDetails){
-            $ws_details = array(
-                'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
-                'user' => $getProjectWSDetails['ws_user'],
-                'psw' => $getProjectWSDetails['ws_psw'],
-            );
-            $fields = array('compressed_filename');
-            $post_ = 'compressed_filename=project-oaisdakwhe.zip';
-            $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+            if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'WP'){
+                //# Create and Upload WP instance (Inspired by https://github.com/iamthemanintheshower/custom-wp-installer)
+                mkdir($application_configs['wp_install']['temp'].$post['project']);
+
+                $wp_config_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_config_tmpl_filename']);
+                $htaccess_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['htaccess_tmpl_filename']);
+                $WP_db_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_db_template']);
+
+                //wp-config.php
+                $wp_config = str_replace('#DB-NAME#', $post['db_name'], $wp_config_tmpl_content);
+                $wp_config = str_replace('#DB-USER#', $post['db_user'], $wp_config);
+                $wp_config = str_replace('#DB-PSW#', $post['db_psw'], $wp_config);
+                $wp_config = str_replace('#DB-HOST#', $post['db_host'], $wp_config);
+                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/wp-config.php', $wp_config);
+
+                //use an already customized .htaccess
+                $htaccess = str_replace('#SITE-NAME#', $post['project'], $htaccess_tmpl_content);
+                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess);
+
+                //use the WP instance from template
+                $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
+
+                //customize the DB from a template
+                $WP_db_content = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
+                $WP_db_content = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
+                $WP_db_content = str_replace('#WP-USR#', $post['website'], $WP_db_content);
+                $WP_db_content = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
+                $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
+
+                //create the customized DB
+                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
+                $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db_content, 'ws');
+
+                //#Upload WP customized instance
+                $files = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($application_configs['wp_install']['temp'].$post['project']),
+                    RecursiveIteratorIterator::LEAVES_ONLY
+                );
+                foreach ($files as $file){
+                    if(!$file->isDir()){
+                        $_files[] = $file;
+                    }
+                }
+                $_website_compressed_filename = $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip';
+                $ftp->_compress_files($_website_compressed_filename, $_files, $application_configs['wp_install']['temp'].$post['project'].'/');
+                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip', $post['website']);
+
+                //# Uncompress files via WS
+                if($getProjectWSDetails){
+                    $ws_details = array(
+                        'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                        'user' => $getProjectWSDetails['ws_user'],
+                        'psw' => $getProjectWSDetails['ws_psw'],
+                    );
+                    $fields = array('compressed_filename');
+                    $post_ = 'compressed_filename=project-oaisdakwhe.zip';
+                    $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+                }
+
+                $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
+            }
         }
 
         return array(
@@ -331,7 +337,8 @@ class home extends page{
             'response' => array(
                 'project_id' => $_project_id,
                 '_import' => $_import,
-                '_uncompressfile_ws' => $_uncompressfile_ws
+                '_uncompressfile_ws' => $_uncompressfile_ws,
+                'message' => $_message
             )
         );
     }

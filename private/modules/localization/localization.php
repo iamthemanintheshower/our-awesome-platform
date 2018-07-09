@@ -64,6 +64,10 @@ class localization{
                                         'db-name' => 'DB name',
                                         'db-user' => 'DB user',
                                         'db-psw' => 'DB psw',
+                                        
+                                        'project-type-WP' => 'WordPress',
+                                        'project-type-BlankProject' => 'Blank Project',
+                                        'project-type-None' => 'None',
 
                                         //# New group modal
                                         'new-group' => 'New group',
