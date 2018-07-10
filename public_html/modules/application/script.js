@@ -108,6 +108,11 @@ $( document ).ready(function() {
             db_psw: $('#db_psw').val(),
 
             radioProjectType: $('input[name=radioProjectType]:checked', '#saveNewProject').val(),
+
+            _user: $('#_user').val(),
+            _psw: $('#_psw').val(),
+            _email: $('#_email').val(),
+
             website: $('#website').val(),
             project: $('#project').val()  
         };

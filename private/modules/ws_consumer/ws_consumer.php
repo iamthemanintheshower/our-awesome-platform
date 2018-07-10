@@ -45,8 +45,10 @@ class WSConsumer {
     }
 
     public function uncompressfile_ws($ws_details, $fields, $post_){
-        $ws_details['ws_url'] = 'http://www.itmits.com/WS-uncompress-jeuastod.php';
+        return $this->_ws($ws_details, $fields, $post_);
+    }
 
+    public function import_ws($ws_details, $fields, $post_){
         return $this->_ws($ws_details, $fields, $post_);
     }
 
@@ -66,7 +68,6 @@ class WSConsumer {
 //        var_dump(curl_error($ch)); //# debug
 //        var_dump(curl_getinfo($ch)); //# debug
         curl_close($ch);
-//        var_dump($_ws);
         return $_ws;
     }
 }

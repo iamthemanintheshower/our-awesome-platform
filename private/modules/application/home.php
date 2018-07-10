@@ -82,7 +82,8 @@ class home extends page{
             'response' => $application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].$module.'/tmpl/'.$application_configs['tmpl'].$action.'.php', 
             'data' => array(
                 'button' => new Button(),
-                'userbean' => $_SESSION['userbean-Q4rp']
+                'userbean' => $_SESSION['userbean-Q4rp'],
+                'strings' => new Strings()
             )
         );
     }
@@ -259,6 +260,8 @@ class home extends page{
             $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
             $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
             if($getProjectWSDetails){
+                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['wp_tmpl'].'/WS-uncompress-jeuastod.php', $post['website']);
+
                 $ws_details = array(
                     'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
                     'user' => $getProjectWSDetails['ws_user'],
@@ -306,13 +309,12 @@ class home extends page{
                 //customize the DB from a template
                 $WP_db_content = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
                 $WP_db_content = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
-                $WP_db_content = str_replace('#WP-USR#', $post['website'], $WP_db_content);
-                $WP_db_content = str_replace('#WP-PSW#', $post['website'], $WP_db_content);
-                $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['website'], $WP_db_content);
+                $WP_db_content = str_replace('#WP-USR#', $post['_user'], $WP_db_content);
+                $WP_db_content = str_replace('#WP-PSW#', md5($post['_psw']), $WP_db_content);
+                $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['_email'], $WP_db_content);
 
                 //create the customized DB
                 file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
-                $_import = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($WP_db_content, 'ws');
 
                 //#Upload WP customized instance
                 $files = new RecursiveIteratorIterator(
@@ -340,6 +342,18 @@ class home extends page{
                     $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                 }
 
+                $ws_details = array(
+                    'ws_url' => $project['website'].'/WS-database-import-asoiwnoienoiaero.php',
+                    'user' => $getProjectWSDetails['ws_user'],
+                    'psw' => $getProjectWSDetails['ws_psw'],
+                );
+                $fields = array('db_host', 'db_name', 'db_user', 'db_psw');
+                $post_ = 'db_host='.$post['db_host'].'&db_name='.$post['db_name'].'&db_user='.$post['db_user'].'&db_psw='.$post['db_psw'];
+                $_import_ws = $this->_import_ws(new WSConsumer, $ws_details, $fields, $post_);
+
+                unlink($_website_compressed_filename);
+                system('rm -rf ' . escapeshellarg($application_configs['wp_install']['temp'].$post['project']), $retval);
+                
                 $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
             }
         }
@@ -348,7 +362,7 @@ class home extends page{
             'type' => 'ws', 
             'response' => array(
                 'project_id' => $_project_id,
-                '_import' => $_import,
+                '_import' => $_import_ws,
                 '_uncompressfile_ws' => $_uncompressfile_ws,
                 'message' => $_message
             )
@@ -357,6 +371,10 @@ class home extends page{
 
     private function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
         return $WSConsumer->uncompressfile_ws($ws_details, $fields, $post_);
+    }
+
+    private function _import_ws($WSConsumer, $ws_details, $fields, $post_){
+        return $WSConsumer->import_ws($ws_details, $fields, $post_);
     }
 
     private function getProjectGroupID($optional_parameters){

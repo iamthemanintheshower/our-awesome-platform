@@ -39,6 +39,7 @@ SOFTWARE.
 
         $button = $page_data['button'];
         $userbean = unserialize($page_data['userbean']);
+        $strings = $page_data['strings'];
         ?>
     </head>
 
@@ -193,6 +194,20 @@ SOFTWARE.
                                         <input type="radio" id="radioNone" name="radioProjectType" value="None" class="custom-control-input">
                                         <label class="custom-control-label" for="radioNone"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['project-type-None'];?></label>
                                     </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="_user" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-user'];?></label>
+                                    <input type="text" class="form-control" id="_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-user'];?>" value="<?php echo $strings->getRandomString();?>">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-psw'];?></label>
+                                    <input type="text" class="form-control" id="_psw" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-psw'];?>" value="<?php echo $strings->getRandomString();?>">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="_email" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-email'];?></label>
+                                    <input type="text" class="form-control" id="_email" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-email'];?>">
                                 </div>
                             </div>
                         </form>

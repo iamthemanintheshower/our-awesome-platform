@@ -65,6 +65,10 @@ class localization{
                                         'db-user' => 'DB user',
                                         'db-psw' => 'DB psw',
                                         
+                                        '-user' => 'user',
+                                        '-psw' => 'psw',
+                                        '-email' => 'email',
+
                                         'project-type-WP' => 'WordPress',
                                         'project-type-BlankProject' => 'Blank Project',
                                         'project-type-None' => 'None',
