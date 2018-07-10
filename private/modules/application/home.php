@@ -264,8 +264,20 @@ class home extends page{
                     'user' => $getProjectWSDetails['ws_user'],
                     'psw' => $getProjectWSDetails['ws_psw'],
                 );
-                $fields = array('compressed_filename', 'ws_oap_folder');
-                $post_ = 'compressed_filename=ws-oap.zip&ws_oap_folder='.$_ws_oap_folder;
+                $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
+                $fields = array(
+                    'compressed_filename',
+                    'ws_oap_folder',
+                    'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
+                    'ws_user', 'ws_psw'
+                );
+                $post_ = 'compressed_filename=ws-oap.zip'.
+                    '&ws_oap_folder='.$_ws_oap_folder.
+                    '&ws_database_url='.$_ws_database_url.
+                    '&ws_file_list_url='.$_ws_file_list_url.
+                    '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
+                    '&ws_user='.$getProjectWSDetails['ws_user'].
+                    '&ws_psw='.$password;
                 $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
             }
 
