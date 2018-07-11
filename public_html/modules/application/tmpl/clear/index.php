@@ -199,7 +199,7 @@ SOFTWARE.
                             <div class="form-row">
                                 <div class="form-group col-md-4">
                                     <label for="_user" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-user'];?></label>
-                                    <input type="text" class="form-control" id="_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-user'];?>" value="<?php echo $strings->getRandomString();?>">
+                                    <input type="text" class="form-control" id="_user" placeholder="<?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-user'];?>" value="admin-<?php echo $strings->getRandomString();?>">
                                 </div>
                                 <div class="form-group col-md-4">
                                     <label for="_psw" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['-psw'];?></label>

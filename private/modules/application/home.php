@@ -259,32 +259,34 @@ class home extends page{
             $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
             $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
             $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
-            if($getProjectWSDetails){
-                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['wp_tmpl'].'/WS-uncompress-jeuastod.php', $post['website']);
-
-                $ws_details = array(
-                    'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
-                    'user' => $getProjectWSDetails['ws_user'],
-                    'psw' => $getProjectWSDetails['ws_psw'],
-                );
-                $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
-                $fields = array(
-                    'compressed_filename',
-                    'ws_oap_folder',
-                    'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
-                    'ws_user', 'ws_psw'
-                );
-                $post_ = 'compressed_filename=ws-oap.zip'.
-                    '&ws_oap_folder='.$_ws_oap_folder.
-                    '&ws_database_url='.$_ws_database_url.
-                    '&ws_file_list_url='.$_ws_file_list_url.
-                    '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
-                    '&ws_user='.$getProjectWSDetails['ws_user'].
-                    '&ws_psw='.$password;
-                $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
-            }
 
             if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'WP'){
+                if($getProjectWSDetails){
+                    $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['wp_tmpl'].'/WS-uncompress-jeuastod.php', $post['website']);
+
+                    $ws_details = array(
+                        'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                        'user' => $getProjectWSDetails['ws_user'],
+                        'psw' => $getProjectWSDetails['ws_psw'],
+                    );
+                    $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
+                    $fields = array(
+                        'compressed_filename',
+                        'application_slug',
+                        'ws_oap_folder',
+                        'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
+                        'ws_user', 'ws_psw'
+                    );
+                    $post_ = 'compressed_filename=ws-oap.zip'.
+                        '&application_slug='.$this->_getSlugByProjectName($post['project']).
+                        '&ws_oap_folder='.$_ws_oap_folder.
+                        '&ws_database_url='.$_ws_database_url.
+                        '&ws_file_list_url='.$_ws_file_list_url.
+                        '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
+                        '&ws_user='.$getProjectWSDetails['ws_user'].
+                        '&ws_psw='.$password;
+                    $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+                }
                 //# Create and Upload WP instance (Inspired by https://github.com/iamthemanintheshower/custom-wp-installer)
                 mkdir($application_configs['wp_install']['temp'].$post['project']);
 
@@ -353,6 +355,108 @@ class home extends page{
 
                 unlink($_website_compressed_filename);
                 system('rm -rf ' . escapeshellarg($application_configs['wp_install']['temp'].$post['project']), $retval);
+                
+                $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
+            }
+
+            if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'BlankProject'){
+                if($getProjectWSDetails){
+                    $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['bp_install']['bp_tmpl'].'/WS-uncompress-jeuastod.php', $post['website']);
+
+                    $ws_details = array(
+                        'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                        'user' => $getProjectWSDetails['ws_user'],
+                        'psw' => $getProjectWSDetails['ws_psw'],
+                    );
+                    $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
+                    $fields = array(
+                        'compressed_filename',
+                        'application_slug',
+                        'ws_oap_folder',
+                        'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
+                        'ws_user', 'ws_psw'
+                    );
+                    $post_ = 'compressed_filename=ws-oap.zip'.
+                        '&application_slug='.$this->_getSlugByProjectName($post['project']).
+                        '&ws_oap_folder='.$_ws_oap_folder.
+                        '&ws_database_url='.$_ws_database_url.
+                        '&ws_file_list_url='.$_ws_file_list_url.
+                        '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
+                        '&ws_user='.$getProjectWSDetails['ws_user'].
+                        '&ws_psw='.$password;
+                    $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+                }
+
+                mkdir($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']));
+
+                $bp_config_tmpl_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['bp_config_tmpl_filename']);
+                $htaccess_tmpl_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['htaccess_tmpl_filename']);
+                $BP_db_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['bp_db_template']);
+
+                //bp-config
+                $bp_config_tmpl_content = str_replace('#SITE-URL#', $post['website'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#ROOT_PATH#', $post['ftp_root'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#APPLICATION-NAME#', $post['project'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#DB-NAME#', $post['db_name'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#DB-USER#', $post['db_user'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#DB-PSW#', $post['db_psw'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#DB-HOST#', $post['db_host'], $bp_config_tmpl_content);
+
+                //use the BP instance from template
+                $this->recurse_copy($application_configs['bp_install']['bp_tmpl'], $application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/');
+
+                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/-application-config.php', $bp_config_tmpl_content);
+
+                //use an already customized .htaccess
+                $htaccess = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $htaccess_tmpl_content);
+                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/.htaccess', $htaccess);
+
+                //customize the DB from a template
+                $BP_db_content = str_replace('#BP-USR#', $post['_user'], $BP_db_content);
+                $BP_db_content = str_replace('#BP-PSW#', md5($post['_psw']), $BP_db_content);
+                $BP_db_content = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $BP_db_content);
+
+                //create the customized DB
+                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/'.$application_configs['bp_install']['bp_db_template'], $BP_db_content);
+
+                //#Upload BP customized instance
+                $files = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project'])),
+                    RecursiveIteratorIterator::LEAVES_ONLY
+                );
+                foreach ($files as $file){
+                    if(!$file->isDir()){
+                        $_files[] = $file;
+                    }
+                }
+                $_website_compressed_filename = $application_configs['bp_install']['temp'].'project-oaisdakwhe.zip';
+                $ftp->_compress_files($_website_compressed_filename, $_files, $application_configs['bp_install']['temp']);
+                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['bp_install']['temp'].'project-oaisdakwhe.zip', $post['website']);
+
+                //# Uncompress files via WS
+                if($getProjectWSDetails){
+                    $ws_details = array(
+                        'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                        'user' => $getProjectWSDetails['ws_user'],
+                        'psw' => $getProjectWSDetails['ws_psw'],
+                    );
+                    $fields = array('compressed_filename');
+                    $post_ = 'compressed_filename=project-oaisdakwhe.zip';
+                    $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
+                }
+
+                $ws_details = array(
+                    'ws_url' => $project['website'].'/WS-database-import-asoiwnoienoiaero.php',
+                    'user' => $getProjectWSDetails['ws_user'],
+                    'psw' => $getProjectWSDetails['ws_psw'],
+                );
+                $fields = array('db_host', 'db_name', 'db_user', 'db_psw');
+                $post_ = 'db_host='.$post['db_host'].'&db_name='.$post['db_name'].'&db_user='.$post['db_user'].'&db_psw='.$post['db_psw'];
+                $_import_ws = $this->_import_ws(new WSConsumer, $ws_details, $fields, $post_);
+
+                unlink($_website_compressed_filename);
+                system('rm -rf ' . escapeshellarg($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project'])), $retval);
                 
                 $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
             }
@@ -440,6 +544,12 @@ class home extends page{
     private function getProjectFTPDetails($db_mng, $_id_db_details){
         $project = new Project($db_mng);
         return $project->getProjectFTPDetails($_id_db_details);
+    }
+
+    private function _getSlugByProjectName($ProjectName){ //#TODO improve the slug creator
+        $_projectname = str_replace(' ', '-', $ProjectName);
+        $_projectname = strtolower($_projectname);
+        return $_projectname;
     }
 
     public function getInitScript($application_configs, $token){
