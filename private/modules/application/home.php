@@ -302,8 +302,7 @@ class home extends page{
                 file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/wp-config.php', $wp_config);
 
                 //use an already customized .htaccess
-                $htaccess = str_replace('#SITE-NAME#', $post['project'], $htaccess_tmpl_content);
-                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess);
+                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess_tmpl_content);
 
                 //use the WP instance from template
                 $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
