@@ -293,6 +293,21 @@ $( document ).ready(function() {
             console.log( data );
         });
     });
+
+    $('body').on('click', '#golive', function () {
+        var values = {
+            id_project: current_project
+        };
+
+        $.post( APPLICATION_URL + "application/home/golive", values)
+        .done(function( data ) {
+            console.log(data);
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });
+    });
+    
 });
 
 

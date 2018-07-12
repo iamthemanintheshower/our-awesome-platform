@@ -59,6 +59,7 @@ SOFTWARE.
                 <div class="col-sm-2 no-margin-no-padding">
                     <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
                     <span id="current_dir" class="pull-left"></span>
+                    <button class="no-margin-no-padding pull-right" id="golive">golive</button>
                     <button class="no-margin-no-padding pull-right" id="refreshFilelistCacheByProject">R</button>
                 </div>
                 <div class="col-sm-1 no-margin-no-padding">

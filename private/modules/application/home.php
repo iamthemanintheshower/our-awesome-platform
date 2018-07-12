@@ -175,7 +175,8 @@ class home extends page{
     }
 
     public function _action_saveNewProject($application_configs, $module, $action, $post, $optional_parameters){
-        if(file_exists($application_configs['wp_install']['temp'].$post['project']) && is_dir($application_configs['wp_install']['temp'].$post['project'])){
+        $projectslug = $this->_getSlugByProjectName($post['project']);
+        if(file_exists($application_configs['wp_install']['temp'].$projectslug) && is_dir($application_configs['wp_install']['temp'].$projectslug)){
             $_message = array('field' => '', 'valid' => false, 'message' => 'Project already exists');
         }else{
             ini_set('max_execution_time', 300);
@@ -255,7 +256,7 @@ class home extends page{
             $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
 
             //# Upload the WS folders
-            $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_db_details);
+            $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_ftp_details);
             $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
             $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['ws_oap_install']['ws_oap_tmpl'], $post['website']);
             $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
@@ -278,7 +279,7 @@ class home extends page{
                         'ws_user', 'ws_psw'
                     );
                     $post_ = 'compressed_filename=ws-oap.zip'.
-                        '&application_slug='.$this->_getSlugByProjectName($post['project']).
+                        '&application_slug='.$projectslug.
                         '&ws_oap_folder='.$_ws_oap_folder.
                         '&ws_database_url='.$_ws_database_url.
                         '&ws_file_list_url='.$_ws_file_list_url.
@@ -287,8 +288,9 @@ class home extends page{
                         '&ws_psw='.$password;
                     $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                 }
+
                 //# Create and Upload WP instance (Inspired by https://github.com/iamthemanintheshower/custom-wp-installer)
-                mkdir($application_configs['wp_install']['temp'].$post['project']);
+                mkdir($application_configs['wp_install']['temp'].$projectslug);
 
                 $wp_config_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['wp_config_tmpl_filename']);
                 $htaccess_tmpl_content = file_get_contents($application_configs['wp_install']['wp_tmpl'].$application_configs['wp_install']['htaccess_tmpl_filename']);
@@ -299,27 +301,28 @@ class home extends page{
                 $wp_config = str_replace('#DB-USER#', $post['db_user'], $wp_config);
                 $wp_config = str_replace('#DB-PSW#', $post['db_psw'], $wp_config);
                 $wp_config = str_replace('#DB-HOST#', $post['db_host'], $wp_config);
-                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/wp-config.php', $wp_config);
+                file_put_contents($application_configs['wp_install']['temp'].$projectslug.'/wp-config.php', $wp_config);
 
                 //use an already customized .htaccess
-                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/.htaccess', $htaccess_tmpl_content);
+                $htaccess_tmpl_content = str_replace('#APPLICATION-SLUG#', $projectslug, $htaccess_tmpl_content);
+                file_put_contents($application_configs['wp_install']['temp'].$projectslug.'/.htaccess', $htaccess_tmpl_content);
 
                 //use the WP instance from template
-                $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$post['project'].'/');
+                $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$projectslug.'/');
 
                 //customize the DB from a template
-                $WP_db_content = str_replace('#SITE-URL#', $post['website'], $WP_db_content);
+                $WP_db_content = str_replace('#SITE-URL#', $post['website'].'/'.$projectslug, $WP_db_content);
                 $WP_db_content = str_replace('#SITE-NAME#', $post['project'], $WP_db_content);
                 $WP_db_content = str_replace('#WP-USR#', $post['_user'], $WP_db_content);
                 $WP_db_content = str_replace('#WP-PSW#', md5($post['_psw']), $WP_db_content);
                 $WP_db_content = str_replace('#ADMIN-EMAIL#', $post['_email'], $WP_db_content);
 
                 //create the customized DB
-                file_put_contents($application_configs['wp_install']['temp'].$post['project'].'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
+                file_put_contents($application_configs['wp_install']['temp'].$projectslug.'/'.$application_configs['wp_install']['wp_db_template'], $WP_db_content);
 
                 //#Upload WP customized instance
                 $files = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($application_configs['wp_install']['temp'].$post['project']),
+                    new RecursiveDirectoryIterator($application_configs['wp_install']['temp'].$projectslug),
                     RecursiveIteratorIterator::LEAVES_ONLY
                 );
                 foreach ($files as $file){
@@ -328,8 +331,8 @@ class home extends page{
                     }
                 }
                 $_website_compressed_filename = $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip';
-                $ftp->_compress_files($_website_compressed_filename, $_files, $application_configs['wp_install']['temp'].$post['project'].'/');
-                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip', $post['website']);
+                $ftp->_compress_files($_website_compressed_filename, $_files, $application_configs['wp_install']['temp']); //.$projectslug.'/'
+                $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['temp'].'project-oaisdakwhe.zip', $projectslug);
 
                 //# Uncompress files via WS
                 if($getProjectWSDetails){
@@ -353,7 +356,7 @@ class home extends page{
                 $_import_ws = $this->_import_ws(new WSConsumer, $ws_details, $fields, $post_);
 
                 unlink($_website_compressed_filename);
-                system('rm -rf ' . escapeshellarg($application_configs['wp_install']['temp'].$post['project']), $retval);
+                system('rm -rf ' . escapeshellarg($application_configs['wp_install']['temp'].$projectslug), $retval);
                 
                 $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
             }
@@ -376,7 +379,7 @@ class home extends page{
                         'ws_user', 'ws_psw'
                     );
                     $post_ = 'compressed_filename=ws-oap.zip'.
-                        '&application_slug='.$this->_getSlugByProjectName($post['project']).
+                        '&application_slug='.$projectslug.
                         '&ws_oap_folder='.$_ws_oap_folder.
                         '&ws_database_url='.$_ws_database_url.
                         '&ws_file_list_url='.$_ws_file_list_url.
@@ -386,42 +389,42 @@ class home extends page{
                     $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                 }
 
-                mkdir($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']));
+                mkdir($application_configs['bp_install']['temp'].$projectslug);
 
                 $bp_config_tmpl_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['bp_config_tmpl_filename']);
                 $htaccess_tmpl_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['htaccess_tmpl_filename']);
                 $BP_db_content = file_get_contents($application_configs['bp_install']['bp_tmpl'].$application_configs['bp_install']['bp_db_template']);
 
                 //bp-config
-                $bp_config_tmpl_content = str_replace('#SITE-URL#', $post['website'], $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#SITE-URL#', $this->_getDomainWithoutProtocol($post['website']), $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#ROOT_PATH#', $post['ftp_root'], $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#APPLICATION-NAME#', $post['project'], $bp_config_tmpl_content);
-                $bp_config_tmpl_content = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $bp_config_tmpl_content);
+                $bp_config_tmpl_content = str_replace('#APPLICATION-SLUG#', $projectslug, $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#DB-NAME#', $post['db_name'], $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#DB-USER#', $post['db_user'], $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#DB-PSW#', $post['db_psw'], $bp_config_tmpl_content);
                 $bp_config_tmpl_content = str_replace('#DB-HOST#', $post['db_host'], $bp_config_tmpl_content);
 
                 //use the BP instance from template
-                $this->recurse_copy($application_configs['bp_install']['bp_tmpl'], $application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/');
+                $this->recurse_copy($application_configs['bp_install']['bp_tmpl'], $application_configs['bp_install']['temp'].$projectslug.'/');
 
-                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/-application-config.php', $bp_config_tmpl_content);
+                file_put_contents($application_configs['bp_install']['temp'].$projectslug.'/-application-config.php', $bp_config_tmpl_content);
 
                 //use an already customized .htaccess
-                $htaccess = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $htaccess_tmpl_content);
-                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/.htaccess', $htaccess);
+                $htaccess = str_replace('#APPLICATION-SLUG#', $projectslug, $htaccess_tmpl_content);
+                file_put_contents($application_configs['bp_install']['temp'].$projectslug.'/.htaccess', $htaccess);
 
                 //customize the DB from a template
                 $BP_db_content = str_replace('#BP-USR#', $post['_user'], $BP_db_content);
                 $BP_db_content = str_replace('#BP-PSW#', md5($post['_psw']), $BP_db_content);
-                $BP_db_content = str_replace('#APPLICATION-SLUG#', $this->_getSlugByProjectName($post['project']), $BP_db_content);
+                $BP_db_content = str_replace('#APPLICATION-SLUG#', $projectslug, $BP_db_content);
 
                 //create the customized DB
-                file_put_contents($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project']).'/'.$application_configs['bp_install']['bp_db_template'], $BP_db_content);
+                file_put_contents($application_configs['bp_install']['temp'].$projectslug.'/'.$application_configs['bp_install']['bp_db_template'], $BP_db_content);
 
                 //#Upload BP customized instance
                 $files = new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project'])),
+                    new RecursiveDirectoryIterator($application_configs['bp_install']['temp'].$projectslug),
                     RecursiveIteratorIterator::LEAVES_ONLY
                 );
                 foreach ($files as $file){
@@ -455,7 +458,7 @@ class home extends page{
                 $_import_ws = $this->_import_ws(new WSConsumer, $ws_details, $fields, $post_);
 
                 unlink($_website_compressed_filename);
-                system('rm -rf ' . escapeshellarg($application_configs['bp_install']['temp'].$this->_getSlugByProjectName($post['project'])), $retval);
+                system('rm -rf ' . escapeshellarg($application_configs['bp_install']['temp'].$projectslug), $retval);
                 
                 $_message = array('field' => '', 'valid' => true, 'message' => 'ok');
             }
@@ -465,11 +468,128 @@ class home extends page{
             'type' => 'ws', 
             'response' => array(
                 'project_id' => $_project_id,
+                'id_db_details' => $_id_db_details,
                 '_import' => $_import_ws,
                 '_uncompressfile_ws' => $_uncompressfile_ws,
                 'message' => $_message
             )
         );
+    }
+
+    public function _action_golive($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $post['id_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $selectedTable = 'oap__projects';
+        $selectValues_oap__projects[] = 'id_project';
+        $selectValues_oap__projects[] = 'project';
+        $selectValues_oap__projects[] = 'website_id';
+        $whereValues_oap__projects[] = array('where_field' => 'id_project', 'where_value' => $id_project);
+        $oap__projects = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_oap__projects, $whereValues_oap__projects)['response'];
+
+        $selectedTable = 'oap__websites';
+        $selectValues_oap__websites[] = 'id_website';
+        $selectValues_oap__websites[] = 'website';
+        $selectValues_oap__websites[] = 'wp_admin';
+        $selectValues_oap__websites[] = 'ftp_id_details';
+        $selectValues_oap__websites[] = 'db_id_details';
+        $selectValues_oap__websites[] = 'ws_id_details';
+        $whereValues_oap__websites[] = array('where_field' => 'id_website', 'where_value' => $oap__projects[0]['website_id']);
+        $oap__websites = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_oap__websites, $whereValues_oap__websites)['response'];
+        
+        $selectedTable = 'oap__ftp_details';
+        $selectValues_oap__ftp_details[] = 'id_ftp_details';
+        $selectValues_oap__ftp_details[] = 'ftp_host';
+        $selectValues_oap__ftp_details[] = 'ftp_root';
+        $selectValues_oap__ftp_details[] = 'ftp_user';
+        $selectValues_oap__ftp_details[] = 'ftp_psw';
+        $whereValues_oap__ftp_details[] = array('where_field' => 'id_ftp_details', 'where_value' => $oap__websites[0]['ftp_id_details']);
+        $oap__ftp_details = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_oap__ftp_details, $whereValues_oap__ftp_details)['response'];
+        
+        //# change this out
+        $dev_website_protocol = 'https://'; //# TODO fix this part
+        $dev_website_url = $oap__websites[0]['website']; //$dev_website_protocol.'domain/folder/'; //#URL of the DEV WP website
+        $prod_website_url = '/';
+
+        $encryption = new Encryption($application_configs['encryption_details']);
+
+        $ftp__host = $oap__ftp_details[0]['ftp_host'];
+        $ftp__user = $encryption->decrypt($oap__ftp_details[0]['ftp_user']);
+        $ftp__password = $encryption->decrypt($oap__ftp_details[0]['ftp_psw']);
+        $ftp__destination_folder = $oap__ftp_details[0]['ftp_root']; //'/website'; //# TODO fix this part
+
+        $_date = new DateTime();
+
+        $file_ary_edit[] = $file_ary_all[] = NULL;
+
+        if($dev_website_url !== ''){
+//        $ary_missing_files = array( //#TODO fix this part
+//            '_utils/wp-emoji-release.min.js' => '/wp-includes/js/wp-emoji-release.min.js',
+//            '_utils/wp-embed.min.js' => '/wp-includes/js/wp-embed.min.js'
+//        );
+            $dev_website_url_js = $this->_get_website_url_js($dev_website_url); //#Customized URL for the javascript part
+            $dev_website_cache_dir = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'cache/'.$oap__projects[0]['project'].'-'.$_date->format('Y-m-d_H:i:s');
+
+            $_download_website_to_cache = $this->download_website_to_cache($dev_website_url, $dev_website_cache_dir);
+            $files = $this->filesystem_navigation($dev_website_cache_dir);
+
+            $file_ary_edit = $files['file_ary_edit'];
+            $file_ary_all = $files['file_ary_all'];
+
+            echo '<h1>Response:</h1>';
+            echo '<p>exec_status:'.$_download_website_to_cache['exec_status'].'</p>';
+            echo '<p>$dev_website_cache_dir: '.$dev_website_cache_dir.'</p>';
+
+            echo '<pre>';
+            var_dump($file_ary_edit);
+            echo '</pre>';
+
+            //replace dev_website_url
+            foreach ($file_ary_edit as $f){
+                $this->_find_replace_in_file($f, $dev_website_url, $prod_website_url);
+            }
+
+            //replace dev_website_url_js
+            foreach ($file_ary_edit as $f){
+                $this->_find_replace_in_file($f, $dev_website_url_js, $this->_get_website_url_js($prod_website_url));
+            }
+
+            //replace /wp-content
+            foreach ($file_ary_edit as $f){
+                $this->_find_replace_in_file($f, 'src="/wp-content/', 'src="'.$prod_website_url.'/wp-content/');
+            }
+
+            //rename file with ?
+            foreach ($file_ary_all as $f){
+                $this->_rename_file($f);
+            }
+
+            //copy some files that wget can't catch
+            //# Inspired by https://github.com/iamthemanintheshower/WP-from-DEV-to-HTML-LIVE
+            //# TODO: fix this part
+            /*
+            foreach ($ary_missing_files as $k => $v){
+                copy(
+                    __DIR__. '/'.$k, 
+                    $dev_website_cache_dir.'/'.str_replace($dev_website_protocol, '', $dev_website_url).$v
+                );
+            }*/
+
+            $ftp_connection = ftp_connect($ftp__host) or die("Couldn't connect to ".$ftp__host); 
+            if (ftp_login($ftp_connection, $ftp__user, $ftp__password)) {
+                ftp_chdir($ftp_connection, $ftp__destination_folder);
+                foreach ($file_ary_all as $filename){
+                    if(file_exists($filename)){
+                        $this->ftp_put_dir($ftp_connection, $dev_website_cache_dir.'/'.str_replace($dev_website_protocol, '', $dev_website_url), $ftp__destination_folder);
+                    }
+                }
+                $message = 'Check the website: <a target="_blank" href="'.$prod_website_url.'">'.$prod_website_url.'</a>';
+            }else{
+                $message = 'Not connected. Check FTP details.';
+            }
+
+            echo '<a target="_blank" href="'.$prod_website_url.'">'.$prod_website_url.'</a>';
+        }
     }
 
     private function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
@@ -547,11 +667,155 @@ class home extends page{
 
     private function _getSlugByProjectName($ProjectName){ //#TODO improve the slug creator
         $_projectname = str_replace(' ', '-', $ProjectName);
+        $_projectname = str_replace('é', 'e', $_projectname);
+        $_projectname = str_replace('è', 'e', $_projectname);
+        $_projectname = str_replace('https://', '', $_projectname);
+        $_projectname = strtolower($_projectname);
+        return $_projectname;
+    }
+
+    private function _getDomainWithoutProtocol($_projectname){
+        $_projectname = str_replace('https://', '', $_projectname);
         $_projectname = strtolower($_projectname);
         return $_projectname;
     }
 
     public function getInitScript($application_configs, $token){
         $this->_getInitScript($application_configs, $token);
+    }
+    
+    
+    
+    
+    
+    
+    //# Inspired by https://github.com/iamthemanintheshower/WP-from-DEV-to-HTML-LIVE
+    //# TODO: fix this part
+    private function _find_replace_in_file($path_to_file, $dev_website_url, $prod_website_url){
+        if(!empty($path_to_file) && is_file($path_to_file)){
+            $file_contents = file_get_contents($path_to_file);
+            $file_contents = str_replace($dev_website_url, $prod_website_url, $file_contents);
+            file_put_contents($path_to_file,$file_contents);
+        }
+    }
+    private function _rename_file($path_to_file){
+        if(strpos($path_to_file, '?') !== false || strpos($path_to_file, '?') !== false){
+            $path_to_file__ary = explode('?', $path_to_file);
+            if(isset($path_to_file__ary[0])){
+                rename($path_to_file, $path_to_file__ary[0]);
+            }
+        }
+    }
+
+    private function download_website_to_cache($dev_website_url, $dev_website_cache_dir){
+        $exec_output = $exec_status = '';
+
+        //# Create dir for the cache
+        mkdir($dev_website_cache_dir);
+
+        //# Change directory to the cache
+        chdir($dev_website_cache_dir);
+
+        //# wget the website cache into the directory cache
+        exec('wget  -r -p -U Mozilla --no-parent '.$dev_website_url, $exec_output, $exec_status); //wget -E -H -k -p 
+
+        return array('exec_output' => $exec_output, 'exec_status' => $exec_status);
+    }
+
+    private function _get_website_url_js($dev_website_url){
+        return str_replace('/', '\/', $dev_website_url);
+    }
+
+    private function ftp_put_dir($ftp_connection, $local_folder, $ftp__destination_folder) {
+        $d = dir($local_folder);
+        while($file = $d->read()) {
+            if ($file != "." && $file != "..") {
+                if (is_dir($local_folder."/".$file)) {
+                    if (!@ftp_chdir($ftp_connection, $ftp__destination_folder."/".$file)) {
+                        ftp_mkdir($ftp_connection, $ftp__destination_folder."/".$file);
+                    }
+                    $this->ftp_put_dir($ftp_connection, $local_folder."/".$file, $ftp__destination_folder."/".$file);
+                } else {
+                    ftp_put($ftp_connection, $ftp__destination_folder."/".$file, $local_folder."/".$file, FTP_BINARY);
+                }
+            }
+        }
+        $d->close();
+    }
+
+    private function filesystem_navigation($directory, $extensions = array()) {
+        global $file_ary_edit, $file_ary_all;
+
+        if( substr($directory, -1) == "/" ) { 
+            $directory = substr($directory, 0, strlen($directory) - 1); 
+        }
+
+        $this->_filesystem_navigation_folder($directory, $extensions);
+
+        return array('file_ary_edit' => $file_ary_edit, 'file_ary_all' => $file_ary_all);
+    }
+
+    private function _filesystem_navigation_folder($directory, $extensions = array(), $first_call = true) {
+        global $file_ary_edit, $file_ary_all;
+
+        $file = scandir($directory); 
+        natcasesort($file);
+        $files = $dirs = array();
+
+        foreach($file as $this_file) {
+            if( is_dir("$directory/$this_file" ) ){ 
+                $dirs[] = $this_file;
+            }else{ 
+                $files[] = $this_file;
+            }
+        }
+        $file = array_merge($dirs, $files);
+
+        if( !empty($extensions) ) {
+            foreach( array_keys($file) as $key ) {
+                if( !is_dir("$directory/$file[$key]") ) {
+                    $ext = substr($file[$key], strrpos($file[$key], ".") + 1); 
+                    if( !in_array($ext, $extensions) ){ unset($file[$key]); }
+                }
+            }
+        }
+
+        if( count($file) > 2 ) {
+            if( $first_call ) { $first_call = false; }
+
+            foreach( $file as $this_file ) {
+                if( $this_file != "." && $this_file != ".." ) {
+                    if( is_dir("$directory/$this_file") ) {
+                        $this->_filesystem_navigation_folder("$directory/$this_file", $extensions, false);
+                    } else {
+                        $ext = '';
+                        $path_parts = pathinfo($this_file);
+                        if(isset($path_parts['extension'])){
+                            $ext = $path_parts['extension'];
+                        }
+
+                        switch ($ext) {
+                            case 'php':
+                            case 'html':
+                            case 'js':
+                            case 'txt':
+                            case 'mo':
+                            case '':
+                                $file_ary_edit[] = $directory.'/'.$this_file;
+
+                                break;
+
+                            default:
+                                break;
+                        }
+                        if(!isset($path_parts['extension'])){
+                            $file_ary_edit[] = $directory.'/'.$this_file;
+                        }
+
+                        $file_ary_all[] = $directory.'/'.$this_file;
+                    }
+                }
+            }
+        }
     }
 }

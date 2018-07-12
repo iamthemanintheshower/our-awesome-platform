@@ -69,6 +69,9 @@ $application_configs['parameters_whitelist'] = array(
 
         'project' => $_parameter_mandatory_not_formalcheck //#TODO
     ),
+
+    'application/home/golive' => 'no-parameters', //#TODO
+
     'application/home/getProjectsByGroupID' => 'no-parameters',
     'application/home/getProjectGroups' => 'no-parameters',
 
