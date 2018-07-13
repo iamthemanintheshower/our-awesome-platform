@@ -40,6 +40,8 @@ SOFTWARE.
 
         //#custom on page
         $project = $page_data['project'];
+        $_wp_admin = $page_data['wp_admin'];
+
         $website = $project['website'];
         $project_domain = str_replace('https://', '', $website);
         ?>
@@ -59,7 +61,10 @@ SOFTWARE.
                 <div class="col-sm-2 no-margin-no-padding">
                     <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
                     <span id="current_dir" class="pull-left"></span>
-                    <button class="no-margin-no-padding pull-right" id="golive">golive</button>
+                    <?php if($_wp_admin !== ''){?>
+                        <button class="no-margin-no-padding pull-right" id="golive">golive</button>
+                        <button class="no-margin-no-padding pull-right" id="disableallplugins">disableallplugins</button>
+                    <?php }?>
                     <button class="no-margin-no-padding pull-right" id="refreshFilelistCacheByProject">R</button>
                 </div>
                 <div class="col-sm-1 no-margin-no-padding">

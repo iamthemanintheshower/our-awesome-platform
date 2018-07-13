@@ -47,6 +47,7 @@ include($application_configs['PRIVATE_FOLDER_MODULES'].'localization/localizatio
 include($application_configs['PRIVATE_FOLDER_MODULES'].'inputchecker/InputChecker.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'dbadmin/dbadmin.php');
 include($application_configs['PRIVATE_FOLDER_MODULES'].'timetracker/timetracker.php');
+include($application_configs['PRIVATE_FOLDER_MODULES'].'logviewer/logviewer.php');
 
 session_start();
 

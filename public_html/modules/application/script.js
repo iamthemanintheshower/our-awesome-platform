@@ -163,6 +163,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
     var ftp_src = APPLICATION_URL + 'editor/editor/index/id_project/' + current_project;
     var db_src = APPLICATION_URL + 'dbadmin/dbadmin/index/id_project/' + current_project;
     var timetracker_src = APPLICATION_URL + 'timetracker/timetracker/index/id_project/' + current_project;
+    var logviewer_src = APPLICATION_URL + 'logviewer/logviewer/index/id_project/' + current_project;
 
     $.post( APPLICATION_URL + "/application/home/getProject", { token: token, id_project: current_project, current_action: current_action})
     .done(function(data) {
@@ -177,6 +178,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#wp_admin_iframe').hide();
                 $('#db_admin_iframe').hide();
                 $('#time_iframe').hide();
+                $('#logviewer_iframe').hide();
 
                 $('#ftp_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
@@ -190,6 +192,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#wp_admin_iframe').hide();
                 $('#db_admin_iframe').hide();
                 $('#time_iframe').hide();
+                $('#logviewer_iframe').hide();
 
                 $('#website_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
@@ -203,10 +206,14 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                     $('#website_iframe').hide();
                     $('#db_admin_iframe').hide();
                     $('#time_iframe').hide();
+                    $('#logviewer_iframe').hide();
 
                     $('#wp_admin_iframe').show();
                     if(opened_iframes.indexOf(current_action) === -1){
-                        $('#wp_admin_iframe').attr('src', project.wp_admin);
+                        console.log('project');
+                        console.log(project);
+                        console.log(project.website + '/' + project.projectslug + '/' + project.wp_admin);
+                        $('#wp_admin_iframe').attr('src', project.website + '/' + project.projectslug + '/' + project.wp_admin);
                         opened_iframes.push(current_action);
                     }
                 }else{
@@ -218,6 +225,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#website_iframe').hide();
                 $('#wp_admin_iframe').hide();
                 $('#time_iframe').hide();
+                $('#logviewer_iframe').hide();
 
                 $('#db_admin_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
@@ -230,10 +238,23 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#website_iframe').hide();
                 $('#wp_admin_iframe').hide();
                 $('#db_admin_iframe').hide();
+                $('#logviewer_iframe').hide();
 
                 $('#time_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
                     $('#time_iframe').attr('src', timetracker_src);
+                    opened_iframes.push(current_action);
+                }
+                break;
+            case 'logviewer_action':
+                $('#ftp_iframe').hide();
+                $('#website_iframe').hide();
+                $('#wp_admin_iframe').hide();
+                $('#db_admin_iframe').hide();
+
+                $('#logviewer_iframe').show();
+                if(opened_iframes.indexOf(current_action) === -1){
+                    $('#logviewer_iframe').attr('src', logviewer_src);
                     opened_iframes.push(current_action);
                 }
                 break;

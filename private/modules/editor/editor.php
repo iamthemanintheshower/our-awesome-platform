@@ -153,6 +153,7 @@ class editor extends page{
             'data' => array(
                 'userbean' => $_SESSION['userbean-Q4rp'],
                 'project' => $project,
+                'wp_admin' => $project['wp_admin'],
                 'filelist_ws' => $_filelist_ws
             )
         );

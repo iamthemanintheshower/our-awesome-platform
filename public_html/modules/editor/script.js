@@ -184,7 +184,7 @@ $( document ).ready(function() {
             $('#spinner', window.parent.document).hide();
         })
         .fail(function( data ) {
-            console.log( "FAIL: " + data );
+            console.log( data );
         });
     });
     
@@ -295,6 +295,8 @@ $( document ).ready(function() {
     });
 
     $('body').on('click', '#golive', function () {
+        $('#spinner', window.parent.document).html('The platform is trying to generate the HTML cache of the website. Please, wait until it\'s done');
+        $('#spinner', window.parent.document).show();
         var values = {
             id_project: current_project
         };
@@ -302,6 +304,24 @@ $( document ).ready(function() {
         $.post( APPLICATION_URL + "application/home/golive", values)
         .done(function( data ) {
             console.log(data);
+            $('#spinner', window.parent.document).hide();
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });
+    });
+
+    $('body').on('click', '#disableallplugins', function () {
+        $('#spinner', window.parent.document).html('The platform is trying to disable all plugins of the website. Please, wait until it\'s done');
+        $('#spinner', window.parent.document).show();
+        var values = {
+            id_project: current_project
+        };
+
+        $.post( APPLICATION_URL + "application/home/disableallplugins", values)
+        .done(function( data ) {
+            console.log(data);
+            $('#spinner', window.parent.document).hide();
         })
         .fail(function( data ) {
             console.log( data );

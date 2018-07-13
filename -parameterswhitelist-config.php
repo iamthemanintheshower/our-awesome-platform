@@ -71,6 +71,7 @@ $application_configs['parameters_whitelist'] = array(
     ),
 
     'application/home/golive' => 'no-parameters', //#TODO
+    'application/home/disableallplugins' => 'no-parameters', //#TODO
 
     'application/home/getProjectsByGroupID' => 'no-parameters',
     'application/home/getProjectGroups' => 'no-parameters',
@@ -143,6 +144,8 @@ $application_configs['parameters_whitelist'] = array(
     ),
     'timetracker/timetracker/index' => 'no-parameters', //#TODO
 
+    'logviewer/logviewer/index' => 'no-parameters', //#TODO
+    
     'login/login/index' => 'no-parameters',
     'login/login/checklogin' => array(
         'token' => $_parameter_token,

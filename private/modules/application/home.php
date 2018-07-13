@@ -149,7 +149,7 @@ class home extends page{
         $id_project = $this->getProjectID($post);
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $tabs = $this->getTabsByProjectID($application_configs['db_mng'], $project['id_project']);
-        
+        $project['projectslug'] = $this->_getSlugByProjectName($project['project']);
         return array(
             'type' => 'ws', 
             'response' => array(
@@ -217,7 +217,7 @@ class home extends page{
 
             //#- oap__websites
             $ivWebsite[] = array('field' => 'website', 'typed_value' => $post['website']);
-            $ivWebsite[] = array('field' => 'wp_admin', 'typed_value' => 'wp_admin'); //#TODO: take a decision about this field
+            $ivWebsite[] = array('field' => 'wp_admin', 'typed_value' => 'wp-admin'); //#TODO: take a decision about this field
             $ivWebsite[] = array('field' => 'ftp_id_details', 'typed_value' => $_id_ftp_details);
             $ivWebsite[] = array('field' => 'db_id_details', 'typed_value' => $_id_db_details);
             $ivWebsite[] = array('field' => 'ws_id_details', 'typed_value' => $_id_ws_details);
@@ -233,19 +233,29 @@ class home extends page{
 
             //#- oap__projects_tabs
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 7);
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
             $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
+            if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'WP'){
+                $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+                $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 3);
+                $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+                $ivProjectTabs = null;
+            }
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
 
@@ -276,7 +286,8 @@ class home extends page{
                         'application_slug',
                         'ws_oap_folder',
                         'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
-                        'ws_user', 'ws_psw'
+                        'ws_user', 'ws_psw',
+                        'db_host', 'db_name', 'db_user', 'db_psw'
                     );
                     $post_ = 'compressed_filename=ws-oap.zip'.
                         '&application_slug='.$projectslug.
@@ -285,7 +296,9 @@ class home extends page{
                         '&ws_file_list_url='.$_ws_file_list_url.
                         '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
                         '&ws_user='.$getProjectWSDetails['ws_user'].
-                        '&ws_psw='.$password;
+                        '&ws_psw='.$password.
+                        '&db_host='.$post['db_host'].'&db_name='.$post['db_name'].'&db_user='.$post['db_user'].'&db_psw='.$post['db_psw']
+                        ;
                     $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                 }
 
@@ -376,7 +389,8 @@ class home extends page{
                         'application_slug',
                         'ws_oap_folder',
                         'ws_database_url', 'ws_file_list_url', 'ws_find_string_in_file_url',
-                        'ws_user', 'ws_psw'
+                        'ws_user', 'ws_psw',
+                        'db_host', 'db_name', 'db_user', 'db_psw'
                     );
                     $post_ = 'compressed_filename=ws-oap.zip'.
                         '&application_slug='.$projectslug.
@@ -385,7 +399,9 @@ class home extends page{
                         '&ws_file_list_url='.$_ws_file_list_url.
                         '&ws_find_string_in_file_url='.$_ws_find_string_in_file_url.
                         '&ws_user='.$getProjectWSDetails['ws_user'].
-                        '&ws_psw='.$password;
+                        '&ws_psw='.$password.
+                        '&db_host='.$post['db_host'].'&db_name='.$post['db_name'].'&db_user='.$post['db_user'].'&db_psw='.$post['db_psw']
+                    ;
                     $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                 }
 
@@ -508,7 +524,7 @@ class home extends page{
         
         //# change this out
         $dev_website_protocol = 'https://'; //# TODO fix this part
-        $dev_website_url = $oap__websites[0]['website']; //$dev_website_protocol.'domain/folder/'; //#URL of the DEV WP website
+        $dev_website_url = $oap__websites[0]['website'].'/'.$this->_getSlugByProjectName($oap__projects[0]['project']);
         $prod_website_url = '/';
 
         $encryption = new Encryption($application_configs['encryption_details']);
@@ -516,33 +532,26 @@ class home extends page{
         $ftp__host = $oap__ftp_details[0]['ftp_host'];
         $ftp__user = $encryption->decrypt($oap__ftp_details[0]['ftp_user']);
         $ftp__password = $encryption->decrypt($oap__ftp_details[0]['ftp_psw']);
-        $ftp__destination_folder = $oap__ftp_details[0]['ftp_root']; //'/website'; //# TODO fix this part
+        $ftp__destination_folder = str_replace('/web/htdocs', '', $oap__ftp_details[0]['ftp_root']); //# TODO fix this part
+        $ftp__destination_folder = str_replace('/home', '', $ftp__destination_folder); //# TODO fix this part
 
         $_date = new DateTime();
 
         $file_ary_edit[] = $file_ary_all[] = NULL;
 
         if($dev_website_url !== ''){
-//        $ary_missing_files = array( //#TODO fix this part
-//            '_utils/wp-emoji-release.min.js' => '/wp-includes/js/wp-emoji-release.min.js',
-//            '_utils/wp-embed.min.js' => '/wp-includes/js/wp-embed.min.js'
-//        );
+//            $ary_missing_files = array( //#TODO fix this part
+//                '_utils/wp-emoji-release.min.js' => '/wp-includes/js/wp-emoji-release.min.js',
+//                '_utils/wp-embed.min.js' => '/wp-includes/js/wp-embed.min.js'
+//            );
             $dev_website_url_js = $this->_get_website_url_js($dev_website_url); //#Customized URL for the javascript part
-            $dev_website_cache_dir = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'cache/'.$oap__projects[0]['project'].'-'.$_date->format('Y-m-d_H:i:s');
+            $dev_website_cache_dir = $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].'cache/'.$this->_getSlugByProjectName($oap__projects[0]['project']).'-'.$this->_getSlugByProjectName($_date->format('Y-m-d_H:i:s'));
 
-            $_download_website_to_cache = $this->download_website_to_cache($dev_website_url, $dev_website_cache_dir);
+            $this->download_website_to_cache($dev_website_url, $dev_website_cache_dir); //# TODO: manage the return and proceed only if it's ok
             $files = $this->filesystem_navigation($dev_website_cache_dir);
 
             $file_ary_edit = $files['file_ary_edit'];
             $file_ary_all = $files['file_ary_all'];
-
-            echo '<h1>Response:</h1>';
-            echo '<p>exec_status:'.$_download_website_to_cache['exec_status'].'</p>';
-            echo '<p>$dev_website_cache_dir: '.$dev_website_cache_dir.'</p>';
-
-            echo '<pre>';
-            var_dump($file_ary_edit);
-            echo '</pre>';
 
             //replace dev_website_url
             foreach ($file_ary_edit as $f){
@@ -573,8 +582,8 @@ class home extends page{
                     __DIR__. '/'.$k, 
                     $dev_website_cache_dir.'/'.str_replace($dev_website_protocol, '', $dev_website_url).$v
                 );
-            }*/
-
+            }
+            */
             $ftp_connection = ftp_connect($ftp__host) or die("Couldn't connect to ".$ftp__host); 
             if (ftp_login($ftp_connection, $ftp__user, $ftp__password)) {
                 ftp_chdir($ftp_connection, $ftp__destination_folder);
@@ -583,13 +592,45 @@ class home extends page{
                         $this->ftp_put_dir($ftp_connection, $dev_website_cache_dir.'/'.str_replace($dev_website_protocol, '', $dev_website_url), $ftp__destination_folder);
                     }
                 }
-                $message = 'Check the website: <a target="_blank" href="'.$prod_website_url.'">'.$prod_website_url.'</a>';
+                $_result = 'Check the website: <a target="_blank" href="'.$prod_website_url.'">'.$prod_website_url.'</a>';
             }else{
-                $message = 'Not connected. Check FTP details.';
+                $_result = 'Not connected. Check FTP details.';
             }
-
-            echo '<a target="_blank" href="'.$prod_website_url.'">'.$prod_website_url.'</a>';
         }
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                '_result' => $_result,
+                'prod_website_url' => $prod_website_url
+            )
+        );
+    }
+
+    public function _action_disableallplugins($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $post['id_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $sql_query = "SELECT `option_id`, `option_value` FROM `wp_options` WHERE `option_name` = 'active_plugins'";
+
+        $getActivePlugins_via_ws = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($sql_query, 'ws');
+
+        foreach ($getActivePlugins_via_ws['response'] as $element){
+            $_option_id = $element['option_id'];
+            $_option_value = $element['option_value'];
+        }
+
+        $sql_query = "UPDATE `wp_options` SET option_value = '' WHERE `option_id` = '$_option_id'";
+        $setActivePlugins_via_ws = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($sql_query, 'ws');
+        
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'option_id' => $_option_id,
+                'option_value' => $_option_value,
+                'setActivePlugins_via_ws' => $setActivePlugins_via_ws
+            )
+        );
     }
 
     private function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
@@ -669,6 +710,7 @@ class home extends page{
         $_projectname = str_replace(' ', '-', $ProjectName);
         $_projectname = str_replace('é', 'e', $_projectname);
         $_projectname = str_replace('è', 'e', $_projectname);
+        $_projectname = str_replace(':', '-', $_projectname);
         $_projectname = str_replace('https://', '', $_projectname);
         $_projectname = strtolower($_projectname);
         return $_projectname;
@@ -745,7 +787,6 @@ class home extends page{
 
     private function filesystem_navigation($directory, $extensions = array()) {
         global $file_ary_edit, $file_ary_all;
-
         if( substr($directory, -1) == "/" ) { 
             $directory = substr($directory, 0, strlen($directory) - 1); 
         }

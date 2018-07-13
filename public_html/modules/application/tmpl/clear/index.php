@@ -96,6 +96,7 @@ SOFTWARE.
                     <iframe id="wp_admin_iframe" src=""></iframe>
                     <iframe id="db_admin_iframe" src=""></iframe>
                     <iframe id="time_iframe" src=""></iframe>
+                    <iframe id="logviewer_iframe" src=""></iframe>
                 </div>
             </div>
 
