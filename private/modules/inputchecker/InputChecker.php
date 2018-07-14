@@ -112,21 +112,27 @@ class InputChecker {
         //#usertypes/positions
         $_valid = false;
 
-        $userbean = unserialize($_SESSION['userbean-Q4rp']);
+        if($position !== 'login/login/index' && $position !== 'login/login/checklogin'){ //#TODO improve this part developing a method that checks the whitelist 
+            if(isset($_SESSION) && isset($_SESSION['userbean-Q4rp'])){
+                $userbean = unserialize($_SESSION['userbean-Q4rp']);
 
-        $sql_query = 
-            "SELECT * FROM `oap__usertypes_positions` utp LEFT JOIN `oap__positions` p ON utp.position_id = p.id_position ".
-            "WHERE utp.usertype_id='".$userbean->getIdUserType()."' p.position='$position'";
-        $checkIfTheUsertypeIsAllowedToThePosition = $application_configs['db_mng']->getDataByQuery($sql_query, 'db');
+                $sql_query = 
+                    "SELECT * FROM `oap__usertypes_positions` utp LEFT JOIN `oap__positions` p ON utp.position_id = p.id_position ".
+                    "WHERE utp.usertype_id='".$userbean->getIdUserType()."' AND p.position='$position'";
+                $checkIfTheUsertypeIsAllowedToThePosition = $application_configs['db_mng']->getDataByQuery($sql_query, 'db');
 
-        if(isset($checkIfTheUsertypeIsAllowedToThePosition['response']) && is_array($checkIfTheUsertypeIsAllowedToThePosition['response'])){
-            foreach ($checkIfTheUsertypeIsAllowedToThePosition['response'] as $element){
-                $_valid = true;
+                if(isset($checkIfTheUsertypeIsAllowedToThePosition['response']) && is_array($checkIfTheUsertypeIsAllowedToThePosition['response'])){
+                    foreach ($checkIfTheUsertypeIsAllowedToThePosition['response'] as $element){
+                        $_valid = true;
+                    }
+                }
             }
-        }
 
-        if($_valid === false){
-            return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
+            if($_valid === false){
+                return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
+            }else{
+                return array('field' => $position, 'valid' => true, 'message' => 'ok');
+            }
         }else{
             return array('field' => $position, 'valid' => true, 'message' => 'ok');
         }
