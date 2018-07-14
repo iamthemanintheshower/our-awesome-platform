@@ -41,8 +41,9 @@ class InputChecker {
                 if($_checkIfPostDataIsValid['valid']){
                     $_checkIfTheUsertypeIsAllowedToThePosition = $this->checkIfTheUsertypeIsAllowedToThePosition($application_configs, $position);
                     if($_checkIfTheUsertypeIsAllowedToThePosition['valid']){
-                        $_checkAuthorizationOnData = $this->checkAuthorizationOnData($post, $position);
+                        $_checkAuthorizationOnData = $this->checkAuthorizationOnData($application_configs, $post, $position);
                         return $_checkAuthorizationOnData;
+//                        return $_checkIfTheUsertypeIsAllowedToThePosition;
                     }else{
                         return $_checkIfTheUsertypeIsAllowedToThePosition;
                     }
@@ -143,29 +144,64 @@ class InputChecker {
         }
     }
 
-    private function checkAuthorizationOnData($post, $position){
+    private function checkAuthorizationOnData($application_configs, $post, $position){
         //#
-        $_valid = false;
+        $_valid = true;
 
         switch ($position) {
             case 'application/home/getProject':
-                //# TODO Check if the logged use can getProject by checking the id_project parameter
-                
-                if($_valid === false){
-                    return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
-                }else{
+                //# TODO Check if the logged user can getProject by checking the id_project parameter
+                $project_id = $this->getProjectID($post);
+
+                //# project/tabs
+                $selectedTable = 'oap__projects_tabs';
+                $selectValues_getTabsByProjectID[] = 'tab_id';
+
+                $userbean = unserialize($_SESSION['userbean-Q4rp']);
+
+                $whereValues[] = array('where_field' => 'project_id', 'where_value' => $project_id);
+                $whereValues[] = array('where_field' => 'usertype_id', 'where_value' => $userbean->getIdUserType());
+
+                $getTabsByProjectID = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_getTabsByProjectID, $whereValues);
+
+                if(sizeof($getTabsByProjectID['response']) > 0){
                     return array('field' => $position, 'valid' => true, 'message' => 'ok');
+                }else{
+                    return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
+                }
+                break;
+
+            case 'application/home/saveNewProject':
+                //# projects
+                $selectedTable = 'oap__projects';
+                $selectValues_getProjectByName[] = 'id_project';
+
+                $whereValues[] = array('where_field' => 'project', 'where_value' => $post['project']);
+
+                $getProjectByName = $application_configs['db_mng']->getDataByWhere($selectedTable, $selectValues_getProjectByName, $whereValues);
+
+                if(sizeof($getProjectByName['response']) === 0){
+                    return array('field' => $position, 'valid' => true, 'message' => 'ok');
+                }else{
+                    return array('field' => $position, 'valid' => $_valid, 'message' => 'Project with the same name already exists'); //#TODO improve this part with the Localization
                 }
                 break;
 
             default: //# no check needed, return "ok"
                 return array('field' => $position, 'valid' => true, 'message' => 'ok');
         }
+        return array('field' => $position, 'valid' => true, 'message' => 'ok');
     }
 
     private function getLocalization($language, $module, $controller, $action){
         $localization = new localization();
         return $localization->getLocalization($language, $module, $controller, $action);
     }
-
+    private function getProjectID($optional_parameters){
+        if($optional_parameters){
+            return $optional_parameters['id_project'];
+        }else{
+            return false;
+        }
+    }
 }
