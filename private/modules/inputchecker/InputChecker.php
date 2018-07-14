@@ -37,9 +37,13 @@ class InputChecker {
 
         if($getParametersWhitelist){
             if($this->checkIfThePostKeysAreEqual($post_keys, $getParametersWhitelist)){
-
                 $_checkIfPostDataIsValid = $this->checkIfPostDataIsValid($position, $post, $application_configs['parameters_whitelist']);
-                return $_checkIfPostDataIsValid;
+                if($_checkIfPostDataIsValid['valid']){
+                    $_checkIfTheUsertypeIsAllowedToThePosition = $this->checkIfTheUsertypeIsAllowedToThePosition($application_configs, $position);
+                    return $_checkIfTheUsertypeIsAllowedToThePosition;
+                }else{
+                    return $_checkIfPostDataIsValid;
+                }
             }else{
                 $localization = $this->getLocalization($application_configs['language'], $module, $controller, 'default');
                 die('1<a href="'.$application_configs['APPLICATION_URL_LOGIN'].'">'.$localization['error-log-done'].'</a>');
@@ -104,6 +108,29 @@ class InputChecker {
         return array('field' => '', 'valid' => true, 'message' => 'ok');
     }
 
+    private function checkIfTheUsertypeIsAllowedToThePosition($application_configs, $position){
+        //#usertypes/positions
+        $_valid = false;
+
+        $userbean = unserialize($_SESSION['userbean-Q4rp']);
+
+        $sql_query = 
+            "SELECT * FROM `oap__usertypes_positions` utp LEFT JOIN `oap__positions` p ON utp.position_id = p.id_position ".
+            "WHERE utp.usertype_id='".$userbean->getIdUserType()."' p.position='$position'";
+        $checkIfTheUsertypeIsAllowedToThePosition = $application_configs['db_mng']->getDataByQuery($sql_query, 'db');
+
+        if(isset($checkIfTheUsertypeIsAllowedToThePosition['response']) && is_array($checkIfTheUsertypeIsAllowedToThePosition['response'])){
+            foreach ($checkIfTheUsertypeIsAllowedToThePosition['response'] as $element){
+                $_valid = true;
+            }
+        }
+
+        if($_valid === false){
+            return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
+        }else{
+            return array('field' => $position, 'valid' => true, 'message' => 'ok');
+        }
+    }
 
     private function getLocalization($language, $module, $controller, $action){
         $localization = new localization();

@@ -78,11 +78,14 @@ class Project {
         $selectedTable = 'oap__projects_tabs';
         $selectValues_getTabsByProjectID[] = 'tab_id';
 
+        $userbean = unserialize($_SESSION['userbean-Q4rp']);
+
         $whereValues[] = array('where_field' => 'project_id', 'where_value' => $id_project);
+        $whereValues[] = array('where_field' => 'usertype_id', 'where_value' => $userbean->getIdUserType());
 
         $getTabsByProjectID = $this->db_mng->getDataByWhere($selectedTable, $selectValues_getTabsByProjectID, $whereValues);
 
-        foreach ($getTabsByProjectID['response_columns'] as $v){   
+        foreach ($getTabsByProjectID['response_columns'] as $v){
             //# tabs
             $selectedTable_getTabByID = 'oap__tabs';
             $selectValues_getTabByID[] = 'id_tab';

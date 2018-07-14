@@ -106,7 +106,6 @@ $application_configs['parameters_whitelist'] = array(
         'token' => $_parameter_token
     ),
     'dbadmin/dbadmin/downloaddatabase' => 'no-parameters', //#TODO
-
     'dbadmin/dbadmin/getQueryResult' => array(
         'id_project' => $_parameter_mandatory_number_2,
         'raw_query' => array(
