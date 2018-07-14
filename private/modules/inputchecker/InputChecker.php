@@ -40,7 +40,12 @@ class InputChecker {
                 $_checkIfPostDataIsValid = $this->checkIfPostDataIsValid($position, $post, $application_configs['parameters_whitelist']);
                 if($_checkIfPostDataIsValid['valid']){
                     $_checkIfTheUsertypeIsAllowedToThePosition = $this->checkIfTheUsertypeIsAllowedToThePosition($application_configs, $position);
-                    return $_checkIfTheUsertypeIsAllowedToThePosition;
+                    if($_checkIfTheUsertypeIsAllowedToThePosition['valid']){
+                        $_checkAuthorizationOnData = $this->checkAuthorizationOnData($post, $position);
+                        return $_checkAuthorizationOnData;
+                    }else{
+                        return $_checkIfTheUsertypeIsAllowedToThePosition;
+                    }
                 }else{
                     return $_checkIfPostDataIsValid;
                 }
@@ -135,6 +140,26 @@ class InputChecker {
             }
         }else{
             return array('field' => $position, 'valid' => true, 'message' => 'ok');
+        }
+    }
+
+    private function checkAuthorizationOnData($post, $position){
+        //#
+        $_valid = false;
+
+        switch ($position) {
+            case 'application/home/getProject':
+                //# TODO Check if the logged use can getProject by checking the id_project parameter
+                
+                if($_valid === false){
+                    return array('field' => $position, 'valid' => $_valid, 'message' => 'Not authorized.'); //#TODO improve this part with the Localization
+                }else{
+                    return array('field' => $position, 'valid' => true, 'message' => 'ok');
+                }
+                break;
+
+            default: //# no check needed, return "ok"
+                return array('field' => $position, 'valid' => true, 'message' => 'ok');
         }
     }
 
