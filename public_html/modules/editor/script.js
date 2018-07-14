@@ -351,11 +351,10 @@ function setFile(this_, data){
         data: data,
         token: token
     };
-console.log(values);
+
     $.post( APPLICATION_URL + "editor/editor/setFile", values)
     .done(function( data ) {
-        console.log(data);
-        alert('Saved');
+        manage_result(values, data, window.parent.document);
         enable_element(this_);
     })
     .fail(function( data ) {
@@ -379,10 +378,8 @@ function deleteFile(this_, data){
 
     $.post( APPLICATION_URL + "editor/editor/deleteFile/id_project/" + current_project + "/subfolder/" + $( '#upload_dir').val() + "/file/" + file, values)
     .done(function( data ) {
-        console.log(data);
-        alert('Deleted');
+        manage_result(values, data, window.parent.document);
         enable_element(this_);
-        location.reload();
     })
     .fail(function( data ) {
         console.log( data );
@@ -391,7 +388,6 @@ function deleteFile(this_, data){
     });
 }
 function editor_history() {
-
     var file = $( '#file').val();
     var values = {file: file, id_project: current_project, token: 'token1'};
 

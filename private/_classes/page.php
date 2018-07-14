@@ -120,6 +120,24 @@ class page {
                 return true;
             }
 
+            function manage_result(values, data, window_){
+                console.log('manage-result-VALUES');
+                console.log(values);
+                console.log('manage-result-DATA');
+                console.log(data);
+
+                if(typeof data.valid === "undefined" || data.valid === 'false'){
+                    $('#message_h4', window_).html('Info');
+                }else{
+                    $('#message_h4', window_).html('Error');
+                }
+
+                $('#message_body', window_).html(data.field + ': ' + data.message);
+
+                $('#message_modal', window_).modal('show');
+                $('#message_modal', window_).css('opacity', 1) //#TODO find a real solution, this is a workaround
+            }
+
             <?php echo $page_related_scripts;?>
         </script>
     <?php
