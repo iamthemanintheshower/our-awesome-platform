@@ -44,6 +44,7 @@ class Project {
         $selectValues_getProjectDataByID[] = 'id_project';
         $selectValues_getProjectDataByID[] = 'project';
         $selectValues_getProjectDataByID[] = 'website_id';
+        $selectValues_getProjectDataByID[] = 'radioProjectType';
 
         $whereValues[] = array('where_field' => 'id_project', 'where_value' => $id_project);
 
@@ -80,8 +81,10 @@ class Project {
 
         $userbean = unserialize($_SESSION['userbean-Q4rp']);
 
+        $_usertype_id = $this->getIdUsertypeInProjectByUserID($id_project, $userbean->getId());
+
         $whereValues[] = array('where_field' => 'project_id', 'where_value' => $id_project);
-        $whereValues[] = array('where_field' => 'usertype_id', 'where_value' => $userbean->getIdUserType());
+        $whereValues[] = array('where_field' => 'usertype_id', 'where_value' => $_usertype_id);
 
         $getTabsByProjectID = $this->db_mng->getDataByWhere($selectedTable, $selectValues_getTabsByProjectID, $whereValues);
 
@@ -138,6 +141,14 @@ class Project {
         LEFT JOIN oap__tabs tabs ON tabs.id_tab = timetracker.tab_id
         WHERE timetracker.project_id="'.$project_id.'"';
         return $this->db_mng->getDataByQuery($sql_query, 'db');
+    }
+
+    public function getIdUsertypeInProjectByUserID($project_id, $user_id){
+        $sql_query = 'SELECT user_project_usertype.usertype_id
+        FROM `oap__user_project_usertype` user_project_usertype
+        WHERE user_project_usertype.user_id="'.$user_id.'"
+        AND user_project_usertype.project_id="'.$project_id.'"';
+        return $this->db_mng->getDataByQuery($sql_query, 'db')['response'][0]['usertype_id'];
     }
 
     public function getProjectDBDetails($db_id_details){

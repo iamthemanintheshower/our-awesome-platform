@@ -225,8 +225,11 @@ class home extends page{
             $_website_id = $application_configs['db_mng']->saveDataOnTable('oap__websites', $ivWebsite, 'db', 0);
 
             //#- oap__projects
+            if($post['radioProjectType'] === 'BlankProject'){$_radioProjectType = 'BP';} //#TODO: improve these two lines
+            if($post['radioProjectType'] === 'None'){$_radioProjectType = 'NN';}
             $ivProject[] = array('field' => 'project', 'typed_value' => $post['project']);
             $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
+            $ivProject[] = array('field' => 'radioProjectType', 'typed_value' => $_radioProjectType);
 
             $_project_id = $application_configs['db_mng']->saveDataOnTable('oap__projects', $ivProject, 'db', 0);
             $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
@@ -270,6 +273,15 @@ class home extends page{
             $ivProjectsGroups[] = array('field' => 'group_id', 'typed_value' => $_group_id);
 
             $application_configs['db_mng']->saveDataOnTable('oap__projects_groups', $ivProjectsGroups, 'db', 0);
+
+            //#- oap__user_project_usertype
+            $userbean = unserialize($_SESSION['userbean-Q4rp']);
+            $ivUserProjectUsertype[] = array('field' => 'user_id', 'typed_value' => $userbean->getId());
+            $ivUserProjectUsertype[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivUserProjectUsertype[] = array('field' => 'usertype_id', 'typed_value' => 1);
+
+            $application_configs['db_mng']->saveDataOnTable('oap__user_project_usertype', $ivUserProjectUsertype, 'db', 0);
+
 
             //# Upload the WS folders
             $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_ftp_details);

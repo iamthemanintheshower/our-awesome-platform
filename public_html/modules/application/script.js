@@ -196,7 +196,11 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                 $('#website_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
-                    $('#website_iframe').attr('src', project.website);
+                    if(project.radioProjectType === 'WP'){
+                        $('#website_iframe').attr('src', project.website + '/' + project.projectslug);
+                    }else{
+                        $('#website_iframe').attr('src', project.website);
+                    }
                     opened_iframes.push(current_action);
                 }
                 break;
@@ -251,6 +255,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#website_iframe').hide();
                 $('#wp_admin_iframe').hide();
                 $('#db_admin_iframe').hide();
+                $('#time_iframe').hide();
 
                 $('#logviewer_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
