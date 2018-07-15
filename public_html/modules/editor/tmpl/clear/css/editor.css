@@ -100,3 +100,9 @@ div#div_header_bar input {font-size: 8px;line-height: 8px;}
     font-size: 30px;
     display: none;
 }
+
+.btnUpload{
+    white-space: normal;
+    height: 100px;
+    width: 24%;
+}

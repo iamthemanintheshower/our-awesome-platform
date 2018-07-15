@@ -166,6 +166,7 @@ SOFTWARE.
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="file_change_history_result_modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -183,5 +184,27 @@ SOFTWARE.
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="confirmupload_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Confirm Upload</h4>
+                    </div>
+                    <div class="modal-body" id="confirmupload_modal">
+                        <button type="button" class="btn btn-primary btnUpload" id="btnUpload">Upload</button>
+                        <button type="button" class="btn btn-primary btnUpload" id="btnUpload_Uncompress">Upload & uncompress</button>
+                        <button type="button" class="btn btn-primary btnUpload" id="btnUpload_Uncompress_Delete">Upload, uncompress & delete the original file</button>
+                        <button type="button" class="btn btn-primary btnUpload" id="btnUpload_WP_Theme">Upload a WP theme</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </body>
 </html>

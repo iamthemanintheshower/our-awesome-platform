@@ -232,6 +232,11 @@ $( document ).ready(function() {
     });
 
     $('#upload').on('click', function() {
+        $('#confirmupload_modal').modal();
+        return false;
+    });
+    
+    $('.btnUpload').on('click', function() {
         if($( '#dir').val() !== ''){
             $( '#upload_dir').val($( '#dir').val());
         }else{
@@ -241,38 +246,34 @@ $( document ).ready(function() {
         var file = $( '#file').val();
 
         if($( '#upload_dir').val() !== ''){
-            var confirm_upload = confirm("Sei sicuro di voler caricare " + $( '#upload_dir').val());
-            console.log(confirm_upload);
-            if(!confirm_upload){
-                return false;
-            }
+            var file_data = $('#sortpicture').prop('files')[0];   
+            var form_data = new FormData();                  
+            form_data.append('file', file_data);
+            form_data.append('action', 3);
+
+            form_data.append('subfolder', $( '#upload_dir').val());
+            form_data.append('file', file);
+            form_data.append('uploadType', this.id);
+            form_data.append('token', 'token');
+
+            $.ajax({
+                url: APPLICATION_URL + "editor/editor/uploadFile/id_project/" + current_project + "/subfolder/" + $( '#upload_dir').val() + "/file/" + file + "/data/" + file_data,
+                dataType: 'text',
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,                         
+                type: 'post',
+                success: function(php_script_response){
+                    console.log(php_script_response);
+                    alert('Upload completo');
+                    location.reload();
+                }
+            });
         }else{
             alert('Seleziona una cartella');
             return false;
         }
-        var file_data = $('#sortpicture').prop('files')[0];   
-        var form_data = new FormData();                  
-        form_data.append('file', file_data);
-        form_data.append('action', 3);
-
-        form_data.append('subfolder', $( '#upload_dir').val());
-        form_data.append('file', file);
-        form_data.append('token', 'token');
-
-        $.ajax({
-            url: APPLICATION_URL + "editor/editor/uploadFile/id_project/" + current_project + "/subfolder/" + $( '#upload_dir').val() + "/file/" + file + "/data/" + file_data,
-            dataType: 'text',
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: form_data,                         
-            type: 'post',
-            success: function(php_script_response){
-                console.log(php_script_response);
-                alert('Upload completo');
-                location.reload();
-            }
-         });
     });
     $('body').on('click', '.view_file_in_history_content', function () {
         console.log($(this).data('file'));

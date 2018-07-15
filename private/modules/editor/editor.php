@@ -369,9 +369,33 @@ class editor extends page{
 
             $remote__root_folder = '/';
 
-            $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-            $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
-
+            if(isset($post['uploadType']) && $post['uploadType'] !== ''){
+                $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+                switch ($post['uploadType']) {
+                    case 'btnUpload':
+                        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+                        break;
+                    case 'btnUpload_Uncompress':
+                        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+                        //#TODO uncompress
+                        break;
+                    case 'btnUpload_Uncompress_Delete':
+                        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+                        //#TODO uncompress and delete
+                        break;
+                    case 'btnUpload_WP_Theme':
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+                        $finfo_file = finfo_file($finfo, $local__root_folder.$post['file']);
+                        $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
+                        //#TODO uncompress in /html_file and delete the original theme file
+                        if($finfo_file === 'zip'){
+                            
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
         return array(
             'type' => 'ws', 
