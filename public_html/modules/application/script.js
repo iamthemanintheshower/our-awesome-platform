@@ -137,6 +137,16 @@ $( document ).ready(function() {
             sendError(position, '', 'script.js', 'save-new-project-fail', '0', data.responseText);
         });
     });
+    $('body').on('click', '#wp_dev_url', function() {
+        $('#wp_prod_url').removeClass('active-action-button');
+        $(this).addClass('active-action-button');
+        $('#website_iframe').attr('src', $(this).data('iframesrc'));
+    });
+    $('body').on('click', '#wp_prod_url', function() {
+        $('#wp_dev_url').removeClass('active-action-button');
+        $(this).addClass('active-action-button');
+        $('#website_iframe').attr('src', $(this).data('iframesrc'));
+    });
 
     var header_height = 100; //#TODO parseInt($('#div_header_bar').height()) + parseInt($('#div_body_bar').height());
     $( "iframe" ).height( $( window ).height() - header_height );
@@ -197,11 +207,21 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                 $('#website_iframe').show();
                 if(opened_iframes.indexOf(current_action) === -1){
                     if(project.radioProjectType === 'WP'){
+                        $('#wp_dev_url').data('iframesrc', project.website + '/' + project.projectslug);
+                        $('#wp_prod_url').data('iframesrc', project.website);
+
                         $('#website_iframe').attr('src', project.website + '/' + project.projectslug);
                     }else{
                         $('#website_iframe').attr('src', project.website);
                     }
                     opened_iframes.push(current_action);
+                }
+                if(project.radioProjectType === 'WP'){
+                    $('#wp_prod_url').removeClass('active-action-button');
+                    $('#wp_dev_url').addClass('active-action-button');
+
+                    $('#wp_dev_url').show();
+                    $('#wp_prod_url').show();
                 }
                 break;
             case 'wp_admin_action':
@@ -338,6 +358,10 @@ function show_tabs(tabs){
     $( tabs ).each(function( index, value ) {
         div_tabs = div_tabs + value.button;
     });
+    div_tabs = div_tabs + '<button id="wp_prod_url" data-iframesrc="" class="float-right" type="button">Prod</button>';
+    div_tabs = div_tabs + '<button id="wp_dev_url" data-iframesrc="" class="float-right" type="button">Dev</button>';
+    $('#wp_dev_url').hide();
+    $('#wp_prod_url').hide();
     $('#tabs').html(div_tabs);
 }
 
