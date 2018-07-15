@@ -31,12 +31,7 @@ include(__DIR__.'/_include-soaidas/db_mng.php');
 $query_type = $post['query_type'];
 $query_string = $post['query_string'];
 
-$application_configs['db_details'] = array(
-    'Nrqtx0HHsX' => 'DB_SERVER',
-    'VxMO8N5kX4' => 'DB_NAME',
-    'qsPV6EwtzA' => 'DB_USER',
-    'AQowahicz5' => 'DB_PSW'
-);
+#DB-DETAILS#
 
 $application_configs['db_mng'] = new DbMng($application_configs['db_details']);
 

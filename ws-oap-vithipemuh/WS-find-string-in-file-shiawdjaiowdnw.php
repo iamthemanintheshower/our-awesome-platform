@@ -28,7 +28,7 @@ SOFTWARE.
 
 if(isset($_GET['searchstring']) && $_GET['searchstring'] !== ''){
     $searchString = $_GET['searchstring'];
-    $path = str_replace('ws-oap-vithipemuh', '', __DIR__);
+    $path = dirname( dirname(__FILE__) );
     $files = fileList($path);
 
     foreach ($files as $filename) {

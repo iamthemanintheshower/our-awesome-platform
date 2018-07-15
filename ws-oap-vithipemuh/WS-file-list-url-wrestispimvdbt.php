@@ -24,7 +24,7 @@ SOFTWARE.
 */
 
 include("_include-soaidas/filesystem_navigation.php");
-$root_path = str_replace('ws-oap-vithipemuh', '', __DIR__);
+$root_path = dirname( dirname(__FILE__) );
 
 $filesystem_navigation = new FileSystemNavigation();
-echo $filesystem_navigation->filesystem_navigation($root_path);
+echo $filesystem_navigation->filesystem_navigation($root_path).'<input type="hidden" id="root_dir" name="root_dir" value="'.$root_path.'">';
