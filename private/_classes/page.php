@@ -93,6 +93,10 @@ class page {
         return $project->getProjectWSDetails($ws_id_details);
     }
 
+    public function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
+        return $WSConsumer->uncompressfile_ws($ws_details, $fields, $post_);
+    }
+
     public function _getInitScript($application_configs, $token, $page_related_scripts = ''){
         $localization = $this->getLocalization($application_configs['language'], 'default', 'default', 'default');
         ?>

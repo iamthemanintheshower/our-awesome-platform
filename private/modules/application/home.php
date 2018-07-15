@@ -651,10 +651,6 @@ class home extends page{
         );
     }
 
-    private function _uncompressfile_ws($WSConsumer, $ws_details, $fields, $post_){
-        return $WSConsumer->uncompressfile_ws($ws_details, $fields, $post_);
-    }
-
     private function _import_ws($WSConsumer, $ws_details, $fields, $post_){
         return $WSConsumer->import_ws($ws_details, $fields, $post_);
     }

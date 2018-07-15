@@ -385,11 +385,23 @@ class editor extends page{
                         break;
                     case 'btnUpload_WP_Theme':
                         $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
+                        echo $local__root_folder.$post['file'];
                         $finfo_file = finfo_file($finfo, $local__root_folder.$post['file']);
                         $upload_response = $ftp->setFileViaFTP($post, $remote__root_folder, $local__root_folder, $project['website'], $application_configs['db_mng'], $id_project);
                         //#TODO uncompress in /html_file and delete the original theme file
-                        if($finfo_file === 'zip'){
-                            
+                        if($finfo_file === 'application/zip'){
+                            $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+                            $ws_details = array(
+                                'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
+                                'user' => $getProjectWSDetails['ws_user'],
+                                'psw' => $getProjectWSDetails['ws_psw'],
+                            );
+                            $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
+                            $fields = array(
+                                'compressed_filename'
+                            );
+                            $post_ = 'compressed_filename=theme_.zip';
+                            $_uncompressfile_ws = $this->_uncompressfile_ws(new WSConsumer, $ws_details, $fields, $post_);
                         }
                         break;
                     default:
