@@ -15,6 +15,16 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+
+CREATE TABLE `oap__dbadminexecutedqueries` (
+  `id_executed_query` int(11) NOT NULL,
+  `executed_query` text CHARACTER SET utf8 NOT NULL,
+  `query_values` text CHARACTER SET utf8 NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `insert_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 --
 -- Table structure for table `oap__db_details`
 --
@@ -80,6 +90,7 @@ DROP TABLE IF EXISTS `oap__ftp_details`;
 CREATE TABLE `oap__ftp_details` (
   `id_ftp_details` int(11) NOT NULL AUTO_INCREMENT,
   `ftp_host` varchar(50) NOT NULL,
+  `ftp_root` varchar(200) NOT NULL,
   `ftp_user` varchar(200) NOT NULL,
   `ftp_psw` varchar(200) NOT NULL,
   PRIMARY KEY (`id_ftp_details`)
@@ -119,6 +130,13 @@ LOCK TABLES `oap__groups` WRITE;
 /*!40000 ALTER TABLE `oap__groups` DISABLE KEYS */;
 /*!40000 ALTER TABLE `oap__groups` ENABLE KEYS */;
 UNLOCK TABLES;
+
+CREATE TABLE `oap__positions` (
+  `id_position` int(11) NOT NULL,
+  `position` varchar(100) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `oap__projects`
@@ -283,6 +301,31 @@ LOCK TABLES `oap__users` WRITE;
 /*!40000 ALTER TABLE `oap__users` DISABLE KEYS */;
 /*!40000 ALTER TABLE `oap__users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+CREATE TABLE `oap__usertypes` (
+  `id_usertype` int(11) NOT NULL,
+  `usertype` varchar(50) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `oap__usertypes_positions` (
+  `id_usertypepositions` int(11) NOT NULL,
+  `usertype_id` int(11) NOT NULL,
+  `position_id` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `oap__user_project_usertype` (
+  `id_user_project_usertype` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `project_id` int(11) NOT NULL,
+  `usertype_id` int(11) NOT NULL,
+  `insert` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Table structure for table `oap__websites`
