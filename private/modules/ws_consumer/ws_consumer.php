@@ -52,6 +52,10 @@ class WSConsumer {
         return $this->_ws($ws_details, $fields, $post_);
     }
 
+    public function get_ws($ws_details, $fields, $post_){
+        return $this->_ws($ws_details, $fields, $post_);
+    }
+
     private function _ws($ws_details, $fields, $post_){
         $ws_url = $ws_details['ws_url'];
         $ws_user = $ws_details['user'];

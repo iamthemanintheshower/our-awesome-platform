@@ -72,6 +72,9 @@ $application_configs['parameters_whitelist'] = array(
 
     'application/home/golive' => 'no-parameters', //#TODO
     'application/home/disableallplugins' => 'no-parameters', //#TODO
+    'application/home/htmltowp' => 'no-parameters', //#TODO
+    'application/home/getTemplateFiles' => 'no-parameters', //#TODO
+    'application/home/parseHTML' => 'no-parameters', //#TODO
 
     'application/home/getProjectsByGroupID' => 'no-parameters',
     'application/home/getProjectGroups' => 'no-parameters',

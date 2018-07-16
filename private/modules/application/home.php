@@ -35,6 +35,7 @@ class home extends page{
             array(                
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/project_group.php',
+                $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'application/htmltowp.php',
                 $application_configs['PRIVATE_FOLDER_CLASSES'].'button.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'editor/ftp_mng.php',
                 $application_configs['APPLICATION_ROOT'].$application_configs['PRIVATE_FOLDER_MODULES'].'ws_consumer/ws_consumer.php'
@@ -647,6 +648,61 @@ class home extends page{
                 'option_id' => $_option_id,
                 'option_value' => $_option_value,
                 'setActivePlugins_via_ws' => $setActivePlugins_via_ws
+            )
+        );
+    }
+
+    public function _action_htmltowp($application_configs, $module, $action, $post, $optional_parameters){
+        //#Inspired by https://github.com/iamthemanintheshower/itmits__html-to-wp
+        $id_project = $post['id_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+
+            )
+        );
+    }
+    public function _action_getTemplateFiles($application_configs, $module, $action, $post, $optional_parameters){
+        //#Inspired by https://github.com/iamthemanintheshower/itmits__html-to-wp
+        $_project_id = $post['id_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $_project_id);
+        $getProjectWSDetails = $this->getProjectWSDetails($application_configs['db_mng'], $project);
+        $ws_details = array(
+            'ws_url' => $project['website'].'/WS-getTemplateFile-asdoiawndaiwo.php',
+            'user' => $getProjectWSDetails['ws_user'],
+            'psw' => $getProjectWSDetails['ws_psw'],
+        );
+        $password = crypt($getProjectWSDetails['ws_psw'], base64_encode($getProjectWSDetails['ws_psw']));
+        $fields = array();
+        $post_ = '';
+        $_WSConsumer = new WSConsumer();
+        $_getTemplateFiles = json_decode($_WSConsumer->get_ws($ws_details, $fields, $post_));
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'getTemplateFiles' => $_getTemplateFiles
+            )
+        );
+    }
+    public function _action_parseHTML($application_configs, $module, $action, $post, $optional_parameters){
+        //#Inspired by https://github.com/iamthemanintheshower/itmits__html-to-wp
+        $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $_id_ftp_details);
+        $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
+        $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder); //#TODO: get the file content
+        $_htmltowp = new HTMLtoWP();
+        $_get_head = $_htmltowp->get_custom_tag('head', $file_content);
+        $_get_body = $_htmltowp->get_custom_tag('body', $file_content);
+        $_get_footer = $_htmltowp->get_custom_tag('footer', $file_content);
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'get_head' => $_get_head,
+                'get_body' => $_get_body,
+                'get_footer' => $_get_footer
             )
         );
     }

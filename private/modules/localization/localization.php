@@ -78,6 +78,16 @@ class localization{
                                         'project-group' => 'Group',
                                         'group-color' => 'Color (in HEX)',
 
+                                        //#HTML to WP
+                                        'html-to-wp' => 'HTML to WP',
+                                        'file-to-import' => 'File to import',
+                                        'is-index' => 'Is index?',
+                                        'copy-all-folders' => 'Copy all folders',
+                                        'page-template' => 'Page template',
+                                        'retrieved-header' => 'Header (header.php)',
+                                        'retrieved-body' => 'Body (page-home.php)',
+                                        'retrieved-footer' => 'Footer (footer.php)',
+                                        
                                         'logout' =>'logout',
                                         'close' => 'Close'
                                     ),

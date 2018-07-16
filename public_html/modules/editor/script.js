@@ -328,7 +328,46 @@ $( document ).ready(function() {
             console.log( data );
         });
     });
-    
+
+    $('body').on('click', '#htmltowp', function () {
+        console.log('htmltowp');
+        var values = {
+            id_project: current_project
+        };
+
+        $.post( APPLICATION_URL + "application/home/getTemplateFiles", values)
+        .done(function( data ) {
+            console.log(data.getTemplateFiles.Import.fields);
+            var buttons = '';
+            $.each(data.getTemplateFiles.Import.fields, function( i, field ) {
+                buttons = buttons + '<button class="get_header_body_footer">' + field + '</button>';
+            });
+            $('#file_buttons').html(buttons);
+            $('#htmltowp_modal').modal();
+            $('#spinner', window.parent.document).hide();
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });
+    });
+    $('body').on('click', '.get_header_body_footer', function () {
+        var file = $(this).data('file');
+        var values = { file: file};
+        $.post( APPLICATION_URL + "application/home/parseHTML", values)
+        .done(function( data ) {
+            console.log(data);
+            $('#file_to_import').val(file);
+            $('#page_template').val('page-home.php'); //# default value = page-home.php
+            $('#retrieved_header').val('<head>' + data.get_head + '</head>');
+            $('#retrieved_body').val('<body>' + data.get_body + '</body>');
+            $('#retrieved_footer').val(data.get_footer);
+        })
+        .fail(function( data ) {
+            console.log( "FAIL: " );
+            console.log( data );
+        });
+        return false;
+    });
 });
 
 

@@ -64,6 +64,7 @@ SOFTWARE.
                     <?php if($_wp_admin !== ''){?>
                         <button class="no-margin-no-padding pull-right" id="golive">golive</button>
                         <button class="no-margin-no-padding pull-right" id="disableallplugins">disableallplugins</button>
+                        <button class="no-margin-no-padding pull-right" id="htmltowp">HTMLtoWP</button>
                     <?php }?>
                     <button class="no-margin-no-padding pull-right" id="refreshFilelistCacheByProject">R</button>
                 </div>
@@ -205,6 +206,56 @@ SOFTWARE.
             </div>
         </div>
 
+        <div class="modal fade" id="htmltowp_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['html-to-wp'];?></h4>
+                    </div>
+                    <div class="modal-body" id="htmltowp">
+                        <form> <!-- https://getbootstrap.com/docs/4.0/components/modal/ -->
+                            <div class="form-group">
+                                This function is not ready yet in this platform, but it's just a porting of the WP plugin https://github.com/iamthemanintheshower/WP-from-DEV-to-HTML-LIVE that you can just install in your WP instance.
+                                <br><br>
+                                <span id="file_buttons"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="file_to_import" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['file-to-import'];?></label>
+                                <input type="text" class="form-control" id="file_to_import">
+                            </div>
+                            <div class="form-group">
+                                <label for="is_index" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['is-index'];?></label>
+                                <input id="is_index" name="is_index" class="retrieved_checkbox" class="form-control" type="checkbox">
+                            </div>
+                            <div class="form-group">
+                                <label for="copy_all_folders" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['copy-all-folders'];?></label>
+                                <input id="copy_all_folders" name="copy_all_folders" class="retrieved_checkbox" class="form-control" type="checkbox">
+                            </div>
+                            <div class="form-group">
+                                <label for="page_template" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['page-template'];?></label>
+                                <input type="text" class="form-control" id="page_template">
+                            </div>
+                            <div class="form-group">
+                                <label for="retrieved_header" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['retrieved-header'];?></label>
+                                <textarea id="retrieved_header" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="retrieved_body" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['retrieved-body'];?></label>
+                                <textarea id="retrieved_body" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="retrieved_footer" class="col-form-label"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['retrieved-footer'];?></label>
+                                <textarea id="retrieved_footer" class="form-control"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="save-new-group">Save</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['close'];?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </body>
 </html>
