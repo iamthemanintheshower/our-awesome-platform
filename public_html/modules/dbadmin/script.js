@@ -420,12 +420,12 @@ function execute_insert_query(){
         prefix: 'insert',
         token: token
     };
-console.log(values);
+
     $.post( APPLICATION_URL + "dbadmin/dbadmin/executeInsertQuery", values)
     .done(function( data ) {
         console.log(data);
         if(data.saveDataOnTable > 0){
-            alert('Inserito');
+            location.reload();
         }else{
             alert('error');
         }
@@ -455,7 +455,7 @@ function execute_update_query(this_obj){
     .done(function( data ) {
         console.log(data);
         if(data.saveDataOnTable > 0){
-            alert('Inserito');
+            location.reload();
         }else{
             alert('error');
         }
