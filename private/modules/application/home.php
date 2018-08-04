@@ -226,7 +226,8 @@ class home extends page{
             $_website_id = $application_configs['db_mng']->saveDataOnTable('oap__websites', $ivWebsite, 'db', 0);
 
             //#- oap__projects
-            if($post['radioProjectType'] === 'BlankProject'){$_radioProjectType = 'BP';} //#TODO: improve these two lines
+            if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'WP'){$_radioProjectType = 'WP';}
+            if($post['radioProjectType'] === 'BlankProject'){$_radioProjectType = 'BP';} //#TODO: improve these lines
             if($post['radioProjectType'] === 'None'){$_radioProjectType = 'NN';}
             $ivProject[] = array('field' => 'project', 'typed_value' => $post['project']);
             $ivProject[] = array('field' => 'website_id', 'typed_value' => $_website_id);
@@ -237,17 +238,12 @@ class home extends page{
 
             //#- oap__projects_tabs
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 7);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
             $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
-            $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
-            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
-            $ivProjectTabs = null;
-            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
             $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
@@ -259,12 +255,17 @@ class home extends page{
                 $ivProjectTabs = null;
             }
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 2);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 5);
             $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;
             $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
-            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 1);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 6);
+            $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
+            $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
+            $ivProjectTabs = null;
+            $ivProjectTabs[] = array('field' => 'project_id', 'typed_value' => $_project_id);
+            $ivProjectTabs[] = array('field' => 'tab_id', 'typed_value' => 7);
             $ivProjectTabs[] = array('field' => 'usertype_id', 'typed_value' => 1); //#TODO default available for usertype_id = 1
             $application_configs['db_mng']->saveDataOnTable('oap__projects_tabs', $ivProjectTabs, 'db', 0);
             $ivProjectTabs = null;

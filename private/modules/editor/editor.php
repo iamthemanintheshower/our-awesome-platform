@@ -57,6 +57,10 @@ class editor extends page{
                 $code_mirror_base_url.'codemirror.css',
                 $code_mirror_base_url.'addon/hint/show-hint.css',
 
+                $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
+                    'font-awesome-4.7.0/css/font-awesome.min',
+                $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'].
+                    'bootstrap-4.0.0-dist/css/bootstrap.min.css', //#TODO must be only one bootstrap, fix this
                 //#editor
                 $application_configs['APPLICATION_URL'].$application_configs['PUBLIC_FOLDER'].$application_configs['PUBLIC_FOLDER_MODULES'].
                     'editor/tmpl/clear/css/editor.css',

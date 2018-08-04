@@ -112,11 +112,12 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/searchStringInFile", values)
         .done(function( data ) {
+            console.log(data);
             $('#searchinfile_result').html(data.stream_searchStringInFile);
             $('#searchinfile_result_modal').modal();
         })
         .fail(function( data ) {
-            console.log( data );
+            console.log( data );data
             alert('************** failed ************************');
             sendError('#btnSearchStringInFile', '', 'script.js', 'btnSearchStringInFile-fail', '0', data);
         });
@@ -201,6 +202,7 @@ $( document ).ready(function() {
         disable_element(this_);
         $( '#file').val($('#new_file').val());
         setFile(this_, '');
+        $('#refreshFilelistCacheByProject').click();
     });
 
     $('body').on('click', '#btnNewDir', function () {
@@ -223,6 +225,7 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "editor/editor/setDirectory/id_project/" + current_project, values)
         .done(function( data ) {
+            $('#refreshFilelistCacheByProject').click();
             console.log( data );
         })
         .fail(function( data ) {
@@ -237,6 +240,7 @@ $( document ).ready(function() {
     });
     
     $('.btnUpload').on('click', function() {
+        $(this).html('...loading...');
         if($( '#dir').val() !== ''){
             $( '#upload_dir').val($( '#dir').val());
         }else{
@@ -266,7 +270,7 @@ $( document ).ready(function() {
                 type: 'post',
                 success: function(php_script_response){
                     console.log(php_script_response);
-                    alert('Upload completo');
+                    $('#refreshFilelistCacheByProject').click();
                     location.reload();
                 }
             });
@@ -394,6 +398,7 @@ function setFile(this_, data){
 
     $.post( APPLICATION_URL + "editor/editor/setFile", values)
     .done(function( data ) {
+        console.log(data);
         manage_result(values, data, window.parent.document);
         enable_element(this_);
     })

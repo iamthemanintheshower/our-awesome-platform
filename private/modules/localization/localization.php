@@ -87,6 +87,10 @@ class localization{
                                         'retrieved-header' => 'Header (header.php)',
                                         'retrieved-body' => 'Body (page-home.php)',
                                         'retrieved-footer' => 'Footer (footer.php)',
+
+                                        //#Editor
+                                        'wptools' => 'WP Tools',
+                                        'ftptools' => 'FTP Tools',
                                         
                                         'logout' =>'logout',
                                         'close' => 'Close'

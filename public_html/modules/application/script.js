@@ -45,6 +45,7 @@ $( document ).ready(function() {
 
     $('body').on('click', '.project-button', function() {
         if($(this).data('id_project') === 'new_project'){
+            
             $('#new_project_modal').modal();
             return false;
         }
@@ -68,14 +69,20 @@ $( document ).ready(function() {
 
         $.post( APPLICATION_URL + "/application/home/saveNewGroup", { token: token, project_group: $('#project_group').val(), group_color: $('#group_color').val() })
         .done(function(data) {
-            console.log(data);
-            if(typeof data.valid === "undefined"){
+            $('#new_group_modal').modal('hide');
+            if(typeof data.saveNewGroup !== "undefined"){
                 $('#message_h4').html('Info');
                 $('#message_body').html('New Group created');
             }else{
                 $('#message_h4').html('Error');
-                $('#message_body').html(data.field + ': ' + data.message);
+                if(typeof data.field !== "undefined"){
+                    $('#message_body').html(data.field + ': ' + data.message);
+                }else{
+                    $('#message_body').html('Undefined error. Try again.');
+                }
             }
+
+            setTimeout(function() {location.reload();}, 3000);
 
             $('#message_modal').modal();
             $('#spinner').hide();
@@ -89,7 +96,6 @@ $( document ).ready(function() {
 
     $('body').on('click', '#save-new-project', function() {
         var position = 'save-new-project';
-        current_group = 1;
         $('#spinner').html('Wait for the project setup');
         $('#spinner').show();
         var values = { 
@@ -117,16 +123,33 @@ $( document ).ready(function() {
             project: $('#project').val()  
         };
 
+        if(typeof current_group === "undefined"){
+            alert('select group before'); //#TODO improve this alert and use Localization
+            return false;
+        }
+
         $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
         .done(function(data) {
-            console.log(data);
-            if(typeof data.valid === "undefined"){
+            $('#new_project_modal').modal('hide');
+            if(typeof data.saveNewGroup !== "undefined"){
                 $('#message_h4').html('Info');
                 $('#message_body').html('New Project created');
+                $('#message_body').html(
+                    $('#message_body').html() + 
+                    'DEV URL: ' + $('#website').val() + $('#project').val() + '<br>' + //# TODO 
+                    'PROD URL: ' + $('#website').val() + '<br>' +
+                    'USER: ' + $('#_user').val() + 'PSW: ' + $('#_psw').val()
+                );
             }else{
                 $('#message_h4').html('Error');
-                $('#message_body').html(data.field + ': ' + data.message);
+                if(typeof data.field !== "undefined"){
+                    $('#message_body').html(data.field + ': ' + data.message);
+                }else{
+                    $('#message_body').html('Undefined error. Try again.');
+                }
             }
+
+            setTimeout(function() {location.reload();}, 3000);
 
             $('#message_modal').modal();
             $('#spinner').hide();
@@ -311,7 +334,7 @@ function getProjectGroups(APPLICATION_URL, token){
         var groups = data.groups;
         var group_buttons = data.group_buttons;
         $('#groups').html(group_buttons);
-        if(groups !== 'no-groups'){
+        if(groups !== 'no-groups' && groups[0].id_group && typeof current_group !== "undefined"){
             $('#id_' + groups[0].id_group).addClass('active-action-button');
             current_group = groups[0].id_group;
         }else{
@@ -327,30 +350,35 @@ function getProjectGroups(APPLICATION_URL, token){
 
 function getProjectsByGroupID(APPLICATION_URL, token, current_group){
     var position = 'getProjectsByGroupID';
+    
+    if(typeof current_group === "undefined"){
+        console.log('No projects in this group'); //#TODO use the Localization
+    }else{
+        $.post( APPLICATION_URL + "/application/home/getProjectsByGroupID", { token: token, group_id: current_group, current_action: current_action})
+        .done(function(data) {
+            console.log(data);
+            var projects = data.projects;
+            var project_buttons = data.project_buttons;
+            $('#projects_by_group_id').html(project_buttons);
+            if(projects !== 'no-projects'){
+                $('#id_' + projects[0].id_project).addClass('active-action-button');
+                current_project = projects[0].id_project;
 
-    $.post( APPLICATION_URL + "/application/home/getProjectsByGroupID", { token: token, group_id: current_group, current_action: current_action})
-    .done(function(data) {
-        console.log(data);
-        var projects = data.projects;
-        var project_buttons = data.project_buttons;
-        $('#projects_by_group_id').html(project_buttons);
-        if(projects !== 'no-projects'){
-            $('#id_' + projects[0].id_project).addClass('active-action-button');
-            current_project = projects[0].id_project;
-
-            getProjectActionData(APPLICATION_URL, token, current_project, current_action);
-        }else{
-            $('#message_h4').html('Info');
-            $('#message_body').html('No projects in the selected group');
-            $('#message_modal').modal();
-            $('#spinner').hide();
-        }
-    })
-    .fail(function(data) {
-        console.log( "error" );
-        console.log(data.responseText);
-        sendError(position, '', 'script.js', 'getProjectsByGroupID-fail', '0', data.responseText);
-    });
+                getProjectActionData(APPLICATION_URL, token, current_project, current_action);
+            }else{
+                $('#message_h4').html('Info');
+                $('#message_body').html('No projects in the selected group');
+                $('#message_modal').modal();
+                $('#spinner').hide();
+            }
+        })
+        .fail(function(data) {
+            console.log( "error" );
+            console.log(data.responseText);
+            sendError(position, '', 'script.js', 'getProjectsByGroupID-fail', '0', data.responseText);
+        });
+    }
+    
 }
 
 function show_tabs(tabs){
@@ -374,10 +402,15 @@ function reset_project(){
 
 function trackProjectAction(current_project, current_action){
     var position = 'trackProjectAction';
+    var id_tab = '';
 
-    $.post( APPLICATION_URL + "/timetracker/timetracker/trackProjectAndAction", { token: token, current_project: current_project, current_action: $('#' + current_action).data('id_tab')})
+    if(typeof $('#' + current_action).data('id_tab') === "undefined"){
+        id_tab = '';
+    }else{
+        id_tab = $('#' + current_action).data('id_tab');
+    }
+    $.post( APPLICATION_URL + "/timetracker/timetracker/trackProjectAndAction", { token: token, current_project: current_project, current_action: id_tab})
     .done(function(data) {
-        console.log({ token: token, current_project: current_project, current_action: $('#' + current_action).data('id_tab')});
         console.log(data);
     })
     .fail(function(data) {

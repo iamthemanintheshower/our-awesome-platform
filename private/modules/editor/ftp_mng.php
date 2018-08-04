@@ -215,6 +215,9 @@ class FTP_mng {
 
         $new_file = $destination_folder.'__'.$file_to_be_uploaded__local.'-bkup-'.date('d-m-Y_H:i:s').'.'.$ext;
 
+        if(!file_exists($application_configs['editor__backup-on-save'].$website)){
+            mkdir($application_configs['editor__backup-on-save'].$website, 0777, true);
+        }
         if(file_exists($application_configs['editor__temp-file-to-be-uploaded'].$file_to_be_uploaded__local)){
             if (copy($application_configs['editor__temp-file-to-be-uploaded'].$file_to_be_uploaded__local, $application_configs['editor__backup-on-save'].$website.'/'.$new_file)) {
                 return $application_configs['editor__backup-on-save'].$website.'/'.$new_file;

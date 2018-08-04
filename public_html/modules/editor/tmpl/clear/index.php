@@ -55,39 +55,62 @@ SOFTWARE.
         <input type="hidden" id="upload_dir" name="upload_dir" />
         <input type="hidden" id="dir" name="dir" value=""/>
         <input type="hidden" id="file" name="file" />
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_wptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wptools'];?></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown_wptools">
+                            <?php if($_wp_admin !== ''){?>
+                            <div class="row"><div class="col-md-12"><button class="btn pull-right" id="golive">golive</button></div></div>
+                                <button class="btn pull-right" id="disableallplugins">disableallplugins</button>
+                                <button class="btn pull-right" id="htmltowp">HTMLtoWP</button>
+                            <?php }?>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_ftptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftptools'];?></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown_ftptools">
+                            <button class="btn" id="btnNewFile"><i class="fa fa-file" aria-hidden="true"></i>&nbsp;NEW FILE</button>
+                            <button class="btn" id="btnNewDir"><i class="fa fa-folder" aria-hidden="true"></i>&nbsp;NEW DIR</button>
+                            
+                            <input class="btn pull-left" id="sortpicture" type="file" name="sortpic" />
+                            <button class="btn pull-right" id="upload"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;UPLOAD</button>
 
-        <div class="container-fluid">
-            <div id="div_header_bar" class="row">
-                <div class="col-sm-2 no-margin-no-padding">
-                    <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
-                    <span id="current_dir" class="pull-left"></span>
-                    <?php if($_wp_admin !== ''){?>
-                        <button class="no-margin-no-padding pull-right" id="golive">golive</button>
-                        <button class="no-margin-no-padding pull-right" id="disableallplugins">disableallplugins</button>
-                        <button class="no-margin-no-padding pull-right" id="htmltowp">HTMLtoWP</button>
-                    <?php }?>
-                    <button class="no-margin-no-padding pull-right" id="refreshFilelistCacheByProject">R</button>
-                </div>
-                <div class="col-sm-1 no-margin-no-padding">
-                    <button class="no-margin-no-padding" id="btnNewFile">NEW FILE</button>
-                    <button class="no-margin-no-padding" id="btnNewDir">NEW DIRECTORY</button>
-                </div>
-                <div class="col-sm-2">
-                    <input type="text" id="searchstringinfile" name="serchstringinfile" placeholder="Type text to search in files"/>
-                    <button class="no-margin-no-padding" id="btnSearchStringInFile">FIND IN FILES</button>
-                </div>
-                <div class="col-sm-2 no-margin-no-padding">
-                    <input class="no-margin-no-padding pull-left" id="sortpicture" type="file" name="sortpic" />
-                    <button class="no-margin-no-padding pull-right" id="upload">UPLOAD</button>
-                </div>
-                <div class="col-sm-2 no-margin-no-padding text-right">
-                    <button class="no-margin-no-padding" id="btnDeleteFile">DELETE FILE</button>
-                    <button class="no-margin-no-padding" id="btnCollectEditedFiles">SAVED FILES</button>
-                </div>
-                <div class="col-sm-2 no-margin-no-padding pull-right">
-                    <button class="no-margin-no-padding" id="btnSaveHTML">SAVE</button>
-                </div>
+                            <input type="text" id="searchstringinfile" name="serchstringinfile" placeholder="Type text to search in files"/>
+                            <button class="btn" id="btnSearchStringInFile"><i class="fa fa-search" aria-hidden="true"></i>&nbsp;FIND IN FILES</button>
+
+                            <button class="btn" id="btnDeleteFile"><i class="fa fa-remove" aria-hidden="true"></i>&nbsp;DELETE FILE</button>
+
+                            <button class="btn" id="btnCollectEditedFiles">SAVED FILES</button>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="navbar-nav px-3 pull-left mr-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-default" id="refreshFilelistCacheByProject"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                    </li>
+                </ul>
+                <ul class="navbar-nav px-3 pull-left">
+                    <li class="nav-item">
+                        <span id="current_dir" class="pull-left"></span>
+                    </li>
+                </ul>
+                <ul class="navbar-nav px-3">
+                    <li class="nav-item text-nowrap">
+                        <button class=" btn btn-default" id="btnSaveHTML"><i class="fa fa-save" aria-hidden="true"></i>&nbsp;SAVE</button>
+                    </li>
+                </ul>
             </div>
+        </nav>
+        <div class="container-fluid">
+            
 
             <div id="div_body" class="row">
                 <div class="col-md-2">
@@ -153,7 +176,6 @@ SOFTWARE.
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">Create new file in the selected folder</h4>
                     </div>
                     <div class="modal-body">
