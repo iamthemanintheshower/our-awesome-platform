@@ -22,6 +22,8 @@ FEATURES:
 Next release: (already developed, testing in local environment)
 - chat with collegues and easy cut/paste from the chat to the todo list manager
 
+WATCH THE VIDEO TUTORIALS: (since the platform is often updated, the video could be not updated)
+https://www.youtube.com/watch?v=eLmXMC7QfJ4&list=PLd00zC3UZn8kbLLDySI9vXzrmIkLCttkT
 
 TODO:
 - for each project, add a log viewer (just adapt this code https://github.com/iamthemanintheshower/wp-exceptions-mng)
