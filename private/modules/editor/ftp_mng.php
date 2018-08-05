@@ -97,7 +97,8 @@ class FTP_mng {
             $filename = $local__root_folder.$file_to_be_downloaded;
 
             if (ftp_get($ftp_connection, $filename, $destination_folder.$file_to_be_downloaded, FTP_ASCII)){
-                if($this->_supported_file($filename)){
+                $_supported_file = $this->_supported_file($filename);
+                if(isset($_supported_file['supported_file']) && $_supported_file['supported_file']){
                     $handle = fopen($filename, "rb");
                     $file_content = fread($handle, filesize($filename));
                     fclose($handle);
@@ -254,22 +255,32 @@ class FTP_mng {
         $zip->close();
     }
 
-    private function _supported_file($file){
+    public function _supported_file($file){
         $finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
         $finfo_file = finfo_file($finfo, $file);
+        $_supported_file = false;
+        $_editor_type = 'none';
+
         switch ($finfo_file) {
             case 'text/x-php':
             case 'text/php':
             case 'plain/text':
             case 'text/plain':
             case 'text/html':
-                return true;
+                $_supported_file = true;
+                $_editor_type = 'text';
+                break;
 
+            case 'application/octet-stream': //#TODO I'm considering "application/octet-stream" as an image because some image has this type
+            case 'image/png':
+                $_supported_file = true;
+                $_editor_type = 'image';
                 break;
 
             default:
                 break;
         }
-        return false;
+        //#error_log('$file:'.$file.'|$finfo_file:'.$finfo_file.'|$_editor_type:'.$_editor_type, 0);
+        return array('supported_file' => $_supported_file, 'extension' => $finfo_file, 'editor_type' => $_editor_type);
     }
 }

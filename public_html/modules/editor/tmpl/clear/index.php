@@ -70,6 +70,12 @@ SOFTWARE.
                             <?php if($_wp_admin !== ''){?>
                             <div class="row"><div class="col-md-12"><button class="btn pull-right" id="golive">Go Live</button></div></div>
                                 <button class="btn pull-right" id="disableallplugins">Disable All Plugins</button>
+
+                                <input type="text" id="adminpasswordreset" name="adminpasswordreset" placeholder="Type the password"/>
+                                <button class="btn pull-right" id="resetadminpassword">Reset Admin Password</button>
+
+                                <button class="btn pull-right" id="maintenanceMode">Maintenance Mode</button>
+
                                 <button class="btn pull-right" id="htmltowp">HTML 2 WP</button>
                             <?php }?>
                         </div>
@@ -88,7 +94,8 @@ SOFTWARE.
 
                             <button class="btn" id="btnDeleteFile"><i class="fa fa-remove" aria-hidden="true"></i>&nbsp;DELETE FILE</button>
 
-                            <button class="btn" id="btnCollectEditedFiles">SAVED FILES</button>
+                            <button class="btn" id="btnCollectEditedFiles">EDITED FILES</button>
+                            <button class="btn" id="btnDownloadEntireProject">DOWNLOAD</button>
                         </div>
                     </li>
                 </ul>
@@ -131,6 +138,7 @@ SOFTWARE.
                 <div class="col-sm-10 no-margin-no-padding">
                     <div id="buttons_editor"></div>
                     <div id="editor"></div>
+                    <div id="picture_editor"></div>
                 </div>
             </div>
         </div>
@@ -279,5 +287,22 @@ SOFTWARE.
             </div>
         </div>
 
+        <div class="modal fade" id="confirmMaintenanceMode_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Maintenance Mode</h4>
+                    </div>
+                    <div class="modal-body" id="confirmupload_modal">
+                        <button type="button" class="btn btn-primary btnMaintenanceMode" data-mode="btnMaintenanceModeMessage">Message</button>
+                        <button type="button" class="btn btn-primary btnMaintenanceMode" data-mode="btnMaintenanceModeAuthpopup">Auth popup</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

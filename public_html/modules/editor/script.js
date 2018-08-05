@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 var opened_file_tabs = new Array();
+var current_editor_type = '';
 
 $( document ).ready(function() {
     set_mirror_height();
@@ -59,8 +60,19 @@ $( document ).ready(function() {
                 );
             }
 
-            if(data.supported_by_the_editor){
+            current_editor_type = data.editor_type;
+
+            if(data.supported_by_the_editor && data.editor_type === 'text'){
+                $('#picture_editor').hide();
+                $('#editor').show();
                 editor.setValue(data.file_content);
+            }else if(data.supported_by_the_editor && data.editor_type === 'image'){
+                $('#editor').hide();
+
+                var url = dir + '//' + file;
+                url = 'https://' + url.replace($('#root_dir').val(), $('#edit_on_domain').html());
+                $('#picture_editor').html('<img src="' + encodeURI(url) + '" alt=""/>');
+                $('#picture_editor').show();
             }else{
                 var url = dir + '//' + file;
                 url = 'https://' + url.replace($('#root_dir').val(), $('#edit_on_domain').html());
@@ -93,8 +105,22 @@ $( document ).ready(function() {
     $('body').on('click', '#btnSaveHTML', function () {
         var this_ = $(this);
         disable_element(this_);
-        var data = editor.getValue();
-        setFile(this_,data);
+ 
+        switch(current_editor_type) {
+            case 'text':
+                var data = editor.getValue();
+                setFile(this_,data);
+                break;
+            case 'image':
+                //#TODO
+                //Get image editing
+                //Send edited image to the WS
+                alert('TODO: Not implemented yet');
+                $('#spinner', window.parent.document).hide();
+                break;
+            default:
+                return false;
+        }
     });
     $('body').on('click', '#btnDeleteFile', function () {
         var this_ = $(this);
@@ -316,6 +342,57 @@ $( document ).ready(function() {
         });
     });
 
+    $('body').on('click', '#maintenanceMode', function() {
+        console.log('confirmMaintenanceMode_modal');
+        $('#confirmMaintenanceMode_modal').modal();
+    });
+
+    $('body').on('click', '.btnMaintenanceMode', function() {
+        var position = 'btnMaintenanceMode';
+        console.log($(this).data('mode'));
+        var maintenanceMode = $(this).data('mode');
+
+        $('#spinner').html('Wait for the project setup');
+        $('#spinner').show();
+        var values = { 
+            token: token,
+
+            current_project: current_project,
+            maintenanceMode: maintenanceMode
+        };
+
+        $.post( APPLICATION_URL + "/application/home/maintenanceMode", values)
+        .done(function(data) {
+            $('#spinner').hide();
+        })
+        .fail(function(data) {
+            console.log( "error" );
+            console.log(data.responseText);
+            sendError(position, '', 'script.js', 'save-new-project-fail', '0', data.responseText);
+        });
+    });
+
+    $('body').on('click', '#resetadminpassword', function() {
+        var position = 'resetadminpassword';
+        $('#spinner').html('Wait for the project setup');
+        $('#spinner').show();
+        var values = { 
+            token: token,
+
+            current_project: current_project,
+            adminpasswordreset: $('#adminpasswordreset').val()
+        };
+        $.post( APPLICATION_URL + "/application/home/adminPasswordReset", values)
+        .done(function(data) {
+            $('#spinner').hide();
+        })
+        .fail(function(data) {
+            console.log( "error" );
+            console.log(data.responseText);
+            sendError(position, '', 'script.js', 'save-new-project-fail', '0', data.responseText);
+        });
+    });
+
     $('body').on('click', '#disableallplugins', function () {
         $('#spinner', window.parent.document).html('The platform is trying to disable all plugins of the website. Please, wait until it\'s done');
         $('#spinner', window.parent.document).show();
@@ -372,6 +449,30 @@ $( document ).ready(function() {
         });
         return false;
     });
+
+
+    $('body').on('click', '#btnDownloadEntireProject', function() {
+        console.log('downloadcurrentproject');
+        
+    });
+    $('body').on('click', '#downloadcurrentproject', function() {
+        $('#spinner', window.parent.document).html('The platform is preparing the archive.'); //TODO: localization
+        $('#spinner', window.parent.document).show();
+        var values = {
+            id_project: current_project
+        };
+
+        $.post( APPLICATION_URL + "application/home/downloadcurrentproject", values)
+        .done(function( data ) {
+            console.log(data);
+            $('#spinner', window.parent.document).hide();
+            alert('TODO: Not implemented yet');
+        })
+        .fail(function( data ) {
+            console.log( data );
+        });        
+    });
+
 });
 
 
@@ -425,6 +526,7 @@ function deleteFile(this_, data){
     .done(function( data ) {
         manage_result(values, data, window.parent.document);
         enable_element(this_);
+        $('#refreshFilelistCacheByProject').click();
     })
     .fail(function( data ) {
         console.log( data );

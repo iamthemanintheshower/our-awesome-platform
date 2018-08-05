@@ -60,6 +60,7 @@ div.CodeMirror span.CodeMirror-matchingbracket { color: #000; background-color: 
 ul{display: block;padding-left: 15px;}
 
 #searchstringinfile{width: 100%;}
+#adminpasswordreset{width: 100%;}
 
 #collect_edited_files{
     margin: 0px !important;

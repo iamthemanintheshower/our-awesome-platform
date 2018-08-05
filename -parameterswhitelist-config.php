@@ -70,6 +70,10 @@ $application_configs['parameters_whitelist'] = array(
         'project' => $_parameter_mandatory_not_formalcheck //#TODO
     ),
 
+    'application/home/adminPasswordReset' => 'no-parameters', //#TODO
+    'application/home/maintenanceMode' => 'no-parameters', //#TODO
+    'application/home/downloadcurrentproject' => 'no-parameters', //#TODO
+
     'application/home/golive' => 'no-parameters', //#TODO
     'application/home/disableallplugins' => 'no-parameters', //#TODO
     'application/home/htmltowp' => 'no-parameters', //#TODO

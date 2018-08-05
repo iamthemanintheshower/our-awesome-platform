@@ -512,6 +512,71 @@ class home extends page{
         );
     }
 
+    public function _action_maintenanceMode($application_configs, $module, $action, $post, $optional_parameters){
+        var_dump($post);
+
+        $_id_project = $post['current_project'];
+
+        switch ($post['maintenanceMode']) {
+            case 'btnMaintenanceModeMessage':
+                //#TODO
+                //Put in maintenance
+                //# 1) rename index.php to index-[salt].php
+                //# 2) rename maintenance.php to index.php
+                //Back from maintenance
+                //# 1) rename index.php to maintenance.php
+                //# 2) rename index-[salt].php to index.php
+                break;
+
+            case 'btnMaintenanceModeAuthpopup':
+                //#TODO
+                //Put in maintenance
+                //# 1) change .htaccess in order to consider the .htpasswd file
+                //Back from maintenance
+                //# 1) change .htaccess in order to ignore the .htpasswd file
+                break;
+
+            default:
+                break;
+        }
+        return array(
+            'type' => 'ws', 
+            'response' => array() //#TODO setup a response
+        );
+    }
+
+    public function _action_adminPasswordReset($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $post['current_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        $sql_query = "UPDATE `wp_users` SET `user_pass` = md5('".$post['adminpasswordreset']."') WHERE `ID` = '1'";
+
+        $adminPasswordReset_via_ws = $this->getProjectDBMng($application_configs, $project)->getDataByQuery($sql_query, 'ws');
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+                'adminPasswordReset_via_ws' => $adminPasswordReset_via_ws
+            )
+        );
+    }
+
+    public function _action_downloadcurrentproject($application_configs, $module, $action, $post, $optional_parameters){
+        $id_project = $post['current_project'];
+        $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
+
+        //#TODO
+        //Compress the project folder
+        //Download the archive
+
+        return array(
+            'type' => 'ws', 
+            'response' => array(
+
+            )
+        );
+    }
+    
     public function _action_golive($application_configs, $module, $action, $post, $optional_parameters){
         $id_project = $post['id_project'];
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);

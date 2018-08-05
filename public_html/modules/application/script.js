@@ -131,14 +131,16 @@ $( document ).ready(function() {
         $.post( APPLICATION_URL + "/application/home/saveNewProject", values)
         .done(function(data) {
             $('#new_project_modal').modal('hide');
-            if(typeof data.saveNewGroup !== "undefined"){
+            console.log(data);
+            if(typeof data.saveNewProject !== "undefined"){
                 $('#message_h4').html('Info');
                 $('#message_body').html('New Project created');
                 $('#message_body').html(
                     $('#message_body').html() + 
-                    'DEV URL: ' + $('#website').val() + $('#project').val() + '<br>' + //# TODO 
-                    'PROD URL: ' + $('#website').val() + '<br>' +
-                    'USER: ' + $('#_user').val() + 'PSW: ' + $('#_psw').val()
+                    '<br><br><b>DEV URL: </b> ' + $('#website').val() + '/' + $('#project').val() + '<br>' + //# TODO 
+                    '<b>PROD URL: </b>' + $('#website').val() + '<br>' +
+                    '<b>USER: </b>' + $('#_user').val() + '<br><b>PSW:</b> ' + $('#_psw').val() + '<br>' + 
+                    'Keep it in a safe place'
                 );
             }else{
                 $('#message_h4').html('Error');
@@ -149,7 +151,6 @@ $( document ).ready(function() {
                 }
             }
 
-            setTimeout(function() {location.reload();}, 3000);
 
             $('#message_modal').modal();
             $('#spinner').hide();

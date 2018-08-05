@@ -201,26 +201,46 @@ class editor extends page{
         $project = $this->getProjectByID($application_configs['db_mng'], $id_project);
         $getProjectFTPDetails = $this->getProjectFTPDetails($application_configs['db_mng'], $project);
         $_supported_by_the_editor = true;
-
+        $_editor_type = 'none';
+        $file_content = 'filetype-not-supported-chaslachap';
         $remote__root_folder = '/';
+
         if(isset($post['get_backup']) && $post['get_backup'] === '1'){
             $url = str_replace('https://', '', $project['website']);
             $file_content = file_get_contents(__DIR__.'/_backup-on-save/'.$url.'/'.$post['file']);
         }else{
             $local__root_folder = $application_configs['editor__temp-file-to-be-uploaded'];
             $ftp = new FTP_mng($getProjectFTPDetails, $application_configs);
-            $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder);
+            $_supported_file = $ftp->_supported_file($remote__root_folder.$local__root_folder.'/'.$post['file']);
+            if(isset($_supported_file['supported_file']) && $_supported_file['supported_file']){
+                $_editor_type = $_supported_file['editor_type'];
+                switch ($_editor_type) {
+                    case 'text':
+                        $file_content = $ftp->getFileViaFTP($post, $remote__root_folder, $local__root_folder);
+
+                        break;
+                    case 'image':
+                        $file_content = ''; //#
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
         }
 
-        if($file_content === 'filetype-not-supported-chaslachap'){
+        if($file_content === 'filetype-not-supported-chaslachap'){ //#TODO improve
             $_supported_by_the_editor = false;
         }
+
         return array(
             'type' => 'ws', 
             'response' => array(
                 'project' => $project,
                 'file_content' => $file_content,
-                'supported_by_the_editor' => $_supported_by_the_editor 
+                'supported_by_the_editor' => $_supported_by_the_editor,
+                'editor_type' => $_editor_type
             )
         );
     }
