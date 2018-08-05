@@ -90,6 +90,7 @@ class localization{
 
                                         //#Editor
                                         'wptools' => 'WP Tools',
+                                        'bptools' => 'BP Tools',
                                         'ftptools' => 'FTP Tools',
                                         
                                         'logout' =>'logout',

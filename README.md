@@ -34,7 +34,8 @@ TODO:
 
 Read about the project: https://medium.com/@imthemanintheshower/open-source-projects-and-the-short-of-time-285eeea14f70
 
-
+VIDEO TUTORIALS:
+- Watch tutorial videos: https://www.youtube.com/channel/UCsfQH9V7jxWuhbtnO9fiMrg
 
 https://gist.github.com/joashp/a1ae9cb30fa533f4ad94 is used as inspiration to make private/_classes/encryption.php
 

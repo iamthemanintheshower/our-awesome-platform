@@ -71,15 +71,17 @@ SOFTWARE.
                                 if($l !== ''){
                                     if($_SESSION['last_i'] > $i){ echo '<tr class="bg">'; }
                                     $columns = explode('|', $l);
-                                    //TYPE	WHEN	TYPE	DESCRIPTION	LINE	FILE
-                                    echo '<td>'.$columns[0].'</td>'; //TYPE
-                                    echo '<td>'.date('d/M/Y H:i:s', intval($columns[1])).'</td>'; //WHEN
-                                    echo '<td class="font">'.getErrorType($columns[2]).'</td>'; //TYPE
-                                    echo '<td class="font">'.$columns[3].'</td>'; //DESCRIPTION
-                                    echo '<td class="center">'.$columns[4].'</td>'; //LINE
-                                    echo '<td>'.$columns[5].'</td>'; //FILE
-                                    echo '</tr>';
-                                    $i++;
+                                    if(is_array($columns) && isset($columns[1]) && isset($columns[3])){ //#TODO improve
+                                        //TYPE	WHEN	TYPE	DESCRIPTION	LINE	FILE
+                                        echo '<td>'.$columns[0].'</td>'; //TYPE
+                                        echo '<td>'.date('d/M/Y H:i:s', intval(str_replace('user_id:', '', $columns[1]))).'</td>'; //WHEN
+                                        echo '<td class="font">'.getErrorType($columns[2]).'</td>'; //TYPE
+                                        echo '<td class="font">'.$columns[3].'</td>'; //DESCRIPTION
+                                        echo '<td class="center">'.$columns[4].'</td>'; //LINE
+                                        echo '<td>'.$columns[5].'</td>'; //FILE
+                                        echo '</tr>';
+                                        $i++;
+                                    }
                                 }
                             }
                             $_SESSION['last_i'] = $i;

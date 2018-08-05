@@ -236,11 +236,21 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
 
                         $('#website_iframe').attr('src', project.website + '/' + project.projectslug);
                     }else{
-                        $('#website_iframe').attr('src', project.website);
+                        $('#wp_dev_url').data('iframesrc', project.website + '/' + project.projectslug);
+                        $('#wp_prod_url').data('iframesrc', project.website);
+
+                        $('#website_iframe').attr('src', project.website + '/' + project.projectslug + '/login/login/index');
                     }
                     opened_iframes.push(current_action);
                 }
                 if(project.radioProjectType === 'WP'){
+                    $('#wp_prod_url').removeClass('active-action-button');
+                    $('#wp_dev_url').addClass('active-action-button');
+
+                    $('#wp_dev_url').show();
+                    $('#wp_prod_url').show();
+                }
+                if(project.radioProjectType === 'BP'){
                     $('#wp_prod_url').removeClass('active-action-button');
                     $('#wp_dev_url').addClass('active-action-button');
 

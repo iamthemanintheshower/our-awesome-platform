@@ -64,22 +64,22 @@ SOFTWARE.
                     <li class="nav-item dropdown">
                         <span id="edit_on_domain" class="pull-left"><?php echo $project_domain;?></span>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_wptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wptools'];?></a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown_wptools">
-                            <?php if($_wp_admin !== ''){?>
-                            <div class="row"><div class="col-md-12"><button class="btn pull-right" id="golive">Go Live</button></div></div>
-                                <button class="btn pull-right" id="disableallplugins">Disable All Plugins</button>
+                    <?php if($project['radioProjectType'] === 'WP'){?>
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_wptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['wptools'];?></a>
+                            <div class="dropdown-menu" aria-labelledby="dropdown_wptools">
+                                <div class="row"><div class="col-md-12"><button class="btn pull-right" id="golive">Go Live</button></div></div>
+                                    <button class="btn pull-right" id="disableallplugins">Disable All Plugins</button>
 
-                                <input type="text" id="adminpasswordreset" name="adminpasswordreset" placeholder="Type the password"/>
-                                <button class="btn pull-right" id="resetadminpassword">Reset Admin Password</button>
+                                    <input type="text" id="adminpasswordreset" name="adminpasswordreset" placeholder="Type the password"/>
+                                    <button class="btn pull-right" id="resetadminpassword">Reset Admin Password</button>
 
-                                <button class="btn pull-right" id="maintenanceMode">Maintenance Mode</button>
+                                    <button class="btn pull-right" id="maintenanceMode">Maintenance Mode</button>
 
-                                <button class="btn pull-right" id="htmltowp">HTML 2 WP</button>
-                            <?php }?>
-                        </div>
-                    </li>
+                                    <button class="btn pull-right" id="htmltowp">HTML 2 WP</button>
+                            </div>
+                        </li>
+                    <?php }?>
                     <li class="nav-item dropdown">
                         <a class="navbar-brand dropdown-toggle" href="#" id="dropdown_ftptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $page->getLocalization($application_configs['language'], 'application', 'home', 'index')['ftptools'];?></a>
                         <div class="dropdown-menu" aria-labelledby="dropdown_ftptools">
