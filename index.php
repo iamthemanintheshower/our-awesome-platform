@@ -51,6 +51,8 @@ include($application_configs['PRIVATE_FOLDER_MODULES'].'logviewer/logviewer.php'
 
 session_start();
 
+if($application_configs['APPLICATION_DOMAIN'] === 'YOUR_DOMAIN'){die('Setup');} //#TODO create an Installer
+
 if(isset($get['q'])){
 
     $application_configs['db_mng'] = new DbMng($application_configs['db_details']);
