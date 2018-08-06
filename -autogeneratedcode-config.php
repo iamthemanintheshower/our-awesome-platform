@@ -1,5 +1,7 @@
 <?php
 
+$application_configs['PRIVATE_FOLDER_TEMPLATES'] = 'private/templates-eQVrWbMCAm/';
+
 $application_configs['ws_oap_install'] = array(
     'ws_oap_tmpl' => $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_TEMPLATES'].'ws-oap/ws-oap.zip'
 );
