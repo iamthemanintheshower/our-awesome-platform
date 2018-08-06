@@ -30,6 +30,7 @@ TODO:
 - InputChecker->getParametersWhitelist() => add the parameters for each position
 - InputChecker->checkParameters => add the require/formal check + token (just adapt this code https://medium.com/@imthemanintheshower/another-form-validator-for-wordpress-5161efd2e673)
 - improve the picture editor
+- ZIP editor (like the PHP and picture editor) to read and create ZIP file online
 - search for "TODO" in the code
 
 Read about the project: https://medium.com/@imthemanintheshower/open-source-projects-and-the-short-of-time-285eeea14f70

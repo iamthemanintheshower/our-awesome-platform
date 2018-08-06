@@ -293,7 +293,33 @@ class home extends page{
 
             if(isset($post['radioProjectType']) && $post['radioProjectType'] === 'WP'){
                 if($getProjectWSDetails){
+                    $wordpress_latest_zip = file_get_contents('http://wordpress.org/latest.zip');
+                    file_put_contents($application_configs['wp_install']['wp_tmpl'].'/wordpress_latest_zip.zip', $wordpress_latest_zip);
                     $ftp->uploadFileViaFTP($post['ftp_root'], $application_configs['wp_install']['wp_tmpl'].'/WS-uncompress-jeuastod.php', $post['website']);
+                    $zip = new ZipArchive;
+                    if ($zip->open($application_configs['wp_install']['wp_tmpl'].'/wordpress_latest_zip.zip', ZipArchive::CREATE) === TRUE) {
+                        $zip->extractTo($application_configs['wp_install']['wp_tmpl']);
+                        system('rm -rf ' . escapeshellarg($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/plugins/akismet'), $retval);
+                        system('rm ' . escapeshellarg($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/plugins/hello.php'), $retval);
+                        system('rm -rf ' . escapeshellarg($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/themes/twentyfifteen'), $retval);
+                        system('rm -rf ' . escapeshellarg($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/themes/twentysixteen'), $retval);
+                    }
+                    
+                    //#https://github.com/iamthemanintheshower/itmits__html-to-wp/archive/master.zip
+                    $zip = new ZipArchive;
+                    file_put_contents($application_configs['wp_install']['wp_tmpl'].'/itmits__html-to-wp_latest_zip.zip', 'http://github.com/iamthemanintheshower/itmits__html-to-wp/archive/master.zip');
+
+                    if ($zip->open($application_configs['wp_install']['wp_tmpl'].'/itmits__html-to-wp_latest_zip.zip', ZipArchive::CREATE) === TRUE) {
+                        $zip->extractTo($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/plugins/');
+                    }
+
+                    #https://github.com/iamthemanintheshower/itmits__editor/archive/master.zip
+                    $zip = new ZipArchive;
+                    file_put_contents($application_configs['wp_install']['wp_tmpl'].'/itmits__editor_latest_zip.zip', 'http://github.com/iamthemanintheshower/itmits__editor/archive/master.zip');
+
+                    if ($zip->open($application_configs['wp_install']['wp_tmpl'].'/itmits__editor_latest_zip.zip', ZipArchive::CREATE) === TRUE) {
+                        $zip->extractTo($application_configs['wp_install']['wp_tmpl'].'/wordpress/wp-content/plugins/');
+                    }
 
                     $ws_details = array(
                         'ws_url' => $project['website'].'/WS-uncompress-jeuastod.php',
@@ -341,7 +367,7 @@ class home extends page{
                 file_put_contents($application_configs['wp_install']['temp'].$projectslug.'/.htaccess', $htaccess_tmpl_content);
 
                 //use the WP instance from template
-                $this->recurse_copy($application_configs['wp_install']['wp_tmpl'], $application_configs['wp_install']['temp'].$projectslug.'/');
+                $this->recurse_copy($application_configs['wp_install']['wp_tmpl'].'/wordpress/', $application_configs['wp_install']['temp'].$projectslug.'/');
 
                 //customize the DB from a template
                 $WP_db_content = str_replace('#SITE-URL#', $post['website'].'/'.$projectslug, $WP_db_content);
