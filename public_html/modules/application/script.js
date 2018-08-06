@@ -406,6 +406,7 @@ function show_tabs(tabs){
                     '<li class="nav-item dropdown">' +
                         '<a class="navbar-brand dropdown-toggle" href="#" id="dropdown_bptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BP Tools</a>' +
                         '<div class="dropdown-menu" aria-labelledby="dropdown_bptools">' +
+                            '<button class="btn" id="btnNewPage"><i class="fa fa-file" aria-hidden="true"></i>&nbsp;NEW MENU ITEM</button>' +
                             '<button class="btn" id="btnNewPage"><i class="fa fa-file" aria-hidden="true"></i>&nbsp;NEW PAGE</button>' +
 
                             '<button class="btn" id="btnNewAction"><i class="fa fa-folder" aria-hidden="true"></i>&nbsp;NEW ACTION</button>' +
