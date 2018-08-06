@@ -251,11 +251,7 @@ function getProjectActionData(APPLICATION_URL, token, current_project, current_a
                     $('#wp_prod_url').show();
                 }
                 if(project.radioProjectType === 'BP'){
-                    $('#wp_prod_url').removeClass('active-action-button');
-                    $('#wp_dev_url').addClass('active-action-button');
-
-                    $('#wp_dev_url').show();
-                    $('#wp_prod_url').show();
+                    $('#bp_tools').show();
                 }
                 break;
             case 'wp_admin_action':
@@ -399,8 +395,36 @@ function show_tabs(tabs){
     });
     div_tabs = div_tabs + '<button id="wp_prod_url" data-iframesrc="" class="float-right" type="button">Prod</button>';
     div_tabs = div_tabs + '<button id="wp_dev_url" data-iframesrc="" class="float-right" type="button">Dev</button>';
+
+    div_tabs = div_tabs + 
+        '<nav id="bp_tools" class="navbar navbar-expand-md navbar-dark bg-dark">' +
+            '<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">' +
+                '<span class="navbar-toggler-icon"></span>' +
+            '</button>' +
+            '<div class="collapse navbar-collapse" id="navbarsExampleDefault">' +
+                '<ul class="navbar-nav">' +
+                    '<li class="nav-item dropdown">' +
+                        '<a class="navbar-brand dropdown-toggle" href="#" id="dropdown_bptools" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">BP Tools</a>' +
+                        '<div class="dropdown-menu" aria-labelledby="dropdown_bptools">' +
+                            '<button class="btn" id="btnNewPage"><i class="fa fa-file" aria-hidden="true"></i>&nbsp;NEW PAGE</button>' +
+
+                            '<button class="btn" id="btnNewAction"><i class="fa fa-folder" aria-hidden="true"></i>&nbsp;NEW ACTION</button>' +
+
+                            '<button class="btn" id="btnNewForm"><i class="fa fa-folder" aria-hidden="true"></i>&nbsp;NEW FORM</button>' +
+                        '</div>' +
+                    '</li>' +
+                '</ul>' +
+                '<ul class="navbar-nav px-3 pull-left mr-auto">' +
+                    '<li class="nav-item">' +
+                        '<span id="position" class="pull-left"></span>' +
+                    '</li>' +
+                '</ul>' +
+            '</div>' +
+        '</nav>'; //#BP
+
     $('#wp_dev_url').hide();
     $('#wp_prod_url').hide();
+    $('#bp_tools').hide();
     $('#tabs').html(div_tabs);
 }
 
@@ -430,4 +454,8 @@ function trackProjectAction(current_project, current_action){
         sendError(position, '', 'script.js', 'trackProjectAction-fail', '0', data.responseText);
         $('#spinner').hide();
     });
+}
+
+function updatePosition(){
+    $('#position').html($('#website_iframe').attr('src'));
 }

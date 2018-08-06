@@ -92,7 +92,7 @@ SOFTWARE.
             <div id="div_body" class="row">
                 <div class="col-md-12">
                     <iframe id="ftp_iframe" src=""></iframe>
-                    <iframe id="website_iframe" src=""></iframe>
+                    <iframe id="website_iframe" src="" onLoad="updatePosition();"></iframe>
                     <iframe id="wp_admin_iframe" src=""></iframe>
                     <iframe id="db_admin_iframe" src=""></iframe>
                     <iframe id="time_iframe" src=""></iframe>
