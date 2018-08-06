@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /#APPLICATION-SLUG#/
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /#APPLICATION-SLUG#/index.php?q=$1 [L,QSA]
+</IfModule>
+
+##Enable the following lines if you can avoid to type your credentials into a malicious iframe. 
+##Consider that if you don't enable the following lines, you can't login your WP from the platform iframe
+##Read here the clarifications and take an informed decision: https://stackoverflow.com/questions/14338559/cant-access-wordpress-dashboard-in-an-iframe https://wordpress.stackexchange.com/questions/137545/custom-login-iframe-doesnt-work
+#<IfModule mod_headers.c>
+#    Header unset X-Frame-Options
+#    Header always unset X-Frame-Options
+#</IfModule>
