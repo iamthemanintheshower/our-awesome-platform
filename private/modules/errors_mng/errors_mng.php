@@ -69,9 +69,13 @@ class errors_mng extends page{
 }
 
 function shutDownFunction($application_configs) {
-    if(!file_exists(__DIR__."/logs")){
-        mkdir(__DIR__."/logs");
-    }    $error = error_get_last();
+    if(!file_exists(
+        $application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+        $application_configs['PRIVATE_FOLDER_LOGS'])){
+        mkdir($application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PRIVATE_FOLDER_DATA'].
+                $application_configs['PRIVATE_FOLDER_LOGS']);
+    }
+    $error = error_get_last();
     if ($error['type'] === E_ERROR) { 
         $date = new DateTime();
         error_log(
