@@ -469,6 +469,8 @@ class home extends page{
 
                 //use the BP instance from template
                 $this->recurse_copy($application_configs['bp_install']['bp_tmpl'], $application_configs['bp_install']['temp'].$projectslug.'/');
+                $this->recurse_copy($application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PUBLIC_FOLDER'].$application_configs['LIB'], $application_configs['bp_install']['temp'].$projectslug.'/'.$application_configs['PUBLIC_FOLDER'].$application_configs['LIB']);
+                $this->recurse_copy($application_configs['ROOT_PATH'].$application_configs['APPLICATION_SLUG'].'/'.$application_configs['PUBLIC_FOLDER'].'fonts/', $application_configs['bp_install']['temp'].$projectslug.'/'.$application_configs['PUBLIC_FOLDER'].'fonts/');
 
                 file_put_contents($application_configs['bp_install']['temp'].$projectslug.'/-application-config.php', $bp_config_tmpl_content);
 

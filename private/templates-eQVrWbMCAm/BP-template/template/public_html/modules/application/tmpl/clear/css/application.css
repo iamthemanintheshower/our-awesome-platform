@@ -1,0 +1,31 @@
+body{
+    color: #222;
+    background-size: cover;
+    padding: 0;
+    margin: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+a:hover { 
+    color: #d2dc81;
+}
+
+
+.footer{
+    position: fixed;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+}
+
+#div_header_bar{
+    border: 1px solid #c5c5c5;
+    background-color: #fff;
+    margin-bottom: 3px;
+}
+#div_body_bar{
+    border: 1px solid #c5c5c5;
+    background: #e9e9e9;
+}
+#div_body{
+    border: 1px solid #c5c5c5;
+}
