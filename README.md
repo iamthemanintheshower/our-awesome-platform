@@ -40,6 +40,14 @@ VIDEO TUTORIALS:
 
 https://gist.github.com/joashp/a1ae9cb30fa533f4ad94 is used as inspiration to make private/_classes/encryption.php
 
+LICENCE:
+See the LICENSE file in this folder.
+The following folders contains Open Source code that belongs to the owners (see inside the files and follow the links to see the licence and owners):
+- public_html/fonts/sourcesanspro => https://fonts.google.com/specimen/Source+Sans+Pro
+- public_html/lib/bootstrap-3.3.7-dist => https://getbootstrap.com/docs/3.3
+- public_html/lib/bootstrap-4.0.0-dist => https://getbootstrap.com/docs/4.0/getting-started/introduction/
+- public_html/lib/font-awesome-4.7.0 => https://fontawesome.com/v4.7.0/
+- public_html/lib/jquery => https://jquery.com/
 
 Changes:
 05 August 2018 note: I changed the "Next realease" part becouse many things were added, and listed the FEATURES
